@@ -1,5 +1,5 @@
 
-def line_length():
+def line_length(line):
 	nb_pts = len(line)
 	length = 0
 	while nb_pts > 1:
@@ -14,23 +14,31 @@ def distance(point1, point2):
 	print(f"La distance entre {point1} et {point2} = {dist:.3f}")
 	return dist
 
-#line = ((0, 0), (2, 3), (3, 4), (4, 4))
-print("Merci de saisir votre liste de points sous la forme x1,y1 x2,y2 ... : ")
-user_input = input()
-
-values = user_input.split(' ')
-coordinates = []
-line_tmp = []
-for x in range(0,len(values)):
-	coordinates.append(values[x].split(','))
 	
-for y in range(0, len(coordinates)):
-	tmp = []
-	for z in range(0, 2):
-		tmp.append(int(coordinates[y][z]))
-	line_tmp.append(tuple(tmp))
+def main():
+	print("Merci de saisir votre liste de points sous la forme x1,y1 x2,y2 ... : ")
+	user_input = input()
 
-line = tuple(line_tmp)
-print(f"Les coordonnées saisies sont {line}")
+	values = user_input.split(' ')
+	print(f"values {values}")
+	coordinates = []
+	line_tmp = []
+	for x in range(0,len(values)):
+		coordinates.append(values[x].split(','))
+		print(f"coordinates {coordinates}")
+		
+	for y in range(0, len(coordinates)):
+		tmp = []
+		for z in range(0, 2):
+			tmp.append(float(coordinates[y][z]))
+			print(f"tmp {tmp}")
+		line_tmp.append(tuple(tmp))
+		print(f"line_tmp{line_tmp}")
 
-line_length()
+	line = tuple(line_tmp)
+	print(f"Les coordonnées saisies sont {line}")
+
+	line_length(line)
+
+main()
+
