@@ -12,7 +12,7 @@ def selection(text, min_val, max_val):
         try:
             print(text, min_val, max_val)
             choice = int(input())
-            if (choice >= min_val and choice < max_val + 1) == False:
+            if (choice >= min_val and choice < max_val + 1) is False:
                 print(f"Valeur min attendue {min_val}, valeur max attendue {max_val}")
                 continue
         except ValueError:
@@ -27,7 +27,7 @@ def casino(money, choice, bet, result):
     if result == choice:
         money += bet * 3
         print(f"C'est le bon nombre, la chance est avec vous ! Vous disposez de {money} $")
-    elif (choice % 2 == 0 and result % 2 == 0) or (choice % 2 != 0 and result % 2 != 0):
+    elif choice % 2 == result % 2:
         money += bet * 0.5
         print(f"C'est la bonne couleur, la chance est avec vous ! Vous disposez de {money} $")
     else:
