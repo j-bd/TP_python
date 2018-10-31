@@ -8,7 +8,7 @@ class DictionnaireOrdonne():
         self._keys = []
         self._values = []
 
-        if (isinstance(data, dict) and isinstance(data, DictionnaireOrdonne)) is False:
+        if (isinstance(data, dict) or isinstance(data, DictionnaireOrdonne)) is False:
             raise TypeError(f"The date type in parameters is {type(data)}" +
                             " but dict or DictionnaireOrdonne type is expected")
 
