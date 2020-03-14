@@ -22,3 +22,8 @@ TARGET_TOWNS = ["Bordeaux", "Mont de Marsan"]
 
 YEARS_SELECTED = [2017, 2018, 2019]
 
+WEEKDAY = {
+    'lundi' : 'monday', 'mardi' : 'tuesday', 'mercredi' : 'wednesday',
+    'jeudi' : 'thursday', 'vendredi' : 'friday', 'samedi' : 'saturday',
+    'dimanche' : 'sunday'
+}
