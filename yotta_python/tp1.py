@@ -8,9 +8,11 @@ Created on Sat Mar 14 14:54:38 2020
 
 import os
 import unicodedata
+import datetime
+import calendar
 
 import pandas as pd
-import datetime
+from dateutil.relativedelta import relativedelta
 
 import constants as c
 
@@ -52,4 +54,20 @@ equip_select = ['ordinateur', 'telephone']
 working_df = specific_df(df_original, town_select, equip_select)
 
 
+#Data addition
 
+#ca last year
+for ind_r, values_r in working_df.iterrows():
+    v = working_df.loc[
+        (working_df["ville"] == values_r["ville"]) &
+        (working_df["equipement"] == values_r["equipement"]) &
+        (working_df["date"] == values_r["date"] - relativedelta(years=1)), "CA"
+    ]
+
+    try:
+        working_df.at[ind_r, 'ca_last_year'] = float(v.values)
+    except TypeError:
+        working_df.at[ind_r, 'ca_last_year'] = "Nan"
+
+#a.strftime("%A")
+targ_date = datetime.date(2017, 1, 20)
