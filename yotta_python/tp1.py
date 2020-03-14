@@ -13,6 +13,7 @@ import datetime
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from jours_feries_france.compute import JoursFeries
+from vacances_scolaires_france import SchoolHolidayDates
 
 import constants as c
 
@@ -93,6 +94,15 @@ for ind_r, values_r in working_df.iterrows():
         working_df.at[ind_r, 'is_bankholiday'] = True
     else:
         working_df.at[ind_r, 'is_bankholiday'] = False
+
+#is school holiday
+d = SchoolHolidayDates()
+for ind_r, values_r in working_df.iterrows():
+    if d.is_holiday_for_zone(values_r["date"], c.TOWN_HOLIDAY_ZONE[values_r["ville"]]):
+        working_df.at[ind_r, 'is_school_holiday'] = True
+    else:
+        working_df.at[ind_r, 'is_school_holiday'] = False
+
 
 #a.strftime("%A")
 targ_date = datetime.date(2017, 1, 20)
