@@ -95,6 +95,19 @@ for ind_r, values_r in working_df.iterrows():
     else:
         working_df.at[ind_r, 'is_bankholiday'] = False
 
+#distance between closest bank holiday
+year = 0
+bankholiday = []
+for ind_r, values_r in working_df.iterrows():
+    if working_df.loc[ind_r, "date"].year != year:
+        year = working_df.loc[ind_r, "date"].year
+        bankholiday = list(JoursFeries.for_year(year).values())
+
+    for bhd in bankholiday:
+        if bhd > working_df.loc[ind_r, "date"]:
+            working_df.at[ind_r, 'dist_between_closest_bank_holiday'] = bhd - working_df.loc[ind_r, "date"]
+            break
+
 #is school holiday
 d = SchoolHolidayDates()
 for ind_r, values_r in working_df.iterrows():
