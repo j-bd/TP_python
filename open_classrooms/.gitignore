@@ -1,0 +1,4 @@
+*.pyc
+Test/*
+Certification Python - partie III - code d'exemple de correction/*
+*/__pycache__/*
