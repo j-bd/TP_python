@@ -32,9 +32,10 @@ def specific_df(df, town_list, equipement_list):
         filter_df = init_df[init_df.loc[:, 'equipement'] == value]
         frames = [second_df, filter_df]
         second_df = pd.concat(frames)
-    return second_df
+    return second_df.reset_index(drop=True)
 
 
+#Data Preparation and selection
 df_original = csv_loader(os.path.join(c.WORKING_DIR, c.FILE_NAME))
 
 for line, val in enumerate(df_original.iloc[:, 0]):
@@ -49,3 +50,6 @@ town_select = ['Mont de Marsan', 'Bordeaux']
 equip_select = ['ordinateur', 'telephone']
 
 working_df = specific_df(df_original, town_select, equip_select)
+
+
+
