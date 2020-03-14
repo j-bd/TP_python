@@ -1,2 +1,2 @@
 # TP_python
-All exercices
+Old exercices (2017)
