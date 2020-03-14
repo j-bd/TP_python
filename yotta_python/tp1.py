@@ -12,6 +12,7 @@ import datetime
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
+from jours_feries_france.compute import JoursFeries
 
 import constants as c
 
@@ -80,6 +81,18 @@ for ind_r, values_r in working_df.iterrows():
     else:
         working_df.at[ind_r, 'is weekend'] = False
 
+#is bankholiday
+year = 0
+bankholiday = []
+for ind_r, values_r in working_df.iterrows():
+    if working_df.loc[ind_r, "date"].year != year:
+        year = working_df.loc[ind_r, "date"].year
+        bankholiday = list(JoursFeries.for_year(year).values())
+
+    if working_df.loc[ind_r, "date"] in bankholiday:
+        working_df.at[ind_r, 'is_bankholiday'] = True
+    else:
+        working_df.at[ind_r, 'is_bankholiday'] = False
 
 #a.strftime("%A")
-#targ_date = datetime.date(2017, 1, 20)
+targ_date = datetime.date(2017, 1, 20)
