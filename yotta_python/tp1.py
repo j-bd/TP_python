@@ -70,15 +70,16 @@ for ind_r, values_r in working_df.iterrows():
 
 #weekday
 for ind_r, values_r in working_df.iterrows():
-    d = working_df.loc[ind_r, "date"].strftime("%A")
+    day = working_df.loc[ind_r, "date"].strftime("%A")
+    working_df.at[ind_r, 'weekday'] = c.WEEKDAY[day]
 
-    working_df.at[ind_r, 'weekday'] = c.WEEKDAY[d]
+#weekend
+for ind_r, values_r in working_df.iterrows():
+    if working_df.loc[ind_r, "weekday"] in ['saturday', 'sunday']:
+        working_df.at[ind_r, 'is weekend'] = True
+    else:
+        working_df.at[ind_r, 'is weekend'] = False
 
 
 #a.strftime("%A")
-targ_date = datetime.date(2017, 1, 20)
-WEEKDAY = {
-    'lundi' : 'monday', 'mardi' : 'tuesday', 'mercredi' : 'wednesday',
-    'jeudi' : 'thursday', 'vendredi' : 'friday', 'samedi' : 'saturday',
-    'dimanche' : 'sunday'
-}
+#targ_date = datetime.date(2017, 1, 20)
