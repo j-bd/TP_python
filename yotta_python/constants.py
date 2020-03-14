@@ -16,4 +16,9 @@ FEATURES_NAMES = [
     'is_school_holiday'
 ]
 
-FEATURES_TYPES = [date, int, int, int, str, bool, bool, int, bool]
+#FEATURES_TYPES = [date, int, int, int, str, bool, bool, int, bool]
+
+TARGET_TOWNS = ["Bordeaux", "Mont de Marsan"]
+
+YEARS_SELECTED = [2017, 2018, 2019]
+
