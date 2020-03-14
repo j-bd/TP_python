@@ -9,6 +9,7 @@ Created on Sat Mar 14 14:54:38 2020
 import os
 import unicodedata
 import datetime
+import calendar
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
@@ -70,6 +71,21 @@ for ind_r, values_r in working_df.iterrows():
     except TypeError:
         working_df.at[ind_r, 'ca_last_year'] = "Nan"
 
+#ca last year same weekday
+for ind_r, values_r in working_df.iterrows():
+    ca_l_y_sw = working_df.loc[
+        (working_df["ville"] == values_r["ville"]) &
+        (working_df["equipement"] == values_r["equipement"]) &
+        (working_df["date"] == values_r["date"] + relativedelta(years=-1, weekday=values_r["date"].weekday())),
+        "CA"
+    ]
+
+    try:
+        working_df.at[ind_r, 'ca_last_year_same_weekday'] = float(ca_l_y_sw)
+    except TypeError:
+        working_df.at[ind_r, 'ca_last_year_same_weekday'] = "Nan"
+
+relativedelta(years=+1, months=-1)
 #weekday
 for ind_r, values_r in working_df.iterrows():
     day = working_df.loc[ind_r, "date"].strftime("%A")
@@ -118,4 +134,4 @@ for ind_r, values_r in working_df.iterrows():
 
 
 #a.strftime("%A")
-targ_date = datetime.date(2017, 1, 20)
+targ_date = datetime.date(2020, 3, 15)
