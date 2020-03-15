@@ -9,9 +9,9 @@ Created on Sat Mar 14 14:54:38 2020
 import os
 import unicodedata
 import datetime
-import calendar
 
 import pandas as pd
+import seaborn as sns
 from dateutil.relativedelta import relativedelta
 from jours_feries_france.compute import JoursFeries
 from vacances_scolaires_france import SchoolHolidayDates
@@ -132,6 +132,15 @@ for ind_r, values_r in working_df.iterrows():
     else:
         working_df.at[ind_r, 'is_school_holiday'] = False
 
+
+#Export
+working_df.to_csv(os.path.join(c.WORKING_DIR, "processed data {equipement} v1.csv"))
+
+#for town in town_select:
+#    for equip in equip_select:
+#        sns.lmplot(x="date", y="CA", hue="equipement", data=working_df)
+
+sns.relplot(x="date", y="CA", hue="equipement", style="ville", kind="line", data=working_df)
 
 #a.strftime("%A")
 targ_date = datetime.date(2020, 3, 15)
