@@ -9,14 +9,14 @@ Created on Sat Mar 14 14:53:40 2020
 FILE_NAME = "second_dataset.parquet"
 
 #DATE_FORMAT = '%Y-%m-%d'
-DATE_FORMAT = "%d%m%Y"
+#DATE_FORMAT = "%d%m%Y"
 
-TOWN_HOLIDAY_ZONE = {"Bordeaux" : "A", "Mont-de-Marsan" : "A", "Paris" : "C"}
+TOWN_HOLIDAY_ZONE = {"Bordeaux" : "A", "Mont_Marsan" : "A", "Paris" : "C"}
 
-DATE = "Timestamp"
-TOWN = "Town"
-EQUIP = "Equipment"
-SALES = "Sales"
+#DATE = "Timestamp"
+#TOWN = "Town"
+#EQUIP = "Equipment"
+#SALES = "Sales"
 
 #Request format
 
@@ -33,3 +33,30 @@ base = {
     }
 }
 
+COLUMNS_NAMES = {
+    "Timestamp" : "DATE", "date" : "DATE", "Town" : "TOWN", "ville" : "TOWN",
+    "Equipment" : "EQUIP", "equipement" : "EQUIP", "Sales" : "SALES",
+    "CA" : "SALES"
+
+}
+
+CITIES_NAMES = {
+    "Paris" : ["Paris"], "Bordeaux" : ["Bordeaux"],
+    "Mont_Marsan" : ["Mont-de-Marsan", "Mont de Marsan"]
+}
+
+DATE_FORMAT = {"csv" : "%Y-%m-%d", "parquet" : "%d%m%Y"}
+
+
+#result = {"date_format" : "%Y-%m-%d", "date_col" : "Timestamp",
+#    "town_col" : "Town", "equip_col" : "Equipment", "sales_col" : "Sales"
+#}
+
+#    "date_col" : ["Timestamp", "date"], "equip_col" : ["Equipment", "equipement"],
+#    "town_col" : ["Town", "ville"],"sales_col" : ["Sales", "CA"]
+
+#columns_name = {}
+#for column_name in list(df.columns):
+#    for key, value in dictionary.items():
+#        if column_name in value:
+#            columns_name[key] = column_name
