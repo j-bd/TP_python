@@ -88,60 +88,21 @@ class Forecast:
         'dimanche' : 'sunday'
     }
 
-    def __init__(self, csv_path):
+    def __init__(self, df_original):
         '''Initialize class with original csv'''
-        self.df_original = self.check_extension(csv_path)
-
-#    def check_extension(self, csv_path):
-#        '''Check extension of input file'''
-#        ext = c.FILE_NAME.split(sep=".")[-1].lower()
-#        if ext == "csv":
-#            df = pd.read_csv(csv_path)
-#        elif ext == "parquet":
-#            df = pd.read_parquet(csv_path, engine='pyarrow')
-#        else:
-#            print(
-#                "Extension not take into account. Please get 'csv' or 'parquet' file"
-#            )
-#        return df
-
-#    def check_word(self, town_list, equipement_list):
-#        '''Check request demand to be sure that exist in data'''
-#        towns = self.df_original[c.TOWN].unique()
-#        equipement = self.df_original[c.EQUIP].unique()
-
-#    def var_setter(self):
-#        '''Set variables'''
-#        self.DATE = "Timestamp"
-#        self.TOWN = "Town"
-#        self.EQUIP = "Equipment"
-#        self.SALES = "Sales"
-
-
-    def clean_data(self):
-        '''Set date type and remove accent letters'''
-        for line, val in enumerate(self.df_original.iloc[:, 0]):
-            date_format = datetime.datetime.strptime(val, c.DATE_FORMAT).date()
-            self.df_original.iloc[line, 0] = date_format
-
-        for line, val in enumerate(self.df_original.iloc[:, 1]):
-            word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
-            self.df_original.iloc[line, 1] = word
-
-        self.df_original[c.SALES] = pd.to_numeric(self.df_original[c.SALES])
-
+        self.df_original = df_original
 
     def create_specific_df(self, town_list, equipement_list):
         '''Return a custom dataframe based on columns contains user choice'''
         init_df = pd.DataFrame(columns=self.df_original.columns)
         for value in town_list:
-            filter_df = self.df_original[self.df_original.loc[:, c.TOWN] == value]
+            filter_df = self.df_original[self.df_original.loc[:, c.NAMES["t"]] == value]
             frames = [init_df, filter_df]
             init_df = pd.concat(frames)
 
         second_df = pd.DataFrame(columns=self.df_original.columns)
         for value in equipement_list:
-            filter_df = init_df[init_df.loc[:, c.EQUIP] == value]
+            filter_df = init_df[init_df.loc[:, c.NAMES["e"]] == value]
             frames = [second_df, filter_df]
             second_df = pd.concat(frames)
 
@@ -152,10 +113,10 @@ class Forecast:
         '''Add a column with the sales revenue of one year before for each day'''
         for ind_r, values_r in self.working_df.iterrows():
             sr_l_y = self.working_df.loc[
-                (self.working_df[c.TOWN] == values_r[c.TOWN]) &
-                (self.working_df[c.EQUIP] == values_r[c.EQUIP]) &
-                (self.working_df[c.DATE] == values_r[c.DATE] - relativedelta(years=1)),
-                c.SALES
+                (self.working_df[c.NAMES["t"]] == values_r[c.NAMES["t"]]) &
+                (self.working_df[c.NAMES["e"]] == values_r[c.NAMES["e"]]) &
+                (self.working_df[c.NAMES["d"]] == values_r[c.NAMES["d"]] - relativedelta(years=1)),
+                c.NAMES["s"]
             ]
             try:
                 self.working_df.at[ind_r, 'sr_last_year'] = float(sr_l_y.values)
@@ -167,11 +128,11 @@ class Forecast:
         and linked to the same weekday'''
         for ind_r, values_r in self.working_df.iterrows():
             sr_l_y_sw = self.working_df.loc[
-                (self.working_df[c.TOWN] == values_r[c.TOWN]) &
-                (self.working_df[c.EQUIP] == values_r[c.EQUIP]) &
-                (self.working_df[c.DATE] == values_r[c.DATE] +
-                 relativedelta(years=-1, weekday=values_r[c.DATE].weekday())),
-                c.SALES
+                (self.working_df[c.NAMES["t"]] == values_r[c.NAMES["t"]]) &
+                (self.working_df[c.NAMES["e"]] == values_r[c.NAMES["e"]]) &
+                (self.working_df[c.NAMES["d"]] == values_r[c.NAMES["d"]] +
+                 relativedelta(years=-1, weekday=values_r[c.NAMES["d"]].weekday())),
+                c.NAMES["s"]
             ]
             try:
                 self.working_df.at[ind_r, 'ca_last_year_same_weekday'] = float(sr_l_y_sw)
@@ -182,7 +143,7 @@ class Forecast:
         '''Add a column with the weekday corresponding to the date'''
         cls = self.__class__
         for ind_r, values_r in self.working_df.iterrows():
-            day = self.working_df.loc[ind_r, c.DATE].strftime("%A")
+            day = self.working_df.loc[ind_r, c.NAMES["d"]].strftime("%A")
             try:
                 self.working_df.at[ind_r, 'weekday'] = cls.weekday[day]
             except KeyError:
@@ -201,11 +162,11 @@ class Forecast:
         year = 0
         bankholiday = []
         for ind_r, values_r in self.working_df.iterrows():
-            if self.working_df.loc[ind_r, c.DATE].year != year:
-                year = self.working_df.loc[ind_r, c.DATE].year
+            if self.working_df.loc[ind_r, c.NAMES["d"]].year != year:
+                year = self.working_df.loc[ind_r, c.NAMES["d"]].year
                 bankholiday = list(JoursFeries.for_year(year).values())
 
-            if self.working_df.loc[ind_r, c.DATE] in bankholiday:
+            if self.working_df.loc[ind_r, c.NAMES["d"]] in bankholiday:
                 self.working_df.at[ind_r, 'is_bankholiday'] = True
             else:
                 self.working_df.at[ind_r, 'is_bankholiday'] = False
@@ -215,20 +176,20 @@ class Forecast:
         year = 0
         bankholiday = []
         for ind_r, values_r in self.working_df.iterrows():
-            if self.working_df.loc[ind_r, c.DATE].year != year:
-                year = self.working_df.loc[ind_r, c.DATE].year
+            if self.working_df.loc[ind_r, c.NAMES["d"]].year != year:
+                year = self.working_df.loc[ind_r, c.NAMES["d"]].year
                 bankholiday = list(JoursFeries.for_year(year).values())
 
             for bhd in bankholiday:
-                if bhd > self.working_df.loc[ind_r, c.DATE]:
-                    self.working_df.at[ind_r, 'dist_between_closest_bank_holiday'] = bhd - self.working_df.loc[ind_r, c.DATE]
+                if bhd > self.working_df.loc[ind_r, c.NAMES["d"]]:
+                    self.working_df.at[ind_r, 'dist_between_closest_bank_holiday'] = bhd - self.working_df.loc[ind_r, c.NAMES["d"]]
                     break
 
     def add_is_school_holiday(self):
         '''Add a column with booleen value. True value for school holiday'''
         shd = SchoolHolidayDates()
         for ind_r, values_r in self.working_df.iterrows():
-            if shd.is_holiday_for_zone(values_r[c.DATE], c.TOWN_HOLIDAY_ZONE[values_r[c.TOWN]]):
+            if shd.is_holiday_for_zone(values_r[c.NAMES["d"]], c.TOWN_HOLIDAY_ZONE[values_r[c.NAMES["t"]]]):
                 self.working_df.at[ind_r, 'is_school_holiday'] = True
             else:
                 self.working_df.at[ind_r, 'is_school_holiday'] = False
@@ -252,7 +213,7 @@ class Forecast:
         '''Export graph representation of custom DataFrame'''
         cls = self.__class__
         plot = sns.relplot(
-            x=c.DATE, y=c.SALES, hue=c.EQUIP, style=c.TOWN, kind="line",
+            x=c.NAMES["d"], y=c.NAMES["s"], hue=c.NAMES["e"], style=c.NAMES["t"], kind="line",
             data=self.working_df
         )
         plot.savefig(os.path.join(os.getcwd(), cls.export_plot_name))
@@ -270,9 +231,8 @@ def main(town_list, equip_list):
     grd_w = Groundwork(os.path.join(os.getcwd(), c.FILE_NAME))
     grd_w_df = grd_w.process_pipeline()
 
-
-    fc.clean_data()
-    fc.create_specific_df(town_list, equip_list)
+    fc = Forecast(grd_w_df)
+    fc.create_specific_df(c.CITIES_SELEC, c.EQUIP_SELEC)
     fc.process_pipeline()
     fc.export_data()
     fc.export_graph()
@@ -281,6 +241,4 @@ def main(town_list, equip_list):
 
 
 if __name__ == "__main__":
-    town_list = ['Mont-de-Marsan', 'Bordeaux']
-    equip_list = ['ordinateur', 'telephone']
-    forecast = main(town_list, equip_list)
+    main()
