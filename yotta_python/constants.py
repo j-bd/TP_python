@@ -19,3 +19,17 @@ EQUIP = "Equipment"
 SALES = "Sales"
 
 #Request format
+
+base = {
+    "zone" : {
+        "Bordeaux" : "A", "Mont-de-Marsan" : "A", "Paris" : "C",
+        "Mont de Marsan" : "A"
+    },
+    "date_format" : {"ymd" : "%Y-%m-%d", "dmy" : "%d%m%Y"},
+    "column_format" : {
+        "Timestamp" : "date", "date" : "date", "Town" : "town", "ville" : "town",
+        "Equipment" : "equip", "equipement" : "equip", "Sales" : "sales",
+        "CA" : "sales"
+    }
+}
+
