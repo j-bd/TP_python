@@ -82,6 +82,7 @@ class Forecast:
     '''Allow to get information from sales report'''
     export_df_name = "processed_data_{equipement}_v1.csv"
     export_plot_name = "graph.png"
+    export_agg = "agg_graph.png"
     weekday = {
         'lundi' : 'monday', 'mardi' : 'tuesday', 'mercredi' : 'wednesday',
         'jeudi' : 'thursday', 'vendredi' : 'friday', 'samedi' : 'saturday',
@@ -108,6 +109,12 @@ class Forecast:
 
         self.working_df = second_df.reset_index(drop=True)
         return self.working_df
+
+    def agregate_sr(self):
+        '''Agregate Sales Revenues for cities and equipment selected by day'''
+        self.group_df = self.working_df.groupby(["DATE", "EQUIP"]).sum()
+        self.group_df.reset_index(inplace=True)
+        self.agg_graph()
 
     def add_sr_last_year(self):
         '''Add a column with the sales revenue of one year before for each day'''
@@ -215,13 +222,22 @@ class Forecast:
         self.working_df.to_csv(os.path.join(os.getcwd(), cls.export_df_name))
 
     def export_graph(self):
-        '''Export graph representation of custom DataFrame'''
+        '''Export graph representation of full custom DataFrame'''
         cls = self.__class__
         plot = sns.relplot(
             x=c.NAMES["d"], y=c.NAMES["s"], hue=c.NAMES["e"], style=c.NAMES["t"], kind="line",
             data=self.working_df
         )
         plot.savefig(os.path.join(os.getcwd(), cls.export_plot_name))
+
+    def agg_graph(self):
+        '''Export aggregate sales revenues graph representation'''
+        cls = self.__class__
+        plot = sns.relplot(
+            x=c.NAMES["d"], y=c.NAMES["s"], hue=c.NAMES["e"], kind="line",
+            data=self.group_df
+        )
+        plot.savefig(os.path.join(os.getcwd(), cls.export_agg))
 
     @classmethod
     def display_class_attributes(cls):
@@ -238,6 +254,7 @@ def main():
 
     fc = Forecast(grd_w_df)
     fc.create_specific_df(c.CITIES_SELEC, c.EQUIP_SELEC)
+    fc.agregate_sr()
     fc.process_pipeline()
     fc.export_data()
     fc.export_graph()
