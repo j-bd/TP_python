@@ -63,6 +63,14 @@ class Groundwork:
         for col_name in c.NUMBER_FORMAT:
             self.df[col_name] = pd.to_numeric(self.df[col_name])
 
+    def process_pipeline(self):
+        '''Launch full processing pipeline'''
+        self.rename_columns()
+        self.set_date()
+        self.clean_letters()
+        self.check_numbers()
+
+
 
 class Forecast:
     '''Allow to get information from sales report'''
@@ -78,18 +86,18 @@ class Forecast:
         '''Initialize class with original csv'''
         self.df_original = self.check_extension(csv_path)
 
-    def check_extension(self, csv_path):
-        '''Check extension of input file'''
-        ext = c.FILE_NAME.split(sep=".")[-1].lower()
-        if ext == "csv":
-            df = pd.read_csv(csv_path)
-        elif ext == "parquet":
-            df = pd.read_parquet(csv_path, engine='pyarrow')
-        else:
-            print(
-                "Extension not take into account. Please get 'csv' or 'parquet' file"
-            )
-        return df
+#    def check_extension(self, csv_path):
+#        '''Check extension of input file'''
+#        ext = c.FILE_NAME.split(sep=".")[-1].lower()
+#        if ext == "csv":
+#            df = pd.read_csv(csv_path)
+#        elif ext == "parquet":
+#            df = pd.read_parquet(csv_path, engine='pyarrow')
+#        else:
+#            print(
+#                "Extension not take into account. Please get 'csv' or 'parquet' file"
+#            )
+#        return df
 
 #    def check_word(self, town_list, equipement_list):
 #        '''Check request demand to be sure that exist in data'''
