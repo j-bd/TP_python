@@ -8,10 +8,34 @@ Created on Sat Mar 14 14:53:40 2020
 
 FILE_NAME = "second_dataset.parquet"
 
+NAMES = {"d": "DATE", "t": "TOWN", "e": "EQUIP", "s": "SALES"}
+
+CITIES = {"mdm" : "Mont_Marsan"}
+
+DATE_FORMAT = {"csv" : "%Y-%m-%d", "parquet" : "%d%m%Y"}
+
+COLUMNS_NAMES = {
+    "Timestamp" : NAMES["d"], "date" : NAMES["d"], "Town" : NAMES["t"],
+    "ville" : NAMES["t"], "Equipment" : NAMES["e"], "equipement" : NAMES["e"],
+    "Sales" : NAMES["s"], "CA" : NAMES["s"]
+}
+
+CITIES_NAMES = {
+    "Mont-de-Marsan" : CITIES["mdm"], "Mont de Marsan" : CITIES["mdm"]
+}
+
+STR_COLUMN = [NAMES["t"], NAMES["e"]]
+
+NUMBER_COLUMN = [NAMES["s"]]
+
+TOWN_HOLIDAY_ZONE = {"Bordeaux" : "A", CITIES["mdm"] : "A", "Paris" : "C"}
+
+
+
 #DATE_FORMAT = '%Y-%m-%d'
 #DATE_FORMAT = "%d%m%Y"
 
-TOWN_HOLIDAY_ZONE = {"Bordeaux" : "A", "Mont_Marsan" : "A", "Paris" : "C"}
+
 
 #DATE = "Timestamp"
 #TOWN = "Town"
@@ -33,24 +57,7 @@ TOWN_HOLIDAY_ZONE = {"Bordeaux" : "A", "Mont_Marsan" : "A", "Paris" : "C"}
 #    }
 #}
 
-NAMES = {"d": "DATE", "t": "TOWN", "e": "EQUIP", "s": "SALES"}
 
-COLUMNS_NAMES = {
-    "Timestamp" : NAMES["d"], "date" : NAMES["d"], "Town" : NAMES["t"],
-    "ville" : NAMES["t"], "Equipment" : NAMES["e"], "equipement" : NAMES["e"],
-    "Sales" : NAMES["s"], "CA" : NAMES["s"]
-}
-
-CITIES_NAMES = {
-    "Paris" : ["Paris"], "Bordeaux" : ["Bordeaux"],
-    "Mont_Marsan" : ["Mont-de-Marsan", "Mont de Marsan"]
-}
-
-DATE_FORMAT = {"csv" : "%Y-%m-%d", "parquet" : "%d%m%Y"}
-
-STR_FORMAT = [NAMES["t"], NAMES["e"]]
-
-NUMBER_FORMAT = [NAMES["s"]]
 
 
 #result = {"date_format" : "%Y-%m-%d", "date_col" : "Timestamp",

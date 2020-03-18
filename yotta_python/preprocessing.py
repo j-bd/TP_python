@@ -20,7 +20,7 @@ import constants as c
 
 
 class Groundwork:
-    '''Rename columns, values and check types'''
+    '''Return a clean DataFrame object as defined in constants file'''
     def __init__(self, file_path):
         '''Initialize class with original data'''
         self.df = self.check_extension(file_path)
@@ -53,14 +53,18 @@ class Groundwork:
 
     def clean_letters(self):
         '''Remove accent letters'''
-        for col_name in c.STR_FORMAT:
+        for col_name in c.STR_COLUMN:
             for line, val in enumerate(self.df.loc[:, col_name]):
                 word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
                 self.df.loc[line, col_name] = word
 
+    def check_cities(self):
+        '''Rename cities'''
+        self.df.replace(c.CITIES_NAMES, inplace=True)
+
     def check_numbers(self):
         '''Check if numbers are set to float'''
-        for col_name in c.NUMBER_FORMAT:
+        for col_name in c.NUMBER_COLUMN:
             self.df[col_name] = pd.to_numeric(self.df[col_name])
 
     def process_pipeline(self):
@@ -68,7 +72,9 @@ class Groundwork:
         self.rename_columns()
         self.set_date()
         self.clean_letters()
+        self.check_cities()
         self.check_numbers()
+        return self.df
 
 
 
@@ -261,7 +267,10 @@ class Forecast:
 
 def main(town_list, equip_list):
     '''Launch main steps'''
-    fc = Forecast(os.path.join(os.getcwd(), c.FILE_NAME))
+    grd_w = Groundwork(os.path.join(os.getcwd(), c.FILE_NAME))
+    grd_w_df = grd_w.process_pipeline()
+
+
     fc.clean_data()
     fc.create_specific_df(town_list, equip_list)
     fc.process_pipeline()
