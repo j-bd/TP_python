@@ -19,6 +19,51 @@ from vacances_scolaires_france import SchoolHolidayDates
 import constants as c
 
 
+class Groundwork:
+    '''Rename columns, values and check types'''
+    def __init__(self, file_path):
+        '''Initialize class with original data'''
+        self.df = self.check_extension(file_path)
+
+    def check_extension(self, file_path):
+        '''Check extension of input file'''
+        self.ext = c.FILE_NAME.split(sep=".")[-1].lower()
+        if self.ext == "csv":
+            df = pd.read_csv(file_path)
+        elif self.ext == "parquet":
+            df = pd.read_parquet(file_path, engine='pyarrow')
+        else:
+            print(
+                "Extension not take into account. Please get 'csv' or 'parquet'"
+                " file"
+            )
+        return df
+
+    def rename_columns(self):
+        '''Rename columns following a pre-defined pattern in constants file'''
+        self.df.rename(columns=c.COLUMNS_NAMES, inplace=True)
+
+    def set_date(self):
+        '''Provide the right date format'''
+        for line, val in enumerate(self.df.iloc[:, 0]):
+            date_format = datetime.datetime.strptime(
+                val, c.DATE_FORMAT[self.ext]
+            ).date()
+            self.df.iloc[line, 0] = date_format
+
+    def clean_data(self):
+        '''Set date type and remove accent letters'''
+        for line, val in enumerate(self.df_original.iloc[:, 0]):
+            date_format = datetime.datetime.strptime(val, c.DATE_FORMAT).date()
+            self.df_original.iloc[line, 0] = date_format
+
+        for line, val in enumerate(self.df_original.iloc[:, 1]):
+            word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
+            self.df_original.iloc[line, 1] = word
+
+        self.df_original[c.SALES] = pd.to_numeric(self.df_original[c.SALES])
+
+
 class Forecast:
     '''Allow to get information from sales report'''
     export_df_name = "processed_data_{equipement}_v1.csv"
@@ -46,10 +91,18 @@ class Forecast:
             )
         return df
 
-    def check_word(self, town_list, equipement_list):
-        '''Check request demand to be sure that exist in data'''
-        towns = self.df_original[c.TOWN].unique()
-        equipement = self.df_original[c.EQUIP].unique()
+#    def check_word(self, town_list, equipement_list):
+#        '''Check request demand to be sure that exist in data'''
+#        towns = self.df_original[c.TOWN].unique()
+#        equipement = self.df_original[c.EQUIP].unique()
+
+#    def var_setter(self):
+#        '''Set variables'''
+#        self.DATE = "Timestamp"
+#        self.TOWN = "Town"
+#        self.EQUIP = "Equipment"
+#        self.SALES = "Sales"
+
 
     def clean_data(self):
         '''Set date type and remove accent letters'''
