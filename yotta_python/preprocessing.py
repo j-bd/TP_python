@@ -182,14 +182,19 @@ class Forecast:
 
             for bhd in bankholiday:
                 if bhd > self.working_df.loc[ind_r, c.NAMES["d"]]:
-                    self.working_df.at[ind_r, 'dist_between_closest_bank_holiday'] = bhd - self.working_df.loc[ind_r, c.NAMES["d"]]
+                    self.working_df.at[
+                        ind_r, 'dist_between_closest_bank_holiday'
+                    ] = bhd - self.working_df.loc[ind_r, c.NAMES["d"]]
                     break
 
     def add_is_school_holiday(self):
         '''Add a column with booleen value. True value for school holiday'''
         shd = SchoolHolidayDates()
         for ind_r, values_r in self.working_df.iterrows():
-            if shd.is_holiday_for_zone(values_r[c.NAMES["d"]], c.TOWN_HOLIDAY_ZONE[values_r[c.NAMES["t"]]]):
+            if shd.is_holiday_for_zone(
+                    values_r[c.NAMES["d"]],
+                    c.TOWN_HOLIDAY_ZONE[values_r[c.NAMES["t"]]]
+            ):
                 self.working_df.at[ind_r, 'is_school_holiday'] = True
             else:
                 self.working_df.at[ind_r, 'is_school_holiday'] = False
@@ -226,7 +231,7 @@ class Forecast:
         print(f"Weekday values are organized as follow '{cls.weekday}'")
 
 
-def main(town_list, equip_list):
+def main():
     '''Launch main steps'''
     grd_w = Groundwork(os.path.join(os.getcwd(), c.FILE_NAME))
     grd_w_df = grd_w.process_pipeline()
