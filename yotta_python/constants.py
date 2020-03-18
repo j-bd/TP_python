@@ -20,24 +20,25 @@ TOWN_HOLIDAY_ZONE = {"Bordeaux" : "A", "Mont_Marsan" : "A", "Paris" : "C"}
 
 #Request format
 
-base = {
-    "zone" : {
-        "Bordeaux" : "A", "Mont-de-Marsan" : "A", "Paris" : "C",
-        "Mont de Marsan" : "A"
-    },
-    "date_format" : {"ymd" : "%Y-%m-%d", "dmy" : "%d%m%Y"},
-    "column_format" : {
-        "Timestamp" : "date", "date" : "date", "Town" : "town", "ville" : "town",
-        "Equipment" : "equip", "equipement" : "equip", "Sales" : "sales",
-        "CA" : "sales"
-    }
-}
+#base = {
+#    "zone" : {
+#        "Bordeaux" : "A", "Mont-de-Marsan" : "A", "Paris" : "C",
+#        "Mont de Marsan" : "A"
+#    },
+#    "date_format" : {"ymd" : "%Y-%m-%d", "dmy" : "%d%m%Y"},
+#    "column_format" : {
+#        "Timestamp" : "date", "date" : "date", "Town" : "town", "ville" : "town",
+#        "Equipment" : "equip", "equipement" : "equip", "Sales" : "sales",
+#        "CA" : "sales"
+#    }
+#}
+
+NAMES = {"d": "DATE", "t": "TOWN", "e": "EQUIP", "s": "SALES"}
 
 COLUMNS_NAMES = {
-    "Timestamp" : "DATE", "date" : "DATE", "Town" : "TOWN", "ville" : "TOWN",
-    "Equipment" : "EQUIP", "equipement" : "EQUIP", "Sales" : "SALES",
-    "CA" : "SALES"
-
+    "Timestamp" : NAMES["d"], "date" : NAMES["d"], "Town" : NAMES["t"],
+    "ville" : NAMES["t"], "Equipment" : NAMES["e"], "equipement" : NAMES["e"],
+    "Sales" : NAMES["s"], "CA" : NAMES["s"]
 }
 
 CITIES_NAMES = {

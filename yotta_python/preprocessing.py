@@ -45,17 +45,14 @@ class Groundwork:
 
     def set_date(self):
         '''Provide the right date format'''
-        for line, val in enumerate(self.df.iloc[:, 0]):
+        for line, val in enumerate(self.df.loc[:, c.NAMES["d"]]):
             date_format = datetime.datetime.strptime(
                 val, c.DATE_FORMAT[self.ext]
             ).date()
-            self.df.iloc[line, 0] = date_format
+            self.df.iloc[line, c.NAMES["d"]] = date_format
 
     def clean_data(self):
         '''Set date type and remove accent letters'''
-        for line, val in enumerate(self.df_original.iloc[:, 0]):
-            date_format = datetime.datetime.strptime(val, c.DATE_FORMAT).date()
-            self.df_original.iloc[line, 0] = date_format
 
         for line, val in enumerate(self.df_original.iloc[:, 1]):
             word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
