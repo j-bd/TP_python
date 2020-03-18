@@ -49,16 +49,19 @@ class Groundwork:
             date_format = datetime.datetime.strptime(
                 val, c.DATE_FORMAT[self.ext]
             ).date()
-            self.df.iloc[line, c.NAMES["d"]] = date_format
+            self.df.loc[line, c.NAMES["d"]] = date_format
 
-    def clean_data(self):
-        '''Set date type and remove accent letters'''
+    def clean_letters(self):
+        '''Remove accent letters'''
+        for col_name in c.STR_FORMAT:
+            for line, val in enumerate(self.df.loc[:, col_name]):
+                word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
+                self.df.loc[line, col_name] = word
 
-        for line, val in enumerate(self.df_original.iloc[:, 1]):
-            word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
-            self.df_original.iloc[line, 1] = word
-
-        self.df_original[c.SALES] = pd.to_numeric(self.df_original[c.SALES])
+    def check_numbers(self):
+        '''Check if numbers are set to float'''
+        for col_name in c.NUMBER_FORMAT:
+            self.df[col_name] = pd.to_numeric(self.df[col_name])
 
 
 class Forecast:

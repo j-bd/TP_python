@@ -48,6 +48,10 @@ CITIES_NAMES = {
 
 DATE_FORMAT = {"csv" : "%Y-%m-%d", "parquet" : "%d%m%Y"}
 
+STR_FORMAT = [NAMES["t"], NAMES["e"]]
+
+NUMBER_FORMAT = [NAMES["s"]]
+
 
 #result = {"date_format" : "%Y-%m-%d", "date_col" : "Timestamp",
 #    "town_col" : "Town", "equip_col" : "Equipment", "sales_col" : "Sales"
