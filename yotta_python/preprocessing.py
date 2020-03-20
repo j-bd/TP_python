@@ -24,20 +24,24 @@ class DatasetFormatter:
 
     def __init__(self):
         """Initialize class with original data"""
-        self.df = self.check_extension()
+        self.check_extension()
+        self.df = self.read_data()
 
     def check_extension(self):
         """Check extension of input file"""
         self.extension = c.INPUT_FILE_NAME.split(sep=".")[-1].lower()
-        if self.extension == "csv":
-            df = pd.read_csv(c.INPUT_FILE_NAME)
-        elif self.extension == "parquet":
-            df = pd.read_parquet(c.INPUT_FILE_NAME, engine='pyarrow')
-        else:
+        if self.extension not in ["csv", "parquet"]:
             print(
                 "Extension not take into account. Please get 'csv' or 'parquet'"
                 " file"
             )
+
+    def read_data(self):
+        """Return a dataframe"""
+        if self.extension == "csv":
+            df = pd.read_csv(c.INPUT_FILE_NAME)
+        else:
+            df = pd.read_parquet(c.INPUT_FILE_NAME, engine='pyarrow')
         return df
 
     def rename_columns(self):
@@ -64,7 +68,7 @@ class DatasetFormatter:
         self.df.replace(c.CITIES_NAMES_VARIATION, inplace=True)
 
     def check_columns_format(self):
-        """Check if numbers are set to float"""
+        """Check if columns numbers are set to float"""
         for col_name in c.COL_NUMBER_FORMAT:
             self.df[col_name] = pd.to_numeric(self.df[col_name])
 
