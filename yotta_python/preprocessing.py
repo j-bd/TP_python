@@ -78,11 +78,8 @@ class DatasetFormatter:
         return self.df
 
 
-class AgregateData:
+class AggregateData:
     """Allow to get information from sales report"""
-    EXPORT_DF_NAME = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1.csv"
-    EXPORT_PLOT_NAME = f"{'_'.join(c.EQUIP_SELEC)}-{'_'.join(c.CITIES_SELEC)}.png"
-    EXPORT_AGG = f"'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
     WEEKDAY = {
         'lundi' : 'monday', 'mardi' : 'tuesday', 'mercredi' : 'wednesday',
         'jeudi' : 'thursday', 'vendredi' : 'friday', 'samedi' : 'saturday',
@@ -92,6 +89,9 @@ class AgregateData:
     def __init__(self, df_original):
         """Initialize class with original csv"""
         self.df_original = df_original
+        self.EXPORT_DF_NAME = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1.csv"
+        self.EXPORT_PLOT_NAME = f"{'_'.join(c.EQUIP_SELEC)}-{'_'.join(c.CITIES_SELEC)}.png"
+        self.EXPORT_AGG = f"'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
 
     def create_specific_df(self):
         """Return a custom dataframe based on columns contains user choice"""
@@ -110,105 +110,108 @@ class AgregateData:
         self.working_df = second_df.reset_index(drop=True)
         return self.working_df
 
-    def agregate_sr(self):
-        """Agregate Sales Revenues for cities and equipment selected by day"""
+    def aggregate_sales_revenue(self):
+        """Aggregate Sales Revenue for cities and equipment selected by day"""
         self.group_df = self.working_df.groupby(["DATE", "EQUIP"]).sum()
         self.group_df.reset_index(inplace=True)
         self.agg_graph()
 
-    def add_sr_last_year(self):
+    def add_sales_revenue_last_year(self):
         """Add a column with the sales revenue of one year before for each day"""
-        for ind_r, values_r in self.working_df.iterrows():
-            sr_l_y = self.working_df.loc[
-                (self.working_df[c.COL_KEY["town"]] == values_r[c.COL_KEY["town"]]) &
-                (self.working_df[c.COL_KEY["equip"]] == values_r[c.COL_KEY["equip"]]) &
-                (self.working_df[c.COL_KEY["date"]] == values_r[c.COL_KEY["date"]] - relativedelta(years=c.YEAR_STEP_BACKWARD)),
+        for row_idx, row_value in self.working_df.iterrows():
+            sales_rev_last_year = self.working_df.loc[
+                (self.working_df[c.COL_KEY["town"]] == row_value[c.COL_KEY["town"]]) &
+                (self.working_df[c.COL_KEY["equip"]] == row_value[c.COL_KEY["equip"]]) &
+                (self.working_df[c.COL_KEY["date"]] == row_value[c.COL_KEY["date"]] - relativedelta(years=c.YEAR_STEP_BACKWARD)),
                 c.COL_KEY["sales"]
             ]
             try:
-                self.working_df.at[ind_r, 'sr_last_year'] = float(sr_l_y.values)
+                self.working_df.at[row_idx, 'sr_last_year'] = float(sales_rev_last_year.values)
             except TypeError:
-                self.working_df.at[ind_r, 'sr_last_year'] = "Nan"
+                self.working_df.at[row_idx, 'sr_last_year'] = "Nan"
 
-    def add_sr_last_year_weekday(self):
+    def add_sales_revenue_last_year_weekday(self):
         """Add a column with the sales revenue of one year before for each day
         and linked to the same weekday"""
-        for ind_r, values_r in self.working_df.iterrows():
-            sr_l_y_sw = self.working_df.loc[
-                (self.working_df[c.COL_KEY["town"]] == values_r[c.COL_KEY["town"]]) &
-                (self.working_df[c.COL_KEY["equip"]] == values_r[c.COL_KEY["equip"]]) &
-                (self.working_df[c.COL_KEY["date"]] == values_r[c.COL_KEY["date"]] +
-                 relativedelta(years=-c.YEAR_STEP_BACKWARD, weekday=values_r[c.COL_KEY["date"]].weekday())),
-                c.COL_KEY["sales"]
+        for row_idx, row_value in self.working_df.iterrows():
+            sales_rev_last_year_same_weekd = self.working_df.loc[
+                (self.working_df[c.COL_KEY["town"]] == row_value[c.COL_KEY["town"]]) &
+                (self.working_df[c.COL_KEY["equip"]] == row_value[c.COL_KEY["equip"]]) &
+                (self.working_df[c.COL_KEY["date"]] == row_value[c.COL_KEY["date"]] +
+                 relativedelta(
+                    years=-c.YEAR_STEP_BACKWARD, weekday=row_value[c.COL_KEY["date"]].weekday()
+                )), c.COL_KEY["sales"]
             ]
             try:
-                self.working_df.at[ind_r, 'ca_last_year_same_weekday'] = float(sr_l_y_sw)
+                self.working_df.at[row_idx, 'ca_last_year_same_weekday'] = float(
+                    sales_rev_last_year_same_weekd
+                )
             except TypeError:
-                self.working_df.at[ind_r, 'ca_last_year_same_weekday'] = "Nan"
+                self.working_df.at[row_idx, 'ca_last_year_same_weekday'] = "Nan"
 
     def add_weekday(self):
         """Add a column with the weekday corresponding to the date"""
-        for ind_r, values_r in self.working_df.iterrows():
-            day = self.working_df.loc[ind_r, c.COL_KEY["date"]].strftime("%A")
+        for row_idx, row_value in self.working_df.iterrows():
+            day = self.working_df.loc[row_idx, c.COL_KEY["date"]].strftime("%A")
             try:
-                self.working_df.at[ind_r, 'weekday'] = self.WEEKDAY[day]
+                self.working_df.at[row_idx, 'weekday'] = self.WEEKDAY[day]
             except KeyError:
-                self.working_df.at[ind_r, 'weekday'] = day
+                self.working_df.at[row_idx, 'weekday'] = day
 
     def add_is_weekend(self):
         """Add a column with booleen value. True value for weekend"""
-        for ind_r, values_r in self.working_df.iterrows():
-            if self.working_df.loc[ind_r, "weekday"] in ['saturday', 'sunday']:
-                self.working_df.at[ind_r, 'is weekend'] = True
+        for row_idx, row_value in self.working_df.iterrows():
+            if self.working_df.loc[row_idx, "weekday"] in ['saturday', 'sunday']:
+                self.working_df.at[row_idx, 'is weekend'] = True
             else:
-                self.working_df.at[ind_r, 'is weekend'] = False
+                self.working_df.at[row_idx, 'is weekend'] = False
 
     def add_is_bankholiday(self):
         """Add a column with booleen value. True value for bankholiday"""
         year = 0
         bankholiday = []
-        for ind_r, values_r in self.working_df.iterrows():
-            if self.working_df.loc[ind_r, c.COL_KEY["date"]].year != year:
-                year = self.working_df.loc[ind_r, c.COL_KEY["date"]].year
+        for row_idx, row_value in self.working_df.iterrows():
+            if self.working_df.loc[row_idx, c.COL_KEY["date"]].year != year:
+                year = self.working_df.loc[row_idx, c.COL_KEY["date"]].year
                 bankholiday = list(JoursFeries.for_year(year).values())
 
-            if self.working_df.loc[ind_r, c.COL_KEY["date"]] in bankholiday:
-                self.working_df.at[ind_r, 'is_bankholiday'] = True
+            if self.working_df.loc[row_idx, c.COL_KEY["date"]] in bankholiday:
+                self.working_df.at[row_idx, 'is_bankholiday'] = True
             else:
-                self.working_df.at[ind_r, 'is_bankholiday'] = False
+                self.working_df.at[row_idx, 'is_bankholiday'] = False
 
     def add_distance_to_bankholiday(self):
         """Add a column with booleen value. True value for bankholiday"""
         year = 0 #initiate variable
         bankholiday = []
-        for ind_r, values_r in self.working_df.iterrows():
-            if self.working_df.loc[ind_r, c.COL_KEY["date"]].year != year:
-                year = self.working_df.loc[ind_r, c.COL_KEY["date"]].year
+        for row_idx, row_value in self.working_df.iterrows():
+            if self.working_df.loc[row_idx, c.COL_KEY["date"]].year != year:
+                year = self.working_df.loc[row_idx, c.COL_KEY["date"]].year
                 bankholiday = list(JoursFeries.for_year(year).values())
 
             for bhd in bankholiday:
-                if bhd > self.working_df.loc[ind_r, c.COL_KEY["date"]]:
+                if bhd > self.working_df.loc[row_idx, c.COL_KEY["date"]]:
                     self.working_df.at[
-                        ind_r, 'dist_between_closest_bank_holiday'
-                    ] = bhd - self.working_df.loc[ind_r, c.COL_KEY["date"]]
+                        row_idx, 'dist_between_closest_bank_holiday'
+                    ] = bhd - self.working_df.loc[row_idx, c.COL_KEY["date"]]
                     break
 
     def add_is_school_holiday(self):
         """Add a column with booleen value. True value for school holiday"""
-        shd = SchoolHolidayDates()
-        for ind_r, values_r in self.working_df.iterrows():
-            if shd.is_holiday_for_zone(
-                    values_r[c.COL_KEY["date"]],
-                    c.TOWN_HOLIDAY_ZONE[values_r[c.COL_KEY["town"]]]
+        school_holiday_date = SchoolHolidayDates()
+        for row_idx, row_value in self.working_df.iterrows():
+            if school_holiday_date.is_holiday_for_zone(
+                    row_value[c.COL_KEY["date"]],
+                    c.TOWN_HOLIDAY_ZONE[row_value[c.COL_KEY["town"]]]
             ):
-                self.working_df.at[ind_r, 'is_school_holiday'] = True
+                self.working_df.at[row_idx, 'is_school_holiday'] = True
             else:
-                self.working_df.at[ind_r, 'is_school_holiday'] = False
+                self.working_df.at[row_idx, 'is_school_holiday'] = False
 
     def process_pipeline(self):
         """Launch full processing pipeline"""
-        self.add_sr_last_year()
-        self.add_sr_last_year_weekday()
+        self.add_sales_revenue_last_year()
+        self.add_sales_revenue_last_year_weekday()
         self.add_weekday()
         self.add_is_weekend()
         self.add_is_bankholiday()
@@ -217,33 +220,24 @@ class AgregateData:
 
     def export_data(self):
         """Export custom DataFrane in a specidied folder"""
-        cls = self.__class__
-        self.working_df.to_csv(os.path.join(os.getcwd(), cls.EXPORT_DF_NAME))
+        self.working_df.to_csv(os.path.join(os.getcwd(), self.EXPORT_DF_NAME))
 
     def export_graph(self):
         """Export graph representation of full custom DataFrame"""
-        cls = self.__class__
         plot = sns.relplot(
             x=c.COL_KEY["date"], y=c.COL_KEY["sales"], hue=c.COL_KEY["equip"],
             style=c.COL_KEY["town"], kind="line", data=self.working_df
         )
-        plot.savefig(os.path.join(os.getcwd(), cls.EXPORT_PLOT_NAME))
+        plot.savefig(os.path.join(os.getcwd(), self.EXPORT_PLOT_NAME))
 
     def agg_graph(self):
         """Export aggregate sales revenues graph representation"""
-        cls = self.__class__
         plot = sns.relplot(
             x=c.COL_KEY["date"], y=c.COL_KEY["sales"], hue=c.COL_KEY["equip"],
             kind="line", data=self.group_df
         )
-        plot.savefig(os.path.join(os.getcwd(), cls.EXPORT_AGG))
+        plot.savefig(os.path.join(os.getcwd(), self.EXPORT_AGG))
 
-    @classmethod
-    def display_class_attributes(cls):
-        """Display class attributes values"""
-        print(f"DataFrame are export under the name '{cls.EXPORT_DF_NAME}'")
-        print(f"Graphs are export under the name '{cls.EXPORT_PLOT_NAME}'")
-        print(f"Weekday values are organized as follow '{cls.WEEKDAY}'")
 
 
 def main():
@@ -251,15 +245,14 @@ def main():
     grd_w = DatasetFormatter()
     df_grd_w = grd_w.process_pipeline()
 
-    fc = AgregateData(df_grd_w)
+    fc = AggregateData(df_grd_w)
     fc.create_specific_df()
-    fc.agregate_sr()
+    fc.aggregate_sales_revenue()
     fc.process_pipeline()
     fc.export_data()
     fc.export_graph()
 
     return fc
-
 
 if __name__ == "__main__":
     main()
