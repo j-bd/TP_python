@@ -91,7 +91,7 @@ class AggregateData:
         self.df_original = df_original
         self.EXPORT_DF_NAME = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1.csv"
         self.EXPORT_PLOT_NAME = f"{'_'.join(c.EQUIP_SELEC)}-{'_'.join(c.CITIES_SELEC)}.png"
-        self.EXPORT_AGG = f"'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
+        self.EXPORT_AGG = f"{'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
 
     def create_specific_df(self):
         """Return a custom dataframe based on columns contains user choice"""
