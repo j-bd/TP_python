@@ -78,11 +78,11 @@ class DatasetFormatter:
         return self.df
 
 
-class Forecast:
+class AgregateData:
     """Allow to get information from sales report"""
-    EXPORT_DF_NAME = "processed_data_{equipement}_v1.csv"
-    EXPORT_PLOT_NAME = "graph.png"
-    EXPORT_AGG = "agg_graph.png"
+    EXPORT_DF_NAME = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1.csv"
+    EXPORT_PLOT_NAME = f"{'_'.join(c.EQUIP_SELEC)}-{'_'.join(c.CITIES_SELEC)}.png"
+    EXPORT_AGG = f"'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
     WEEKDAY = {
         'lundi' : 'monday', 'mardi' : 'tuesday', 'mercredi' : 'wednesday',
         'jeudi' : 'thursday', 'vendredi' : 'friday', 'samedi' : 'saturday',
@@ -248,10 +248,10 @@ class Forecast:
 
 def main():
     """Launch main steps"""
-    grd_w = Groundwork()
+    grd_w = DatasetFormatter()
     df_grd_w = grd_w.process_pipeline()
 
-    fc = Forecast(df_grd_w)
+    fc = AgregateData(df_grd_w)
     fc.create_specific_df()
     fc.agregate_sr()
     fc.process_pipeline()
