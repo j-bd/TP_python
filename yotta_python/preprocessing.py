@@ -19,7 +19,7 @@ from vacances_scolaires_france import SchoolHolidayDates
 import constants as c
 
 
-class Groundwork:
+class DatasetFormatter:
     """Return a clean DataFrame object as defined in constants file"""
 
     def __init__(self):
@@ -44,7 +44,7 @@ class Groundwork:
         """Rename columns following a pre-defined pattern in constants file"""
         self.df.rename(columns=c.COLUMNS_NAMES_VARIATION, inplace=True)
 
-    def set_date(self):
+    def format_date(self):
         """Provide the right date format"""
         for line, val in enumerate(self.df.loc[:, c.COL_KEY["date"]]):
             date_format = datetime.datetime.strptime(
@@ -71,7 +71,7 @@ class Groundwork:
     def process_pipeline(self):
         """Launch full processing pipeline"""
         self.rename_columns()
-        self.set_date()
+        self.format_date()
         self.clean_letters()
         self.rename_cities()
         self.check_columns_format()
