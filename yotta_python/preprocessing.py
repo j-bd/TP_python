@@ -126,7 +126,7 @@ class AggregateData:
 
     def aggregate_sales_revenue_month(self):
         """Aggregate Sales Revenue for cities and equipment selected by month"""
-        self.group_df_m =self.working_df.set_index(
+        self.group_df_m = self.working_df.set_index(
             pd.DatetimeIndex(self.working_df["DATE"])
         )
         self.group_df_m = self.group_df_m.groupby(
@@ -159,7 +159,7 @@ class AggregateData:
                 (self.working_df[c.COL_KEY["town"]] == row_value[c.COL_KEY["town"]]) &
                 (self.working_df[c.COL_KEY["equip"]] == row_value[c.COL_KEY["equip"]]) &
                 (self.working_df[c.COL_KEY["date"]] == row_value[c.COL_KEY["date"]] +
-                 relativedelta(years=year_step, weekday= weekd)
+                 relativedelta(years=year_step, weekday=weekd)
                  ), column_reported
             ]
             try:
