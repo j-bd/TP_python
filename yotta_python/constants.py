@@ -45,4 +45,4 @@ CITIES_SELEC = [CITIES_KEY["mont_marsan"], CITIES_KEY["bordeaux"]]
 
 EQUIP_SELEC = ['ordinateur', 'telephone']
 
-YEAR_STEP_BACKWARD = 1
+YEAR_STEP_BACKWARD = -1
