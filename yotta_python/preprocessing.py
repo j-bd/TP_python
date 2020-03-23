@@ -12,7 +12,7 @@ import datetime
 
 import pandas as pd
 import seaborn as sns
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR, SA, SU
 from jours_feries_france.compute import JoursFeries
 from vacances_scolaires_france import SchoolHolidayDates
 
@@ -60,7 +60,8 @@ class DatasetFormatter:
         """Remove accent letters"""
         for col_name in c.COL_STR_FORMAT:
             for line, val in enumerate(self.df.loc[:, col_name]):
-                word = unicodedata.normalize('NFKD', val).encode('ascii', 'ignore').decode()
+                word = unicodedata.normalize('NFKD', val)\
+                    .encode('ascii', 'ignore').decode()
                 self.df.loc[line, col_name] = word
 
     def rename_cities(self):
@@ -89,19 +90,22 @@ class AggregateData:
         'jeudi' : 'thursday', 'vendredi' : 'friday', 'samedi' : 'saturday',
         'dimanche' : 'sunday'
     }
+    RELATIVE_WEEKDAY = {0 : MO, 1 : TU, 2 : WE, 3 : TH, 4 :FR, 5 : SA, 6 : SU}
 
     def __init__(self, df_original):
         """Initialize class with original csv"""
         self.df_original = df_original
-        self.EXPORT_DF_NAME = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1.csv"
-        self.EXPORT_PLOT_NAME = f"{'_'.join(c.EQUIP_SELEC)}-{'_'.join(c.CITIES_SELEC)}.png"
-        self.EXPORT_AGG = f"{'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
+        self.export_df_name = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1.csv"
+        self.export_plot_name = f"{'_'.join(c.EQUIP_SELEC)}-{'_'.join(c.CITIES_SELEC)}.png"
+        self.export_agg = f"{'_'.join(c.EQUIP_SELEC)}-agg_graph.png"
 
     def create_specific_df(self):
         """Return a custom dataframe based on columns contains user choice"""
         init_df = pd.DataFrame(columns=self.df_original.columns)
         for value in c.CITIES_SELEC:
-            filter_df = self.df_original[self.df_original.loc[:, c.COL_KEY["town"]] == value]
+            filter_df = self.df_original[
+                self.df_original.loc[:, c.COL_KEY["town"]] == value
+            ]
             frames = [init_df, filter_df]
             init_df = pd.concat(frames)
 
@@ -120,38 +124,50 @@ class AggregateData:
         self.group_df.reset_index(inplace=True)
         self.agg_graph()
 
+    def aggregate_sales_revenue_month(self):
+        """Aggregate Sales Revenue for cities and equipment selected by month"""
+        self.group_df_m =self.working_df.set_index(
+            pd.DatetimeIndex(self.working_df["DATE"])
+        )
+        self.group_df_m = self.group_df_m.groupby(
+            ["EQUIP", pd.Grouper(freq="M")]
+        ).sum()
+        self.group_df_m.reset_index(inplace=True)
+        self.agg_graph_m()
+
     def add_sales_revenue_last_year(self):
         """Add a column with the sales revenue of one year before for each day"""
-        for row_idx, row_value in self.working_df.iterrows():
-            sales_rev_last_year = self.working_df.loc[
-                (self.working_df[c.COL_KEY["town"]] == row_value[c.COL_KEY["town"]]) &
-                (self.working_df[c.COL_KEY["equip"]] == row_value[c.COL_KEY["equip"]]) &
-                (self.working_df[c.COL_KEY["date"]] == row_value[c.COL_KEY["date"]] - relativedelta(years=c.YEAR_STEP_BACKWARD)),
-                c.COL_KEY["sales"]
-            ]
-            try:
-                self.working_df.at[row_idx, 'sr_last_year'] = float(sales_rev_last_year.values)
-            except TypeError:
-                self.working_df.at[row_idx, 'sr_last_year'] = "Nan"
+        self.retrieve_past_value(
+            c.YEAR_STEP_BACKWARD, 'sr_last_year', c.COL_KEY["sales"]
+        )
 
     def add_sales_revenue_last_year_weekday(self):
         """Add a column with the sales revenue of one year before for each day
         and linked to the same weekday"""
+        self.retrieve_past_value(
+            c.YEAR_STEP_BACKWARD, 'sr_last_year_same_weekday', c.COL_KEY["sales"], True
+        )
+
+    def retrieve_past_value(self, year_step, new_column_name, column_reported, weekday_act=False):
+        """Add a column with the backward value of the column watched"""
         for row_idx, row_value in self.working_df.iterrows():
-            sales_rev_last_year_same_weekd = self.working_df.loc[
+            if weekday_act:
+                weekd = self.RELATIVE_WEEKDAY[row_value[c.COL_KEY["date"]].weekday()]
+            else:
+                weekd = None
+            previous_value = self.working_df.loc[
                 (self.working_df[c.COL_KEY["town"]] == row_value[c.COL_KEY["town"]]) &
                 (self.working_df[c.COL_KEY["equip"]] == row_value[c.COL_KEY["equip"]]) &
                 (self.working_df[c.COL_KEY["date"]] == row_value[c.COL_KEY["date"]] +
-                 relativedelta(
-                    years=-c.YEAR_STEP_BACKWARD, weekday=row_value[c.COL_KEY["date"]].weekday()
-                )), c.COL_KEY["sales"]
+                 relativedelta(years=year_step, weekday= weekd)
+                 ), column_reported
             ]
             try:
-                self.working_df.at[row_idx, 'ca_last_year_same_weekday'] = float(
-                    sales_rev_last_year_same_weekd
+                self.working_df.at[row_idx, new_column_name] = float(
+                    previous_value.values
                 )
             except TypeError:
-                self.working_df.at[row_idx, 'ca_last_year_same_weekday'] = "Nan"
+                self.working_df.at[row_idx, new_column_name] = "Nan"
 
     def add_weekday(self):
         """Add a column with the weekday corresponding to the date"""
@@ -186,7 +202,7 @@ class AggregateData:
 
     def add_distance_to_bankholiday(self):
         """Add a column with booleen value. True value for bankholiday"""
-        year = 0 #initiate variable
+        year = 0
         bankholiday = []
         for row_idx, row_value in self.working_df.iterrows():
             if self.working_df.loc[row_idx, c.COL_KEY["date"]].year != year:
@@ -224,7 +240,7 @@ class AggregateData:
 
     def export_data(self):
         """Export custom DataFrane in a specidied folder"""
-        self.working_df.to_csv(os.path.join(os.getcwd(), self.EXPORT_DF_NAME))
+        self.working_df.to_csv(os.path.join(os.getcwd(), self.export_df_name))
 
     def export_graph(self):
         """Export graph representation of full custom DataFrame"""
@@ -232,7 +248,7 @@ class AggregateData:
             x=c.COL_KEY["date"], y=c.COL_KEY["sales"], hue=c.COL_KEY["equip"],
             style=c.COL_KEY["town"], kind="line", data=self.working_df
         )
-        plot.savefig(os.path.join(os.getcwd(), self.EXPORT_PLOT_NAME))
+        plot.savefig(os.path.join(os.getcwd(), self.export_plot_name))
 
     def agg_graph(self):
         """Export aggregate sales revenues graph representation"""
@@ -240,7 +256,15 @@ class AggregateData:
             x=c.COL_KEY["date"], y=c.COL_KEY["sales"], hue=c.COL_KEY["equip"],
             kind="line", data=self.group_df
         )
-        plot.savefig(os.path.join(os.getcwd(), self.EXPORT_AGG))
+        plot.savefig(os.path.join(os.getcwd(), self.export_agg))
+
+    def agg_graph_m(self):
+        """Export aggregate sales revenues graph representation"""
+        plot = sns.relplot(
+            x=c.COL_KEY["date"], y=c.COL_KEY["sales"], hue=c.COL_KEY["equip"],
+            kind="line", data=self.group_df_m
+        )
+        plot.savefig(os.path.join(os.getcwd(), self.export_agg))
 
 
 
@@ -252,6 +276,7 @@ def main():
     fc = AggregateData(df_grd_w)
     fc.create_specific_df()
     fc.aggregate_sales_revenue()
+    fc.aggregate_sales_revenue_month()
     fc.process_pipeline()
     fc.export_data()
     fc.export_graph()
