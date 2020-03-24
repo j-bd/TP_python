@@ -9,6 +9,7 @@ Created on Mon Mar 16 07:54:10 2020
 import os
 import unicodedata
 import datetime
+import logging
 
 import pandas as pd
 import seaborn as sns
@@ -18,6 +19,8 @@ from vacances_scolaires_france import SchoolHolidayDates
 
 import constants as c
 
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class DatasetFormatter:
     """Return a clean DataFrame object as defined in constants file"""
@@ -31,7 +34,7 @@ class DatasetFormatter:
         """Check extension of input file"""
         self.extension = c.INPUT_FILE_NAME.split(sep=".")[-1].lower()
         if self.extension not in ["csv", "parquet"]:
-            print(
+            logging.ERROR(
                 "Extension not take into account. Please get 'csv' or 'parquet'"
                 " file"
             )
@@ -102,7 +105,7 @@ class AggregateData:
     def create_specific_df(self):
         """Return a custom dataframe based on columns contains user choice"""
         self.working_df = self.df_original.query(
-            "EQUIP in @c.EQUIP_SELEC and TOWN in @c.CITIES_SELEC"
+            f"{c.COL_KEY['equip']} in @c.EQUIP_SELEC and {c.COL_KEY['town']} in @c.CITIES_SELEC"
         )
         self.working_df = self.working_df.reset_index(drop=True)
         return self.working_df
