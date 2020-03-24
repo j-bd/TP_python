@@ -101,21 +101,10 @@ class AggregateData:
 
     def create_specific_df(self):
         """Return a custom dataframe based on columns contains user choice"""
-        init_df = pd.DataFrame(columns=self.df_original.columns)
-        for value in c.CITIES_SELEC:
-            filter_df = self.df_original[
-                self.df_original.loc[:, c.COL_KEY["town"]] == value
-            ]
-            frames = [init_df, filter_df]
-            init_df = pd.concat(frames)
-
-        second_df = pd.DataFrame(columns=self.df_original.columns)
-        for value in c.EQUIP_SELEC:
-            filter_df = init_df[init_df.loc[:, c.COL_KEY["equip"]] == value]
-            frames = [second_df, filter_df]
-            second_df = pd.concat(frames)
-
-        self.working_df = second_df.reset_index(drop=True)
+        self.working_df = self.df_original.query(
+            "EQUIP in @c.EQUIP_SELEC and TOWN in @c.CITIES_SELEC"
+        )
+        self.working_df = self.working_df.reset_index(drop=True)
         return self.working_df
 
     def aggregate_sales_revenue(self):
