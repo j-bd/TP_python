@@ -79,13 +79,3 @@ class DatasetFormatter:
         self.check_columns_format()
         return self.df
 
-
-def main():
-    """Launch main steps"""
-    grd_w = DatasetFormatter()
-    df_grd_w = grd_w.process_pipeline
-
-
-
-if __name__ == "__main__":
-    main()
