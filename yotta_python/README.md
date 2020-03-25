@@ -28,7 +28,7 @@ To launch the process:
 
 ## Result
 
-![Image of detection](https://raw.githubusercontent.com/j-bd/mask_rcnn/master/detec.png)
+![Image of detection](https://github.com/j-bd/various_exs/blob/master/yotta_python/output/ordinateur_telephone-agg_graph.png)
 
 
 
