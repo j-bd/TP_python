@@ -41,11 +41,21 @@ class DatasetFormatter:
             df = pd.read_parquet(c.INPUT_FILE_NAME, engine='pyarrow')
         return df
 
-    def rename_columns(self):
+    @property
+    def process(self):
+        """Launch full processing pipeline"""
+        self._rename_columns()
+        self._format_date()
+        self._clean_letters()
+        self._rename_cities()
+        self._check_columns_format()
+        return self.df
+
+    def _rename_columns(self):
         """Rename columns following a pre-defined pattern in constants file"""
         self.df.rename(columns=c.COLUMNS_NAMES_VARIATION, inplace=True)
 
-    def format_date(self):
+    def _format_date(self):
         """Provide the right date format"""
         for line, val in enumerate(self.df.loc[:, c.COL_KEY["date"]]):
             date_format = datetime.datetime.strptime(
@@ -53,7 +63,7 @@ class DatasetFormatter:
             ).date()
             self.df.loc[line, c.COL_KEY["date"]] = date_format
 
-    def clean_letters(self):
+    def _clean_letters(self):
         """Remove accent letters"""
         for col_name in c.COL_STR_FORMAT:
             for line, val in enumerate(self.df.loc[:, col_name]):
@@ -61,21 +71,14 @@ class DatasetFormatter:
                     .encode('ascii', 'ignore').decode()
                 self.df.loc[line, col_name] = word
 
-    def rename_cities(self):
+    def _rename_cities(self):
         """Rename cities"""
         self.df.replace(c.CITIES_NAMES_VARIATION, inplace=True)
 
-    def check_columns_format(self):
+    def _check_columns_format(self):
         """Check if columns numbers are set to float"""
         for col_name in c.COL_NUMBER_FORMAT:
             self.df[col_name] = pd.to_numeric(self.df[col_name])
 
-    def process_pipeline(self):
-        """Launch full processing pipeline"""
-        self.rename_columns()
-        self.format_date()
-        self.clean_letters()
-        self.rename_cities()
-        self.check_columns_format()
-        return self.df
+
 

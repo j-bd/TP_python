@@ -14,7 +14,7 @@ import constants as c
 def main():
     """Launch main steps"""
     formatter = DatasetFormatter()
-    df_format = formatter.process_pipeline()
+    df_format = formatter.process
 
     sub_df = dp.DataframeFilter(df_format)
 
