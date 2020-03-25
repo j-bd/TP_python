@@ -197,26 +197,3 @@ def export_data(df):
     """Export custom DataFrane in a specidied folder"""
     export_df_name = f"processed_data_{'_'.join(c.EQUIP_SELEC)}_v1-{'_'.join(c.CITIES_SELEC)}.csv"
     df.to_csv(os.path.join(os.getcwd(), export_df_name))
-
-
-
-def main():
-    """Launch main steps"""
-    formatter = DatasetFormatter()
-    df_format = formatter.process_pipeline()
-
-    sub_df = DataframeFilter(df_format)
-
-    aggregate = DataframeAggregator(sub_df.sub_df)
-    aggregate.aggregate_data([c.COL_KEY["equip"]], "M")
-
-    sales = SalesRevenue(sub_df.sub_df)
-    sales_df = sales.process
-
-    calendar = CalendarInformation(sales_df)
-    calendar_df = calendar.process
-
-    export_data(calendar_df)
-
-if __name__ == "__main__":
-    main()
