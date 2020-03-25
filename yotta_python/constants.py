@@ -8,7 +8,7 @@ Created on Sat Mar 14 14:53:40 2020
 
 import os
 
-INPUT_FILE_NAME = os.path.join(os.getcwd(), "initial_dataset.csv")
+INPUT_FILE_NAME = os.path.join(os.getcwd(), "data/initial_dataset.csv")
 
 COL_KEY = {"date": "DATE", "town": "TOWN", "equip": "EQUIP", "sales": "SALES"}
 
