@@ -1,0 +1,6 @@
+__pycache__
+processed_data_{equipement}_v1.csv
+second_dataset.parquet
+processed_data_ordinateur_telephone_v1.csv
+old
+output/processed_data_ordinateur_telephone_v1-Mont_Marsan_Bordeaux.csv
