@@ -15,6 +15,11 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+from sklearn.metrics import auc
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import confusion_matrix
 
 
 
@@ -130,31 +135,48 @@ x_train = scaler.fit_transform(x_train)
 # Entrainement
 # =============================================================================
 classifier = LogisticRegression()
-classifier.fit(x_train, y_train)
+classifier_trained = classifier.fit(x_train, y_train)
 
 
 # =============================================================================
 # Prediction
 # =============================================================================
-for col in x_test.columns:
-    x_test[col].fillna(x_test[col].mode()[0],inplace = True)
-
-for col in x_test.select_dtypes(include=[np.number]).columns:
-    x_test = x_test[
-            np.abs(x_test[col] - x_test[col].mean()) <= (3 * x_test[col].std())
-    ]
 
 x_test = pd.get_dummies(x_test, drop_first=True)
 y_test = pd.get_dummies(y_test, drop_first=True)
 
 x_test = scaler.fit_transform(x_test)
 
-y_pred = classifier.predict(x_test)
+y_pred = classifier_trained.predict(x_test)
 
 
 # =============================================================================
 # Estimation de performance
 # =============================================================================
 
+# calculate precision-recall curve
+precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
 
+# calculate F1 score
+f1 = f1_score(y_test, y_pred)
 
+# calculate precision-recall AUC
+pr_auc = auc(recall, precision)
+
+# calculate average precision score
+ap = average_precision_score(y_test, y_pred)
+print('f1=%.3f auc=%.3f ap=%.3f' % (f1, pr_auc, ap))
+# plot no skill
+plt.plot([0, 1], [0.5, 0.5], linestyle='--')
+# plot the precision-recall curve for the model
+plt.plot(recall, precision, marker='.')
+# show the plot
+plt.show()
+
+cm = confusion_matrix(y_test, y_pred)
+sns.heatmap(cm,annot=True)
+classifier_trained.score(x_test, y_test)
+
+ys_rate = pd.get_dummies(ys, drop_first=True)
+print(f"Taux d'acceptation sur l'ensemble du dataset: {1 - ys_rate.sum() / len(df_data)}"\
+    f"Taux predit : {classifier_trained.score(x_test, y_test)}")
