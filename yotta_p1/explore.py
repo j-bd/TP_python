@@ -7,6 +7,8 @@ Created on Mon Apr 13 14:03:02 2020
 """
 
 import os
+import calendar
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
@@ -25,7 +27,6 @@ from sklearn.pipeline import make_pipeline, Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
-
 
 
 path = "/home/latitude/Documents/Yotta/yotta_exs/yotta_p1/data"
@@ -84,7 +85,7 @@ for col in cat_variables:
     graph.set_yscale("log")
 
 
-# multivarie qualitative avec qualitative
+# multivarie qualitative avec quantitative
 for cat in cat_variables:
     for num in numeric_variables:
         plt.figure()
@@ -94,6 +95,58 @@ for cat in cat_variables:
 sns.heatmap(df_data.corr(), nominal_columns=cat_variables.columns, annot=True)
 
 
+# =============================================================================
+# Variable Date
+# =============================================================================
+#df_data["weekday"] = df_data.DATE.apply(
+#    lambda dateString : calendar.day_name[datetime.strptime(dateString,"%Y-%m-%d").weekday()]
+#)
+#df_data["month"] = df_data.DATE.apply(
+#    lambda dateString : calendar.month_name[datetime.strptime(dateString,"%Y-%m-%d").month]
+#)
+df_data['DATE'] = pd.to_datetime(df_data['DATE'], format='%Y-%m-%d')
+df_data["day"] = df_data['DATE'].dt.day
+df_data["weekday"] = df_data['DATE'].dt.day_name()
+df_data["month"] = df_data['DATE'].dt.month_name()
+data_col = ["weekday", "month"]
+sort_order = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+hue_order = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+df_data['SUB_NUM'] = pd.get_dummies(df_data['SUBSCRIPTION'], drop_first=True)
+
+for col in data_col:
+    df_data[col] = df_data[col].astype("category")
+
+for col in data_col:
+    plt.figure()
+    graph = sns.countplot(x=col, hue='SUBSCRIPTION', data=df_data)
+    graph.set_yscale("log")
+
+fig,(ax1,ax2)= plt.subplots(nrows=2)
+fig.set_size_inches(16,22)
+
+#monthAggregated = pd.DataFrame(dailyData.groupby("month")["rented"].mean()).reset_index()
+#monthSorted = monthAggregated.sort_values(by="rented",ascending=False)
+#sn.barplot(data=monthSorted,x="month",y="rented",ax=ax1,order=sortOrder)
+#ax1.set(xlabel='Month', ylabel='Avearage Rented',title="Average Rount By Month")
+
+day_aggregated = pd.DataFrame(df_data.groupby(["day","month"],sort=True)["SUB_NUM"].sum()).reset_index()
+sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggregated["month"], hue_order=sort_order, data=day_aggregated, join=True,ax=ax1)
+ax1.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across month")
+plt.legend(loc='center right', bbox_to_anchor=(1.25, 0.5), ncol=1)
+
+day_aggregated = pd.DataFrame(df_data.groupby(["day","weekday"],sort=True)["SUB_NUM"].sum()).reset_index()
+sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggregated["weekday"],hue_order=hue_order, data=day_aggregated, join=True,ax=ax2)
+ax2.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across Weekdays",label='big')
+
+
+
+#df_data['SUB_NUM'] = pd.get_dummies(df_data['SUBSCRIPTION'], drop_first=True)
+#df_data['SUB_NUM'] = df_data['SUB_NUM'].astype("int64")
+#for col in data_col:
+#    plt.figure()
+#    sns.boxplot(x=col, y='SUB_NUM', data=df_data)
+#    graph.set_yscale("log")
+#sn.boxplot(data=dailyDataWithoutOutliers,y="rented",x="season",orient="v",ax=axes[0][1])
 
 # =============================================================================
 # Valeurs aberrantes
@@ -157,7 +210,7 @@ grid = GridSearchCV(model, param_grid, n_jobs=-1, cv=skf)
 
 y_train = pd.get_dummies(y_train, drop_first=True)
 
-%time grid.fit(x_train, y_train)
+#%time grid.fit(x_train, y_train)
 print(grid.get_params)
 print(grid.best_params_)
 
