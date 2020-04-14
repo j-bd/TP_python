@@ -106,6 +106,7 @@ sns.heatmap(df_data.corr(), nominal_columns=cat_variables.columns, annot=True)
 #)
 df_data['DATE'] = pd.to_datetime(df_data['DATE'], format='%Y-%m-%d')
 df_data["day"] = df_data['DATE'].dt.day
+df_data["year"] = df_data['DATE'].dt.year
 df_data["weekday"] = df_data['DATE'].dt.day_name()
 df_data["month"] = df_data['DATE'].dt.month_name()
 data_col = ["weekday", "month"]
@@ -116,10 +117,19 @@ df_data['SUB_NUM'] = pd.get_dummies(df_data['SUBSCRIPTION'], drop_first=True)
 for col in data_col:
     df_data[col] = df_data[col].astype("category")
 
-for col in data_col:
-    plt.figure()
-    graph = sns.countplot(x=col, hue='SUBSCRIPTION', data=df_data)
-    graph.set_yscale("log")
+#for col in data_col:
+#    plt.figure()
+#    graph = sns.countplot(x=col, hue='SUBSCRIPTION', data=df_data)
+#    graph.set_yscale("log")
+
+plt.figure()
+graph = sns.countplot(x="weekday", hue='SUBSCRIPTION', order=hue_order, data=df_data)
+graph.set_yscale("log")
+
+plt.figure()
+graph = sns.countplot(x="month", hue='SUBSCRIPTION', order=sort_order, data=df_data)
+graph.set_yscale("log")
+
 
 fig,(ax1,ax2)= plt.subplots(nrows=2)
 fig.set_size_inches(16,22)
@@ -134,11 +144,55 @@ sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggre
 ax1.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across month")
 plt.legend(loc='center right', bbox_to_anchor=(1.25, 0.5), ncol=1)
 
-day_aggregated = pd.DataFrame(df_data.groupby(["day","weekday"],sort=True)["SUB_NUM"].sum()).reset_index()
-sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggregated["weekday"],hue_order=hue_order, data=day_aggregated, join=True,ax=ax2)
-ax2.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across Weekdays",label='big')
+#day_aggregated = pd.DataFrame(df_data.groupby(["day","weekday"],sort=True)["SUB_NUM"].sum()).reset_index()
+#sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggregated["weekday"],hue_order=hue_order, data=day_aggregated, join=True,ax=ax2)
+#ax2.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across Weekdays",label='big')
 
 
+day_aggregated = pd.DataFrame(df_data.groupby(["month","EDUCATION"],sort=True)["SUB_NUM"].sum()).reset_index()
+sns.barplot(x='month', y='SUB_NUM', hue='EDUCATION', data=day_aggregated, order=sort_order)
+
+day_aggregated = pd.DataFrame(df_data.groupby(["month","year"],sort=True)["SUB_NUM"].sum()).reset_index()
+sns.barplot(x='month', y='SUB_NUM', hue='year', data=day_aggregated, order=sort_order)
+
+
+g = sns.catplot(x="JOB_TYPE", hue="SUBSCRIPTION", data=df_data,
+                height=6, kind="count", palette="muted")
+g.despine(left=True)
+g.set_ylabels("Number")
+
+
+cols_int = [
+    "STATUS", "JOB_TYPE", "EDUCATION", "HAS_DEFAULT", "HAS_HOUSING_LOAN", "HAS_PERSO_LOAN"
+]
+for col in cols_int:
+    plt.figure()
+    sns.violinplot(x=col, y="AGE", hue="SUBSCRIPTION",
+                   split=True, inner="quart",
+                   palette={"Yes": "y", "No": "b"},
+                   data=df_data)
+
+for col in cols_int:
+    for col_ in cols_int:
+        plt.figure()
+        sns.set(style="whitegrid")
+        g = sns.catplot(x=col, y="SUB_NUM", hue=col_, data=df_data,
+                        height=6, kind="bar", palette="muted")
+        g.despine(left=True)
+        g.set_ylabels("subscription probability")
+
+
+
+g = sns.catplot(x="JOB_TYPE", y="SUB_NUM", hue="STATUS", data=df_data,
+                height=6, kind="bar", col="HAS_HOUSING_LOAN", row="HAS_PERSO_LOAN", palette="muted")
+g.despine(left=True)
+g.set_ylabels("subscription probability")
+
+
+g = sns.catplot(x="JOB_TYPE", y="SUB_NUM", data=df_data,
+                height=6, kind="bar", col="HAS_HOUSING_LOAN", row="HAS_PERSO_LOAN", palette="muted")
+g.despine(left=True)
+g.set_ylabels("subscription probability")
 
 #df_data['SUB_NUM'] = pd.get_dummies(df_data['SUBSCRIPTION'], drop_first=True)
 #df_data['SUB_NUM'] = df_data['SUB_NUM'].astype("int64")
