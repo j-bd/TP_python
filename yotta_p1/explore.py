@@ -144,18 +144,19 @@ sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggre
 ax1.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across month")
 plt.legend(loc='center right', bbox_to_anchor=(1.25, 0.5), ncol=1)
 
-#day_aggregated = pd.DataFrame(df_data.groupby(["day","weekday"],sort=True)["SUB_NUM"].sum()).reset_index()
-#sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggregated["weekday"],hue_order=hue_order, data=day_aggregated, join=True,ax=ax2)
-#ax2.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across Weekdays",label='big')
+day_aggregated = pd.DataFrame(df_data.groupby(["day","weekday"],sort=True)["SUB_NUM"].sum()).reset_index()
+sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUB_NUM"],hue=day_aggregated["weekday"],hue_order=hue_order, data=day_aggregated, join=True,ax=ax2)
+ax2.set(xlabel='Days', ylabel='SUB_NUM',title="Average By Day Across Weekdays",label='big')
 
-
+plt.figure()
 day_aggregated = pd.DataFrame(df_data.groupby(["month","EDUCATION"],sort=True)["SUB_NUM"].sum()).reset_index()
 sns.barplot(x='month', y='SUB_NUM', hue='EDUCATION', data=day_aggregated, order=sort_order)
 
+plt.figure()
 day_aggregated = pd.DataFrame(df_data.groupby(["month","year"],sort=True)["SUB_NUM"].sum()).reset_index()
 sns.barplot(x='month', y='SUB_NUM', hue='year', data=day_aggregated, order=sort_order)
 
-
+plt.figure()
 g = sns.catplot(x="JOB_TYPE", hue="SUBSCRIPTION", data=df_data,
                 height=6, kind="count", palette="muted")
 g.despine(left=True)
@@ -183,16 +184,26 @@ for col in cols_int:
 
 
 
+plt.figure()
 g = sns.catplot(x="JOB_TYPE", y="SUB_NUM", hue="STATUS", data=df_data,
                 height=6, kind="bar", col="HAS_HOUSING_LOAN", row="HAS_PERSO_LOAN", palette="muted")
 g.despine(left=True)
 g.set_ylabels("subscription probability")
 
 
+plt.figure()
 g = sns.catplot(x="JOB_TYPE", y="SUB_NUM", data=df_data,
                 height=6, kind="bar", col="HAS_HOUSING_LOAN", row="HAS_PERSO_LOAN", palette="muted")
 g.despine(left=True)
 g.set_ylabels("subscription probability")
+
+plt.figure()
+g = sns.catplot(x="HAS_DEFAULT", y="SUB_NUM", data=df_data,
+                height=6, kind="bar", col="HAS_HOUSING_LOAN", row="HAS_PERSO_LOAN", palette="muted")
+g.despine(left=True)
+g.set_ylabels("subscription probability")
+
+
 
 #df_data['SUB_NUM'] = pd.get_dummies(df_data['SUBSCRIPTION'], drop_first=True)
 #df_data['SUB_NUM'] = df_data['SUB_NUM'].astype("int64")
