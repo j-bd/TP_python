@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 13 14:03:02 2020
+Created on Thu Apr 16 20:04:29 2020
 
 @author: j-bd
 """
 
 import os
-import calendar
 from datetime import datetime
 
 import pandas as pd
@@ -15,7 +14,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, StratifiedKFold
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, StandardScaler
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import f1_score
 from sklearn.metrics import auc
@@ -23,10 +22,11 @@ from sklearn.metrics import average_precision_score
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
-from sklearn.pipeline import make_pipeline, Pipeline
+from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
 
 
 path = "/home/latitude/Documents/Yotta/yotta_exs/yotta_p1/data"
@@ -48,19 +48,157 @@ print(df_data.isnull().sum(axis=0) *100 / len(df_data))
 print(df_data.head())
 print(df_data.nunique(dropna = False))
 
-
+col=['DATE', 'AGE', 'JOB_TYPE', 'STATUS', 'EDUCATION', 'HAS_DEFAULT',
+             'HAS_HOUSING_LOAN', 'HAS_PERSO_LOAN']
 # =============================================================================
 # Clean data
 # =============================================================================
+df_filter = df_data.drop(
+    columns=['BALANCE', 'CONTACT', 'DURATION_CONTACT', 'NB_CONTACT', 'NB_DAY_LAST_CONTACT',
+       'NB_CONTACT_LAST_CAMPAIGN', 'RESULT_LAST_CAMPAIGN']
+)
 
-df_data.drop(columns=["DATE", "DURATION_CONTACT", "RESULT_LAST_CAMPAIGN", "CONTACT"], inplace=True)
+numeric_variables = list(df_filter.select_dtypes(include=['int64', 'float64']))
+cat_variables = list(df_filter.select_dtypes(include=[object]).drop(['SUBSCRIPTION'], axis=1))
 
-numeric_variables = list(df_data.select_dtypes(include=['int64', 'float64']))
-cat_variables = list(df_data.select_dtypes(include=[object]).drop(['SUBSCRIPTION'], axis=1))
+print(df_filter.info())
+
+for col in cat_variables:
+    df_filter[col] = df_filter[col].astype("category")
+
+df_filter['SUBS_NUM'] = pd.get_dummies(df_filter['SUBSCRIPTION'], drop_first=True)
 
 # =============================================================================
-# Visualisation
+# Visualisation Numeriques variables
 # =============================================================================
+"""univarie"""
+# proportion
+for var in numeric_variables:
+    plt.figure()
+    sns.distplot(df_filter[var], axlabel=var)
+
+# nombre de valeur
+for var in numeric_variables:
+    plt.figure()
+    sns.countplot(x=df_filter[var])
+
+"""univarie + variable explicative"""
+# nombre de valeur
+for var in numeric_variables:
+    plt.figure()
+    sns.countplot(x=df_filter[var], hue=df_filter['SUBSCRIPTION'])
+
+# proportion
+for var in numeric_variables:
+    ax = sns.barplot(
+        x=df_filter[var], y=df_filter[var], hue=df_filter['SUBSCRIPTION'],
+        estimator=lambda x: len(x) / len(df_filter) * 100
+    )
+    ax.set(ylabel="Percent")
+
+
+# =============================================================================
+# Visualisation Categorical variables
+# =============================================================================
+"""univarie"""
+# nombre de valeur
+#for var in cat_variables:
+#    ax = sns.barplot(
+#        x=df_filter[var], y=df_filter[var],
+#        estimator=lambda x: len(x) / len(df_filter) * 100
+#    )
+#    ax.set(ylabel="Percent")
+
+# nombre de valeur
+for var in cat_variables:
+    plt.figure()
+    sns.countplot(x=df_filter[var])
+
+"""univarie + variable explicative"""
+# proportion
+#for var in cat_variables:
+#    plt.figure()
+#    sns.catplot(x=df_filter[var], y=df_filter['SUBS_NUM'], data=df_filter)
+
+# nombre de valeur
+for var in cat_variables:
+    plt.figure()
+    sns.countplot(x=df_filter[var], hue=df_filter['SUBSCRIPTION'])
+
+
+# =============================================================================
+# Visualisation Multi variables
+# =============================================================================
+"""multivarie quantitative avec quantitative"""
+sns.heatmap(
+    pd.get_dummies(
+        df_filter.drop(columns=['DATE', 'SUBS_NUM']), drop_first=True
+        ).corr(), annot=True, fmt=".1%"
+)
+sns.heatmap(pd.get_dummies(df_filter.drop(columns=['DATE', 'SUBS_NUM'])).corr(), annot=True, fmt=".0%")
+
+sns.pairplot(df_data, hue='SUBSCRIPTION')
+#pd.plotting.scatter_matrix(df_data)
+
+
+# =============================================================================
+# Visualisation Date
+# =============================================================================
+df_filter['DATE'] = pd.to_datetime(df_filter['DATE'], format='%Y-%m-%d')
+df_filter["day"] = df_filter['DATE'].dt.day
+df_filter["year"] = df_filter['DATE'].dt.year
+df_filter["weekday"] = df_filter['DATE'].dt.day_name()
+df_filter["month"] = df_filter['DATE'].dt.month_name()
+df_filter["week_year"] = df_filter['DATE'].dt.weekofyear
+data_col = ["weekday", "month"]
+sort_order = ["January","February","March","April","May","June","July","August","September","October","November","December"]
+hue_order = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+
+
+plt.figure()
+graph = sns.countplot(x="weekday", hue='SUBSCRIPTION', order=hue_order, data=df_filter)
+graph.set_yscale("log")
+
+plt.figure()
+graph = sns.countplot(x="month", hue='SUBSCRIPTION', order=sort_order, data=df_filter)
+graph.set_yscale("log")
+
+plt.figure()
+sns.countplot(x=df_filter["week_year"], hue=df_filter['SUBSCRIPTION'])
+
+
+fig,(ax1,ax2)= plt.subplots(nrows=2)
+fig.set_size_inches(16,22)
+
+day_aggregated = pd.DataFrame(df_filter.groupby(["day","month"],sort=True)["SUBS_NUM"].sum()).reset_index()
+sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUBS_NUM"],hue=day_aggregated["month"], hue_order=sort_order, data=day_aggregated, join=True,ax=ax1)
+ax1.set(xlabel='Days', ylabel='SUBS_NUM',title="Average By Day Across month")
+plt.legend(loc='center right', bbox_to_anchor=(1.25, 0.5), ncol=1)
+
+day_aggregated = pd.DataFrame(df_filter.groupby(["day","weekday"],sort=True)["SUBS_NUM"].sum()).reset_index()
+sns.pointplot(x=day_aggregated["day"], y=day_aggregated["SUBS_NUM"],hue=day_aggregated["weekday"],hue_order=hue_order, data=day_aggregated, join=True,ax=ax2)
+ax2.set(xlabel='Days', ylabel='SUBS_NUM',title="Average By Day Across Weekdays",label='big')
+
+
+
+plt.figure()
+day_aggregated = pd.DataFrame(df_filter.groupby(["month","EDUCATION"],sort=True)["SUBS_NUM"].sum()).reset_index()
+sns.barplot(x='month', y='SUBS_NUM', hue='EDUCATION', data=day_aggregated, order=sort_order)
+
+plt.figure()
+day_aggregated = pd.DataFrame(df_filter.groupby(["month","year"],sort=True)["SUBS_NUM"].sum()).reset_index()
+sns.barplot(x='month', y='SUBS_NUM', hue='year', data=day_aggregated, order=sort_order)
+
+plt.figure()
+day_aggregated = pd.DataFrame(df_filter.groupby(["JOB_TYPE", "year"],sort=True)["SUBS_NUM"].sum()).reset_index()
+sns.barplot(x='JOB_TYPE', y='SUBS_NUM', hue='year', data=day_aggregated, order=sort_order)
+
+
+
+# =============================================================================
+# old
+# =============================================================================
+
 df_data.skew()
 df_data.kurtosis()
 numeric_variables_variance = numeric_variables.var()
@@ -260,17 +398,17 @@ preprocessor = ColumnTransformer(
 #Pipeline and grid search
 # =============================================================================
 pca = PCA(whiten=True, random_state=42)
-svc = SVC(kernel='rbf', class_weight='balanced')
+rfc = RandomForestClassifier(n_estimators= 50, criterion='gini')
+svc = SVC(kernel='rbf', class_weight='balanced')#
 #model = make_pipeline(preprocessor, pca, svc)
 model = Pipeline(steps=[('preprocessor', preprocessor),
                         ('pca', pca),
-                      ('svc', svc)])
+                      ('rfc', rfc)])
 
 skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 param_grid = {
     'pca__n_components': [5, 13],
-    'svc__C': [1, ],
-    'svc__gamma': [0.0001, 0.001]}
+    'rfc__n_estimators': [50, 100]}
 grid = GridSearchCV(model, param_grid, n_jobs=-1, cv=skf)
 
 y_train = pd.get_dummies(y_train, drop_first=True)
@@ -281,6 +419,16 @@ print(grid.best_params_)
 
 model = grid.best_estimator_
 y_pred = model.predict(x_test)
+
+
+scaler = StandardScaler()
+x_train = pd.get_dummies(x_train, drop_first=True)
+x_train = scaler.fit_transform(x_train)
+y_train = pd.get_dummies(y_train, drop_first=True)
+rfc.fit(x_train, y_train)
+headers = ["name", "score"]
+values = sorted(zip(pd.DataFrame(x_train), rfc.feature_importances_), key=lambda x: x[1] * -1)
+print(tabulate(values, headers, tablefmt="plain"))
 
 # =============================================================================
 # Prediction
