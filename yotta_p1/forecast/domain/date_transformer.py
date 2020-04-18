@@ -107,7 +107,7 @@ class DateTransformer(BaseEstimator, TransformerMixin):
 
 if __name__ == "__main__":
     merged_input = "data/interim/data_socio_merged.csv"
-    data_output = "data/interim/data_socio_interpolated2.csv"
+    data_output = "data/interim/data_date.csv"
     input_df = pd.read_csv(merged_input)
     date_df = DateTransformer().fit_transform(input_df)
     date_df.to_csv(data_output, index=False)
