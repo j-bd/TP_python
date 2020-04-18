@@ -8,12 +8,12 @@ Classes
 DateTransformer
 
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
-import forecast.settings as stg
+import forecast.settings.base as stg
 
 
 @dataclass
@@ -29,10 +29,14 @@ class DateTransformer(BaseEstimator, TransformerMixin):
 
     """
 
-    df = pd.DataFrame
-    y = df[stg.DATA_SUBSCRIPTION]
-    X = df.drop(columns=[stg.DATA_SUBSCRIPTION])
+    input_df: pd.DataFrame
+    X: pd.DataFrame = field(init=False)
+    y: pd.DataFrame = field(init=False)
 
+
+    def __post_init__(self):
+        self.X = self.input_df.drop(columns=[stg.DATA_SUBSCRIPTION])
+        self.y = self.input_df[stg.DATA_SUBSCRIPTION]
 
     def fit(self):
         """Fit method that return the object itself.
@@ -102,12 +106,13 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        return df.fillna(method='ffill', inplace=True)
+        return df[stg.DATA_DATE].fillna(method='ffill', inplace=True)
 
 
 if __name__ == "__main__":
     merged_input = "data/interim/data_socio_merged.csv"
     data_output = "data/interim/data_date.csv"
     input_df = pd.read_csv(merged_input)
-    date_df = DateTransformer().fit_transform(input_df)
+    date_df = DateTransformer(input_df)
+    date_df = date_df.transform()
     date_df.to_csv(data_output, index=False)
