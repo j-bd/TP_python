@@ -48,7 +48,6 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         self: DateTransformer
         """
-
         return self
 
     def transform(self, X, y=None):
@@ -65,13 +64,11 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-
         X['DATE'] = pd.to_datetime(X['DATE'], format=stg.DATA_DATE_FORMAT)
         X["day"] = X['DATE'].dt.day #remove ?
         X["year"] = X['DATE'].dt.year #remove ?
         X["weekday"] = X['DATE'].dt.day_name()
         X["month"] = X['DATE'].dt.month_name()
-
 
         X["day_selected"] = X["weekday"].apply(
             lambda x: 0 if x in stg.WEEKEND else 1
@@ -85,7 +82,6 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         X["cold_month"] = X["month"].apply(
             lambda x: 1 if x in stg.COLD_MONTH else 0
         )
-
         # Return only features columns
         return X.filter(items=stg.DATE_COLS)
 
@@ -103,7 +99,7 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-
+        return df.fillna(method='ffill', inplace=True)
 
 
 if __name__ == "__main__":
