@@ -19,13 +19,13 @@ import forecast.settings as stg
 @dataclass
 class DateTransformer(BaseEstimator, TransformerMixin):
     """
-    Interpolate monthly and quarterly socioeconomic features.
+    Process date feature.
 
     Methods
     -------
     fit
     transform
-    interpolate
+    fill_missing_value
 
     """
 
@@ -57,7 +57,7 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         Parameters
         ----------
         X: pandas.DataFrame
-            DataFrame containing socioeconomic features
+            DataFrame containing full features
         y: None, default None
             Parameter not used in transformer transform method
 
@@ -88,6 +88,22 @@ class DateTransformer(BaseEstimator, TransformerMixin):
 
         # Return only features columns
         return X.filter(items=stg.DATE_COLS)
+
+    def fill_missing_value(self, df):
+        """Transform method that return transformed DataFrame.
+
+        Parameters
+        ----------
+        X: pandas.DataFrame
+            DataFrame containing full features
+        y: None, default None
+            Parameter not used in transformer transform method
+
+        Returns
+        -------
+        X: pandas.DataFrame
+        """
+
 
 
 if __name__ == "__main__":
