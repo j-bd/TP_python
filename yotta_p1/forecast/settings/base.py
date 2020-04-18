@@ -92,8 +92,10 @@ DATA_HAS_HOUSING_LOAN = 'HAS_HOUSING_LOAN'
 DATA_HAS_PERSO_LOAN = 'HAS_PERSO_LOAN'
 DATA_SUBSCRIPTION = 'SUBSCRIPTION'
 
+# Date columns
 DATA_DATE_FORMAT = '%Y-%m-%d'
 WEEKEND = ["Saturday", "Sunday"]
 HOT_MONTH = ["February", "April", "May", "June", "July", "August", "November"]
 WARM_MONTH = ["March", "September", "October"]
 COLD_MONTH = ["January", "December"]
+DATE_COLS = [WEEKEND, HOT_MONTH, WARM_MONTH, COLD_MONTH]
