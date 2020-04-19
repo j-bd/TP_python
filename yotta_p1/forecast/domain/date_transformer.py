@@ -56,9 +56,8 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        cls = self.__class__
         if X[stg.DATA_DATE].isnull().any():
-            X = cls.fill_missing_value(X)
+            X = self.fill_missing_value(X)
 
         X[stg.DATA_DATE] = pd.to_datetime(X[stg.DATA_DATE], format=stg.DATA_DATE_FORMAT)
         X["weekday"] = X[stg.DATA_DATE].dt.day_name()
@@ -79,7 +78,7 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         # Return only features columns
         return X.filter(items=stg.DATE_COLS)
 
-    def fill_missing_value(X):
+    def fill_missing_value(self, df):
         """Transform method that return transformed DataFrame.
 
         Parameters
@@ -93,7 +92,8 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        return X[stg.DATA_DATE].fillna(method='ffill', inplace=True)
+        fill_col = df[[stg.DATA_DATE]].fillna(method='ffill')
+        return fill_col
 
 
 if __name__ == "__main__":

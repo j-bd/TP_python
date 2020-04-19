@@ -56,7 +56,6 @@ class JobTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-#        cls = self.__class__
         if X[stg.DATA_JOB_TYPE].isnull().any():
             X = self.fill_missing_value(X)
 
@@ -80,8 +79,8 @@ class JobTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        full_x = df[[stg.DATA_JOB_TYPE]].fillna(df[stg.DATA_JOB_TYPE].mode()[0])
-        return full_x
+        fill_col = df[[stg.DATA_JOB_TYPE]].fillna(df[stg.DATA_JOB_TYPE].mode()[0])
+        return fill_col
 
 
 if __name__ == "__main__":
