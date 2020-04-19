@@ -60,14 +60,14 @@ class AgeTransformer(BaseEstimator, TransformerMixin):
         if X[stg.DATA_AGE].isnull().any():
             X = cls.fill_missing_value(X)
 
-        X['age_bin']=pd.cut(
+        X[stg.AGE_LAB]=pd.cut(
             x=X[stg.DATA_AGE], bins=stg.AGE_BINS, labels=stg.AGE_LABELS
         )
 
         # Return only features columns
-        return self.X.filter(items=stg.DATE_COLS)
+        return X[stg.AGE_LAB]
 
-    def fill_missing_value(self, df):
+    def fill_missing_value(X):
         """Transform method that return transformed DataFrame.
 
         Parameters
@@ -81,7 +81,7 @@ class AgeTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        return df[stg.DATA_AGE].fillna(df[stg.DATA_AGE].mode()[0], inplace=True)
+        return X[stg.DATA_AGE].fillna(X[stg.DATA_AGE].mode()[0], inplace=True)
 
 
 if __name__ == "__main__":
