@@ -28,6 +28,8 @@ from sklearn.metrics import confusion_matrix
 import joblib
 
 from forecast.domain.socio_eco_transformer import SocioEcoTransformer
+from forecast.domain.date_transformer import DateTransformer
+from forecast.domain.age_transformer import AgeTransformer
 
 import forecast.settings as stg
 
@@ -51,6 +53,13 @@ def train(input_file_name):
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())])
 
+    date_transformer = Pipeline(steps=[
+        ('datetrans', DateTransformer()),
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())])
+
+
+
     # Numerical transformer
     numeric_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
@@ -66,11 +75,13 @@ def train(input_file_name):
     categorical_features = df_data.select_dtypes(include=['object']).drop(['SUBSCRIPTION'], axis=1).columns
     numeric_features = [x for x in numeric_features if x not in stg.SOCIO_ECO_COLS]
     socio_eco_features = stg.SOCIO_ECO_COLS + [stg.DATE_SOCIO_COL]
+    date_features = [stg.DATA_DATE]
 
     # Column transformer
     preprocessor = ColumnTransformer(
         transformers=[
             ('eco', socio_eco_transformer, socio_eco_features),
+            ('date', date_transformer, date_features),
             ('num', numeric_transformer, numeric_features),
             ('cat', categorical_transformer, categorical_features)])
 
@@ -103,7 +114,7 @@ def train(input_file_name):
     #         steps=[
     #             ('preprocessor', preprocessor),
     #             ('classifier', classifier)])
-    #     pipe.fit(X_train, y_train)   
+    #     pipe.fit(X_train, y_train)
     #     print(classifier)
     #     print("model score: %.3f" % pipe.score(X_test, y_test))
 
@@ -112,7 +123,7 @@ def train(input_file_name):
     #     steps=[
     #         ('preprocessor', preprocessor),
     #         ('classifier', RandomForestClassifier())])
-    # param_grid = { 
+    # param_grid = {
     #     'classifier__n_estimators': [1, 2, 3, 4, 5],
     #     'classifier__max_features': ['auto', 'sqrt', 'log2'],
     #     'classifier__max_depth' : [4, 5, 6, 7, 8],
