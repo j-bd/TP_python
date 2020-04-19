@@ -60,20 +60,20 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         if X[stg.DATA_DATE].isnull().any():
             X = cls.fill_missing_value(X)
 
-        X['DATE'] = pd.to_datetime(X['DATE'], format=stg.DATA_DATE_FORMAT)
-        X["weekday"] = X['DATE'].dt.day_name()
-        X["month"] = X['DATE'].dt.month_name()
+        X[stg.DATA_DATE] = pd.to_datetime(X[stg.DATA_DATE], format=stg.DATA_DATE_FORMAT)
+        X["weekday"] = X[stg.DATA_DATE].dt.day_name()
+        X["month"] = X[stg.DATA_DATE].dt.month_name()
 
-        X["day_selected"] = X["weekday"].apply(
+        X[stg.DAY_SELECTED_COL] = X["weekday"].apply(
             lambda x: 0 if x in stg.WEEKEND else 1
         )
-        X["hot_month"] = X["month"].apply(
+        X[stg.HOT_MONTH_COL] = X["month"].apply(
             lambda x: 1 if x in stg.HOT_MONTH else 0
         )
-        X["warm_month"] = X["month"].apply(
+        X[stg.WARM_MONTH_COL] = X["month"].apply(
             lambda x: 1 if x in stg.WARM_MONTH else 0
         )
-        X["cold_month"] = X["month"].apply(
+        X[stg.COLD_MONTH_COL] = X["month"].apply(
             lambda x: 1 if x in stg.COLD_MONTH else 0
         )
         # Return only features columns
