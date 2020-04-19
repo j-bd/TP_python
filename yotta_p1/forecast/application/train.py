@@ -2,7 +2,8 @@
 # coding: utf-8
 
 import pandas as pd
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
@@ -18,6 +19,10 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+from sklearn.metrics import auc
+from sklearn.metrics import average_precision_score
 import joblib
 
 import forecast.settings as stg
@@ -48,11 +53,15 @@ def main(input_file_name):
     X = df_merged.drop(stg.DATA_SUBSCRIPTION, axis=1)
     df_merged[stg.DATA_SUBSCRIPTION] = df_merged[stg.DATA_SUBSCRIPTION].astype("category")
     y = df_merged[stg.DATA_SUBSCRIPTION].cat.codes
-
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
 
     model = train(X_train, y_train)
-    model_evaluation(model, X_test, y_test)
+
+    default_prediction_rate = 1 - y.sum() / len(y)
+    model_evaluation(model, X_test, y_test, default_prediction_rate)
+
+    # Export the classifier to a file
+    joblib.dump(model, "models/model.joblib")
 
 
 def train(X_train, y_train):
@@ -140,12 +149,9 @@ def train(X_train, y_train):
             ('classifier', GradientBoostingClassifier())])
     gb.fit(X_train, y_train)
 
-    # Export the classifier to a file
-    joblib.dump(gb, "models/model.joblib")
-
     return gb
 
-def model_evaluation(model, X_test, y_test):
+def model_evaluation(model, X_test, y_test, default_prediction_rate):
     """Launch steps to asset the trained model and display tests models
 
     Parameters
@@ -165,7 +171,33 @@ def model_evaluation(model, X_test, y_test):
 
 
 
+    print(f"Taux de prediction pour un refus global : {default_prediction_rate:.3f}\n"
+        f"Taux predit : {model.score(X_test, y_test):.3f}")
 
+    plt.figure()
+    cm = confusion_matrix(y_test, y_pred)
+    sns.heatmap(cm, annot=True, fmt='g')
+
+    # calculate precision-recall curve
+    precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
+    # calculate F1 score
+    f1 = f1_score(y_test, y_pred)
+    # calculate precision-recall AUC
+    pr_auc = auc(recall, precision)
+    # calculate average precision score
+    ap = average_precision_score(y_test, y_pred)
+    print('f1=%.3f auc=%.3f ap=%.3f' % (f1, pr_auc, ap))
+
+    plt.figure()
+    # plot no skill
+    plt.plot([0, 1], [0.88, 0.88], linestyle='--', label="Seuil bas")
+    # plot the precision-recall curve for the model
+    plt.plot(recall, precision, marker='.', label="Courbe Precision Recall")
+    plt.title("Courbe Precision Recall")
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.legend()
+    plt.show()
 
 
     # # Model selection
