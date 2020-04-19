@@ -30,6 +30,7 @@ import joblib
 from forecast.domain.socio_eco_transformer import SocioEcoTransformer
 from forecast.domain.date_transformer import DateTransformer
 from forecast.domain.age_transformer import AgeTransformer
+from forecast.domain.job_transformer import JobTransformer
 
 import forecast.settings as stg
 
@@ -58,7 +59,15 @@ def train(input_file_name):
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())])
 
+    age_transformer = Pipeline(steps=[
+        ('agetrans', AgeTransformer()),
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())])
 
+    job_transformer = Pipeline(steps=[
+        ('jobtrans', JobTransformer()),
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())])
 
     # Numerical transformer
     numeric_transformer = Pipeline(steps=[
@@ -76,12 +85,16 @@ def train(input_file_name):
     numeric_features = [x for x in numeric_features if x not in stg.SOCIO_ECO_COLS]
     socio_eco_features = stg.SOCIO_ECO_COLS + [stg.DATE_SOCIO_COL]
     date_features = [stg.DATA_DATE]
+    age_features = [stg.DATA_AGE]
+    job_features = [stg.DATA_JOB_TYPE]
 
     # Column transformer
     preprocessor = ColumnTransformer(
         transformers=[
             ('eco', socio_eco_transformer, socio_eco_features),
             ('date', date_transformer, date_features),
+            ('age', age_transformer, age_features),
+            ('job', job_transformer, job_features),
             ('num', numeric_transformer, numeric_features),
             ('cat', categorical_transformer, categorical_features)])
 
