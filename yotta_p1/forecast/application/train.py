@@ -32,6 +32,7 @@ from forecast.domain.date_transformer import DateTransformer
 from forecast.domain.age_transformer import AgeTransformer
 from forecast.domain.job_transformer import JobTransformer
 from forecast.domain.status_transformer import StatusTransformer
+from forecast.domain.education_transformer import EducationTransformer
 
 import forecast.settings as stg
 
@@ -71,7 +72,12 @@ def train(input_file_name):
         ('scaler', StandardScaler())])
 
     status_transformer = Pipeline(steps=[
-        ('jobtrans', StatusTransformer()),
+        ('statustrans', StatusTransformer()),
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())])
+
+    education_transformer = Pipeline(steps=[
+        ('educationtrans', EducationTransformer()),
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())])
 
@@ -94,6 +100,7 @@ def train(input_file_name):
     age_features = [stg.DATA_AGE]
     job_features = [stg.DATA_JOB_TYPE]
     status_features = [stg.DATA_STATUS]
+    education_features = [stg.DATA_EDUCATION]
 
     # Column transformer
     preprocessor = ColumnTransformer(
@@ -103,6 +110,7 @@ def train(input_file_name):
             ('age', age_transformer, age_features),
             ('job', job_transformer, job_features),
             ('status', status_transformer, status_features),
+            ('education', education_transformer, education_features),
             ('num', numeric_transformer, numeric_features),
             ('cat', categorical_transformer, categorical_features)])
 
