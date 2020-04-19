@@ -56,18 +56,17 @@ class JobTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        cls = self.__class__
-        if X[stg.DATA_AGE].isnull().any():
-            X = cls.fill_missing_value(X)
+#        cls = self.__class__
+        if X[stg.DATA_JOB_TYPE].isnull().any():
+            X = self.fill_missing_value(X)
 
-        X[stg.AGE_LAB]=pd.cut(
-            x=X[stg.DATA_AGE], bins=stg.AGE_BINS, labels=stg.AGE_LABELS
-        )
+        X[stg.DATA_JOB_TYPE] = X[stg.DATA_JOB_TYPE].astype("category")
+        X[stg.JOB_LAB] = X[stg.DATA_JOB_TYPE].cat.codes
 
         # Return only features columns
-        return X[stg.AGE_LAB]
+        return X[[stg.JOB_LAB]]
 
-    def fill_missing_value(X):
+    def fill_missing_value(self, df):
         """Transform method that return transformed DataFrame.
 
         Parameters
@@ -81,7 +80,8 @@ class JobTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        return X[stg.DATA_AGE].fillna(X[stg.DATA_AGE].mode()[0], inplace=True)
+        full_x = df[[stg.DATA_JOB_TYPE]].fillna(df[stg.DATA_JOB_TYPE].mode()[0])
+        return full_x
 
 
 if __name__ == "__main__":
