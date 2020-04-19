@@ -42,24 +42,33 @@ def main(input_file_name):
     -------
     No returns
     """
-    model = train(input_file_name)
-
-
-
-
-def train(input_file_name):
-    df_data = pd.read_csv(input_file_name)
+    df_merged = pd.read_csv(input_file_name)
 
     # Features and target
-    X = df_data.drop('SUBSCRIPTION', axis=1)
-    y = df_data['SUBSCRIPTION']
+    X = df_merged.drop(stg.DATA_SUBSCRIPTION, axis=1)
+    df_merged[stg.DATA_SUBSCRIPTION] = df_merged[stg.DATA_SUBSCRIPTION].astype("category")
+    y = df_merged[stg.DATA_SUBSCRIPTION].cat.codes
 
-    # Training and testing set separation
-    #X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-
-    # It’s important to stratify y when doing a train_test_split on imbalanced classes, or on a small dataset.
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
 
+    model = train(X_train, y_train)
+    model_evaluation(model, X_test, y_test)
+
+
+def train(X_train, y_train):
+    """Setup training pipeline and launch model training
+
+    Parameters
+        ----------
+    X_train: pandas.DataFrame
+        explanatory variables
+    y_train: pandas.Series
+        target variable
+
+    Returns
+    -------
+    No returns
+    """
     # Socio eco transformer
     socio_eco_transformer = Pipeline(steps=[
         ('sociotrans', SocioEcoTransformer()),
@@ -102,8 +111,8 @@ def train(input_file_name):
         ('onehot', OneHotEncoder(handle_unknown='ignore'))])
 
     # Numrical, categorical, socio eco features
-    numeric_features = df_data.select_dtypes(include=['int64', 'float64']).columns
-    categorical_features = df_data.select_dtypes(include=['object']).drop(['SUBSCRIPTION'], axis=1).columns
+    numeric_features = X_train.select_dtypes(include=['int64', 'float64']).columns
+    categorical_features = X_train.select_dtypes(include=['object']).columns
     numeric_features = [x for x in numeric_features if x not in stg.SOCIO_ECO_COLS]
     socio_eco_features = stg.SOCIO_ECO_COLS + [stg.DATE_SOCIO_COL]
     date_features = [stg.DATA_DATE]
@@ -130,19 +139,29 @@ def train(input_file_name):
             ('preprocessor', preprocessor),
             ('classifier', GradientBoostingClassifier())])
     gb.fit(X_train, y_train)
-    print("model score: %.3f" % gb.score(X_test, y_test))
-
-    # Confusion matrix
-    y_pred = gb.predict(X_test)
-    print(confusion_matrix(y_test, y_pred))
 
     # Export the classifier to a file
     joblib.dump(gb, "models/model.joblib")
 
     return gb
 
+def model_evaluation(model, X_test, y_test):
+    """Launch steps to asset the trained model and display tests models
 
+    Parameters
+        ----------
+    model: sklearn model
+        Trained model
 
+    Returns
+    -------
+    No returns
+    """
+    print("model score: %.3f" % model.score(X_test, y_test))
+
+    # Confusion matrix
+    y_pred = model.predict(X_test)
+    print(confusion_matrix(y_test, y_pred))
 
 
 
