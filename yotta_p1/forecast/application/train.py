@@ -4,15 +4,11 @@
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
-
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
-
 from sklearn.compose import ColumnTransformer
-
 from sklearn.ensemble import RandomForestClassifier
-
 from sklearn.metrics import accuracy_score, log_loss
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC, LinearSVC, NuSVC
@@ -20,13 +16,11 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-
 from sklearn.model_selection import GridSearchCV
-
 from sklearn.metrics import confusion_matrix
-
 import joblib
 
+import forecast.settings as stg
 from forecast.domain.socio_eco_transformer import SocioEcoTransformer
 from forecast.domain.date_transformer import DateTransformer
 from forecast.domain.age_transformer import AgeTransformer
@@ -34,7 +28,23 @@ from forecast.domain.job_transformer import JobTransformer
 from forecast.domain.status_transformer import StatusTransformer
 from forecast.domain.education_transformer import EducationTransformer
 
-import forecast.settings as stg
+
+
+def main(input_file_name):
+    """Launch main steps of model training
+
+    Parameters
+        ----------
+    input_file_name: str
+        String containing path to merge 'csv' dataset
+
+    Returns
+    -------
+    No returns
+    """
+    model = train(input_file_name)
+
+
 
 
 def train(input_file_name):
@@ -129,6 +139,16 @@ def train(input_file_name):
     # Export the classifier to a file
     joblib.dump(gb, "models/model.joblib")
 
+    return gb
+
+
+
+
+
+
+
+
+
     # # Model selection
     # classifiers = [
     #     KNeighborsClassifier(3), #0.886
@@ -193,4 +213,4 @@ def train(input_file_name):
 if __name__ == "__main__":
     #input_file = "data/raw/data.csv"
     input_file = "data/interim/data_socio_merged.csv"
-    train(input_file)
+    main(input_file)
