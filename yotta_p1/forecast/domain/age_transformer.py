@@ -5,7 +5,7 @@ Module to transform date.
 
 Classes
 -------
-DateTransformer
+AgeTransformer
 
 """
 import pandas as pd
