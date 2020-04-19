@@ -99,3 +99,7 @@ HOT_MONTH = ["February", "April", "May", "June", "July", "August", "November"]
 WARM_MONTH = ["March", "September", "October"]
 COLD_MONTH = ["January", "December"]
 DATE_COLS = ["day_selected", "hot_month", "warm_month", "cold_month"]
+
+# Age
+AGE_BINS = [18, 25, 30, 35, 40, 45, 50, 55, 60, 70, 120, 130]
+AGE_LABELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
