@@ -111,3 +111,6 @@ AGE_LAB = "AGE_LABELS"
 
 # Job type
 JOB_LAB = "JOB_LABELS"
+
+# Status
+STATUS_LAB = "STATUS_LABELS"
