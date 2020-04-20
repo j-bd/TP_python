@@ -2,18 +2,18 @@
 # coding: utf-8
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
 import joblib
+from sklearn.model_selection import train_test_split
 
-from forecast.domain import model_train, model_evaluation
 import forecast.settings as stg
+from forecast.domain import model_train, model_evaluation
 
 
 def main(input_file_name):
     """Launch main steps of model training
 
     Parameters
-        ----------
+    ----------
     input_file_name: str
         String containing path to merge 'csv' dataset
 
@@ -26,13 +26,17 @@ def main(input_file_name):
 #    df_data = Treatment(df_data).run_preprocessing()
 
     # Features and target
-    X = df_merged.drop([stg.SUBSCRIPTION, stg.DURATION_CONTACT], axis=1)
-    df_merged[stg.SUBSCRIPTION] = df_merged[stg.SUBSCRIPTION].astype("category")
-    y = df_merged[stg.SUBSCRIPTION].cat.codes
+    X = df_merged.drop(columns = [stg.SUBSCRIPTION, stg.DURATION_CONTACT])
+    y = df_merged[stg.SUBSCRIPTION].astype("category").cat.codes
+
+    # Train test splitting
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
 
+
+    # Training model
     model = model_train.train(X_train, y_train)
 
+    # Evalutate model
     default_prediction_rate = 1 - y.sum() / len(y)
     model_evaluation.evaluation(model, X_test, y_test, default_prediction_rate)
 
