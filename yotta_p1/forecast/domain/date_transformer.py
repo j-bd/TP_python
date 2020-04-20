@@ -56,12 +56,12 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        if X[stg.DATA_DATE].isnull().any():
+        if X[stg.DATE_DATA].isnull().any():
             X = self.fill_missing_value(X)
 
-        X[stg.DATA_DATE] = pd.to_datetime(X[stg.DATA_DATE], format=stg.DATA_DATE_FORMAT)
-        X["weekday"] = X[stg.DATA_DATE].dt.day_name()
-        X["month"] = X[stg.DATA_DATE].dt.month_name()
+        X[stg.DATE_DATA] = pd.to_datetime(X[stg.DATE_DATA], format=stg.DATA_DATE_FORMAT)
+        X["weekday"] = X[stg.DATE_DATA].dt.day_name()
+        X["month"] = X[stg.DATE_DATA].dt.month_name()
 
         X[stg.DAY_SELECTED_COL] = X["weekday"].apply(
             lambda x: 0 if x in stg.WEEKEND else 1
@@ -92,7 +92,7 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        fill_col = df[[stg.DATA_DATE]].fillna(method='ffill')
+        fill_col = df[[stg.DATE_DATA]].fillna(method='ffill')
         return fill_col
 
 

@@ -25,3 +25,4 @@ if __name__ == "__main__":
     socio_eco_input = "data/raw/socio_eco.csv"
     output = "data/interim/data_socio_merged.csv"
     merge_data_socio_eco(data_input, socio_eco_input, output)
+

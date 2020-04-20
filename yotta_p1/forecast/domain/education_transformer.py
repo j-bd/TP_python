@@ -56,11 +56,11 @@ class EducationTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        if X[stg.DATA_EDUCATION].isnull().any():
+        if X[stg.EDUCATION].isnull().any():
             X = self.fill_missing_value(X)
 
-        X[stg.DATA_EDUCATION] = X[stg.DATA_EDUCATION].astype("category")
-        X[stg.EDUCATION_LAB] = X[stg.DATA_EDUCATION].cat.codes
+        X[stg.EDUCATION] = X[stg.EDUCATION].astype("category")
+        X[stg.EDUCATION_LAB] = X[stg.EDUCATION].cat.codes
 
         # Return only features columns
         return X[[stg.EDUCATION_LAB]]
@@ -79,7 +79,7 @@ class EducationTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        fill_col = df[[stg.DATA_EDUCATION]].fillna(df[stg.DATA_EDUCATION].mode()[0])
+        fill_col = df[[stg.EDUCATION]].fillna(df[stg.EDUCATION].mode()[0])
         return fill_col
 
 

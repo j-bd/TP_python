@@ -56,11 +56,11 @@ class StatusTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        if X[stg.DATA_STATUS].isnull().any():
+        if X[stg.STATUS].isnull().any():
             X = self.fill_missing_value(X)
 
-        X[stg.DATA_STATUS] = X[stg.DATA_STATUS].astype("category")
-        X[stg.STATUS_LAB] = X[stg.DATA_STATUS].cat.codes
+        X[stg.STATUS] = X[stg.STATUS].astype("category")
+        X[stg.STATUS_LAB] = X[stg.STATUS].cat.codes
 
         # Return only features columns
         return X[[stg.STATUS_LAB]]
@@ -79,7 +79,7 @@ class StatusTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        fill_col = df[[stg.DATA_STATUS]].fillna(df[stg.DATA_STATUS].mode()[0])
+        fill_col = df[[stg.STATUS]].fillna(df[stg.STATUS].mode()[0])
         return fill_col
 
 

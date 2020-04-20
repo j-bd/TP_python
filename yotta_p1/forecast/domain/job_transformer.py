@@ -56,11 +56,11 @@ class JobTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        if X[stg.DATA_JOB_TYPE].isnull().any():
+        if X[stg.JOB_TYPE].isnull().any():
             X = self.fill_missing_value(X)
 
-        X[stg.DATA_JOB_TYPE] = X[stg.DATA_JOB_TYPE].astype("category")
-        X[stg.JOB_LAB] = X[stg.DATA_JOB_TYPE].cat.codes
+        X[stg.JOB_TYPE] = X[stg.JOB_TYPE].astype("category")
+        X[stg.JOB_LAB] = X[stg.JOB_TYPE].cat.codes
 
         # Return only features columns
         return X[[stg.JOB_LAB]]
@@ -79,7 +79,7 @@ class JobTransformer(BaseEstimator, TransformerMixin):
         -------
         X: pandas.DataFrame
         """
-        fill_col = df[[stg.DATA_JOB_TYPE]].fillna(df[stg.DATA_JOB_TYPE].mode()[0])
+        fill_col = df[[stg.JOB_TYPE]].fillna(df[stg.JOB_TYPE].mode()[0])
         return fill_col
 
 
