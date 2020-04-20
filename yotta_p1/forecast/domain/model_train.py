@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
@@ -21,15 +21,10 @@ from forecast.domain.age_transformer import AgeTransformer
 from forecast.domain.job_transformer import JobTransformer
 from forecast.domain.status_transformer import StatusTransformer
 from forecast.domain.education_transformer import EducationTransformer
-from forecast.domain.Treatment import Treatment
-from forecast.domain.QuantitativeTransformer import QuantitativeTransformer
-
-
-# New packages added
-#import random
-#from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-#from imblearn.over_sampling import SMOTE
+from forecast.domain.bank_status_transformer import BankStatusTransformer
+#from forecast.domain.Treatment import Treatment
+#from forecast.domain.QuantitativeTransformer import QuantitativeTransformer
+from forecast.domain.over_sampling import OverSampler
 
 
 def train(X_train, y_train):
@@ -46,17 +41,17 @@ def train(X_train, y_train):
     -------
     No returns
     """
-    #print('Shape before SMOTE')
-    #print(X_train.shape[0])
 
-    # Use SMOTE for the oversampling, create new rows for SUBSCRIPTION = 'Yes'
-    # /!\ Need LabelEncoding to work /!\
-    #oversample = SMOTE()
-    #X_train, y_train = oversample.fit_resample(X_train, y_train)
-
-    # Make sur it's usefull:
-    #print('Shape before SMOTE')
-    #print(X_train.shape[0])
+    # Numerical, categorical, socio eco features
+    socio_eco_features = [stg.DATE_SOCIO_COL, *stg.SOCIO_ECO_COLS]
+    numerical_features = [stg.BALANCE, stg.NB_CONTACT, stg.NB_DAY_LAST_CONTACT, stg.NB_CONTACT_LAST_CAMPAIGN]
+    categorical_features = [stg.CONTACT, stg.RESULT_LAST_CAMPAIGN]
+    date_features = [stg.DATE_DATA]
+    age_features = [stg.AGE]
+    job_features = [stg.JOB_TYPE]
+    status_features = [stg.STATUS]
+    education_features = [stg.EDUCATION]
+    bank_status_features = [*stg.BANK_STATUS_COL]
 
 
     # Modify RESULT_LAST_CAMPAIGN , drop DURATION_CONTACT, create AT_DEBIT and PRECARITY,CAT_CONTACT_LAST_CAMPAIGN,CAT_CONTACT
@@ -95,8 +90,13 @@ def train(X_train, y_train):
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())])
 
+    bank_status_transformer = Pipeline(steps=[
+        ('bankstatustrans', BankStatusTransformer()),
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler())])
+
     # Numerical transformer
-    numeric_transformer = Pipeline(steps=[
+    numerical_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
         ('scaler', StandardScaler())])
 
@@ -104,17 +104,6 @@ def train(X_train, y_train):
     categorical_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='constant', fill_value='missing')),
         ('onehot', OneHotEncoder(handle_unknown='ignore'))])
-
-    # Numrical, categorical, socio eco features
-    numeric_features = X_train.select_dtypes(include=['int64', 'float64']).columns
-    categorical_features = X_train.select_dtypes(include=['object']).columns
-    numeric_features = [x for x in numeric_features if x not in stg.SOCIO_ECO_COLS]
-    socio_eco_features = stg.SOCIO_ECO_COLS + [stg.DATE_SOCIO_COL]
-    date_features = [stg.DATE_DATA]
-    age_features = [stg.AGE]
-    job_features = [stg.JOB_TYPE]
-    status_features = [stg.STATUS]
-    education_features = [stg.EDUCATION]
 
     # Column transformer
     preprocessor = ColumnTransformer(
@@ -126,15 +115,26 @@ def train(X_train, y_train):
             ('job', job_transformer, job_features),
             ('status', status_transformer, status_features),
             ('education', education_transformer, education_features),
-            ('num', numeric_transformer, numeric_features),
+            ('bank', bank_status_transformer, bank_status_features),
+            ('num', numerical_transformer, numerical_features),
             ('cat', categorical_transformer, categorical_features)])
 
+    # Transform features
+    X_transformed = preprocessor.fit_transform(X_train)
+
+    # Oversampling
+    X_resampled, y_resampled = OverSampler(method="random", inactive=False).fit_resample(X_transformed, y_train)
+
+    # Model
+    model = GradientBoostingClassifier() # XGBClassifier() #GradientBoostingClassifier()
+
+    # Fit the model
+    model.fit(X_resampled, y_resampled)
+
     # Classifier
-    gb = Pipeline(
+    clf = Pipeline(
         steps=[
             ('preprocessor', preprocessor),
-            ('classifier', LogisticRegression())]) # XGBClassifier()
-    gb.fit(X_train, y_train)
+            ('model', model)])
 
-    return gb
-
+    return clf
