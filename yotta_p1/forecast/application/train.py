@@ -50,7 +50,7 @@ def main(input_file_name):
     df_merged = pd.read_csv(input_file_name)
 
     # Features and target
-    X = df_merged.drop(stg.DATA_SUBSCRIPTION, axis=1)
+    X = df_merged.drop([stg.DATA_SUBSCRIPTION, stg.DATA_DURATION_CONTACT], axis=1)
     df_merged[stg.DATA_SUBSCRIPTION] = df_merged[stg.DATA_SUBSCRIPTION].astype("category")
     y = df_merged[stg.DATA_SUBSCRIPTION].cat.codes
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
@@ -158,10 +158,17 @@ def model_evaluation(model, X_test, y_test, default_prediction_rate):
         ----------
     model: sklearn model
         Trained model
+    X_test: pandas.DataFrame
+        explanatory variables
+    y_test: pandas.Series
+        target variable
+    default_prediction_rate: float
+        percent value of no in full dataset
 
     Returns
     -------
     No returns
+    Display model metrics
     """
     print("model score: %.3f" % model.score(X_test, y_test))
 
