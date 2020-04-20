@@ -32,7 +32,6 @@ def main(input_file_name):
     # Train test splitting
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y)
 
-
     # Training model
     model = model_train.train(X_train, y_train)
 
