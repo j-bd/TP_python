@@ -3,6 +3,8 @@
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+# import pandas as pd
+# from tabulate import tabulate
 
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_curve
@@ -46,6 +48,13 @@ def evaluation(model, X_test, y_test, default_prediction_rate):
     print("TPR: {}".format(precision))
     print("F-score: {}".format(2*(precision*recall)/(precision+recall)))
 
+    # Importance features
+    # try:
+    #     headers = ["name", "score"]
+    #     values = sorted(zip(pd.DataFrame(X_test), model.steps[1][1].feature_importances_), key=lambda x: x[1] * -1)
+    #     print(tabulate(values, headers, tablefmt="plain"))
+    # except AttributeError:
+    #     pass
 
     print(f"Taux de prediction pour un refus global : {default_prediction_rate:.3f}\n"
         f"Taux predit : {model.score(X_test, y_test):.3f}")
@@ -55,7 +64,8 @@ def evaluation(model, X_test, y_test, default_prediction_rate):
     sns.heatmap(cm, annot=True, fmt='g')
 
     # calculate precision-recall curve
-    precision, recall, thresholds = precision_recall_curve(y_test, y_pred)
+    y_probs = model.predict_proba(X_test)[:, 1]
+    precision, recall, thresholds = precision_recall_curve(y_test, y_probs)
     # calculate F1 score
     f1 = f1_score(y_test, y_pred)
     # calculate precision-recall AUC

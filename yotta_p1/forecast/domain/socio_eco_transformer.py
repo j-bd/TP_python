@@ -60,10 +60,10 @@ class SocioEcoTransformer(BaseEstimator, TransformerMixin):
 
         # Create YEAR, MONTH, MONTH_YEAR and TRIMESTER columns
         # hypothesis: (sep, oct, nov), (dec, jan, feb)...
-        X["YEAR"] = pd.DatetimeIndex(X[stg.DATE_SOCIO_COL]).year
-        X["MONTH"] = pd.DatetimeIndex(X[stg.DATE_SOCIO_COL]).month
-        X["MONTH_YEAR"] = pd.to_datetime(X[stg.DATE_SOCIO_COL]).dt.to_period("M")
-        X = X.assign(**{"TRIMESTER" : lambda x: x.MONTH / 3 + x.YEAR * 4})
+        X["YEAR"] = pd.DatetimeIndex(X[stg.DATE_DATA]).year
+        X["MONTH"] = pd.DatetimeIndex(X[stg.DATE_DATA]).month
+        X["MONTH_YEAR"] = pd.to_datetime(X[stg.DATE_DATA]).dt.to_period("M")
+        X["TRIMESTER"] = X.apply(lambda row: row.MONTH / 3 + row.YEAR * 4, axis=1)
 
         # Interpolate monthly and quarterly features
         cls = self.__class__

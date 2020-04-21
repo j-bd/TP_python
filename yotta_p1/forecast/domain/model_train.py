@@ -43,7 +43,7 @@ def train(X_train, y_train):
     """
 
     # Numerical, categorical, socio eco features
-    socio_eco_features = [stg.DATE_SOCIO_COL, *stg.SOCIO_ECO_COLS]
+    socio_eco_features = [stg.DATE_DATA, *stg.SOCIO_ECO_COLS]
     numerical_features = [stg.BALANCE, stg.NB_CONTACT, stg.NB_DAY_LAST_CONTACT, stg.NB_CONTACT_LAST_CAMPAIGN]
     categorical_features = [stg.CONTACT, stg.RESULT_LAST_CAMPAIGN]
     date_features = [stg.DATE_DATA]
