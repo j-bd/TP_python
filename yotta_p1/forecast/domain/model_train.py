@@ -22,6 +22,7 @@ from forecast.domain.job_transformer import JobTransformer
 from forecast.domain.status_transformer import StatusTransformer
 from forecast.domain.education_transformer import EducationTransformer
 from forecast.domain.bank_status_transformer import BankStatusTransformer
+from forecast.domain import bayesian_optimisation as bay_op
 #from forecast.domain.Treatment import Treatment
 #from forecast.domain.QuantitativeTransformer import QuantitativeTransformer
 from forecast.domain.over_sampling import OverSampler
@@ -127,6 +128,42 @@ def train(X_train, y_train):
 
     # Model
     model = GradientBoostingClassifier() # XGBClassifier() #GradientBoostingClassifier()
+
+    # Optimisation
+    print('before opt')
+#    bay_op.objective_wrapper(model, X_resampled, y_resampled)
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from sklearn.model_selection import cross_val_score
+    from skopt.space import Real, Integer
+    from skopt.utils import use_named_args
+    from skopt import gp_minimize
+
+    n_features = X_resampled.shape[1]/10
+
+    space = [
+        Integer(1, 2, name='max_depth'),
+        Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
+        Integer(1, n_features, name='max_features'),
+        Integer(2, 20, name='min_samples_split'),
+        Integer(1, 10, name='min_samples_leaf')
+    ]
+
+    @use_named_args(space)
+    def objective(**params):
+        print("in objective")
+        model.set_params(**params)
+
+        return -np.mean(cross_val_score(model, X_resampled, y_resampled, cv=5, n_jobs=-1,
+                                        scoring="neg_mean_absolute_error"))
+
+    res_gp = gp_minimize(
+        func=lambda x: objective(x), dimensions=space, n_calls=200, random_state=0
+    )
+    print("Best score=%.4f" % res_gp.fun)
+
+    print('after opt')
 
     # Fit the model
     model.fit(X_resampled, y_resampled)
