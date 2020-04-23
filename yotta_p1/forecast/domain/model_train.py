@@ -5,7 +5,6 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC, LinearSVC, NuSVC
 from sklearn.tree import DecisionTreeClassifier
@@ -130,8 +129,8 @@ def train(X_train, y_train):
     model = GradientBoostingClassifier() # XGBClassifier() #GradientBoostingClassifier()
 
     # Optimisation
-    opt = True
-    if opt:
+    optimisation = True
+    if optimisation:
         bay_op.objective_wrapper(model, X_resampled, y_resampled)
 
     # Fit the model
