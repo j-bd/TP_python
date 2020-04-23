@@ -50,7 +50,7 @@ def objective_wrapper(model, X, y):
         """Define bounds for the random forest model parameters"""
         space = [
             Integer(1, 2, name='max_depth'),
-            Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
+            Categorical(['gini', 'entropy'], name='criterion'),
             Integer(1, n_features, name='max_features'),
             Integer(2, 20, name='min_samples_split'),
             Integer(1, 10, name='min_samples_leaf')
@@ -66,22 +66,25 @@ def objective_wrapper(model, X, y):
         return space
 
     n_features = X.shape[1]
-    model_name = model.__module__.split('.')[-1]
+    model_name = str(type(model)).split("'")[1].split(".")[-1]
+    print(model_name, "////", model.__module__)
 
-    if model_name == '_gb':
+    if model_name == 'GradientBoostingClassifier':
         space = space_gradient_boosting()
-    elif model_name == '_classes':
+    elif model_name == 'SVC':
         space = space_svm()
-    elif model_name == '_forest':
+    elif model_name == 'RandomForestClassifier':
         space = space_random_forest()
-    elif model_name == '_weight_boosting':
+    elif model_name == 'AdaBoostClassifier':
         space = space_adaboost()
     else:
         print(f"""
-              Prameters for {model.__module__} is not implemented. Please,
-              create a new function named 'space_model_name' and call it with
-              'elif model_name == {model.__module__.split('.')[-1]}'
+              Prameters for {type(model)}
+              is not implemented. Optimisation can not be done.
+              Please, create a new function named 'def space_{model_name}()' and
+              call it with 'elif model_name == '{model_name}':
               """)
+        return None
 
     @use_named_args(space)
     def objective(**params):
