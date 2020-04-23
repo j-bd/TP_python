@@ -9,21 +9,11 @@ Preprocessing
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.model_selection import cross_val_score
-from skopt.space import Real, Integer
+from skopt.space import Real, Integer, Categorical
 from skopt.utils import use_named_args
 from skopt import gp_minimize
 from skopt.plots import plot_convergence, plot_evaluations, plot_objective
-
-import forecast.settings as stg
-
-#
-#sklearn.ensemble._gb /// _gb
-#sklearn.svm._classes /// _classes
-#sklearn.ensemble._forest /// _forest
-#sklearn.ensemble._weight_boosting /// _weight_boosting
-#l_mod = [GradientBoostingClassifier(), SVC(), RandomForestClassifier(), AdaBoostClassifier()]
 
 
 
@@ -48,6 +38,14 @@ def objective_wrapper(model, X, y, verbose=1):
 
     def space_svm():
         space = [
+            Real(0.1, 1, "log-uniform", name='C'),
+            Categorical(['linear', 'poly', 'rbf', 'sigmoid'], name='kernel'),
+            Real(10**-1, 10**0, "log-uniform", name='gamma')
+        ]
+        return space
+
+    def space_random_forest():
+        space = [
             Integer(1, 2, name='max_depth'),
             Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
             Integer(1, n_features, name='max_features'),
@@ -56,13 +54,14 @@ def objective_wrapper(model, X, y, verbose=1):
         ]
         return space
 
-    def space_random_forest():
-        return space
-
     def space_adaboost():
+        space = [
+            Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
+            Categorical(['SAMME', 'SAMME.R'], name='algorithm')
+        ]
         return space
 
-    n_features = X.shape[1]/10
+    n_features = X.shape[1]
     model_name = model.__module__.split('.')[-1]
 
     if model_name == '_gb':
