@@ -131,7 +131,9 @@ def train(X_train, y_train):
     # Optimisation
     optimisation = True
     if optimisation:
-        bay_op.objective_wrapper(model, X_resampled, y_resampled)
+        optimiser = bay_op.BayesianOptimisation(model, X_resampled, y_resampled)
+        optimiser.minimize()
+        optimiser.display_result()
 
     # Fit the model
     model.fit(X_resampled, y_resampled)

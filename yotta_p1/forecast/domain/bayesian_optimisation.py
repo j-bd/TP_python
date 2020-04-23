@@ -2,7 +2,7 @@
 # coding: utf-8
 """Module to optimise model.
 
-Function
+Class
 -------
 Bayesian Optimisation
 
@@ -17,7 +17,7 @@ from skopt.plots import plot_convergence, plot_evaluations, plot_objective
 
 
 
-class objective_wrapper:
+class BayesianOptimisation:
     """Seek the best parameters with Bayesian Method
 
     Parameters
@@ -32,7 +32,8 @@ class objective_wrapper:
         self.X = X
         self.y = y
         self.n_features = self.X.shape[1]
-        self.space = self.space_gradient_boosting()
+        self.space = self.space_definition()
+        print(str(type(self.model)).split("'")[1].split(".")[-1], str(type(self.model)))
 
     def space_definition(self):
         model_name = str(type(self.model)).split("'")[1].split(".")[-1]
@@ -48,8 +49,8 @@ class objective_wrapper:
             print(f"""
                   Prameters for {type(self.model)}
                   is not implemented. Optimisation can not be done.
-                  Please, create a new function named 'def space_{self.model_name}()'
-                  and call it with 'elif model_name == '{self.model_name}':
+                  Please, create a new function named 'def space_{model_name}()'
+                  and call it with 'elif model_name == '{model_name}':
                   """)
             return None
         return space
@@ -105,7 +106,7 @@ class objective_wrapper:
 
     def minimize(self):
         self.res_gp = gp_minimize(
-            func=self.wrapper(), dimensions=self.space, n_calls=2, random_state=0
+            func=self.wrapper(), dimensions=self.space, n_calls=200, random_state=0
         )
 
     def display_result(self):
