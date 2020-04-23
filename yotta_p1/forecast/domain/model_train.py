@@ -130,40 +130,9 @@ def train(X_train, y_train):
     model = GradientBoostingClassifier() # XGBClassifier() #GradientBoostingClassifier()
 
     # Optimisation
-    print('before opt')
-#    bay_op.objective_wrapper(model, X_resampled, y_resampled)
-
-    import numpy as np
-    import matplotlib.pyplot as plt
-    from sklearn.model_selection import cross_val_score
-    from skopt.space import Real, Integer
-    from skopt.utils import use_named_args
-    from skopt import gp_minimize
-
-    n_features = X_resampled.shape[1]/10
-
-    space = [
-        Integer(1, 2, name='max_depth'),
-        Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
-        Integer(1, n_features, name='max_features'),
-        Integer(2, 20, name='min_samples_split'),
-        Integer(1, 10, name='min_samples_leaf')
-    ]
-
-    @use_named_args(space)
-    def objective(**params):
-        print("in objective")
-        model.set_params(**params)
-
-        return -np.mean(cross_val_score(model, X_resampled, y_resampled, cv=5, n_jobs=-1,
-                                        scoring="neg_mean_absolute_error"))
-
-    res_gp = gp_minimize(
-        func=lambda x: objective(x), dimensions=space, n_calls=200, random_state=0
-    )
-    print("Best score=%.4f" % res_gp.fun)
-
-    print('after opt')
+    opt = True
+    if opt:
+        bay_op.objective_wrapper(model, X_resampled, y_resampled)
 
     # Fit the model
     model.fit(X_resampled, y_resampled)
