@@ -23,6 +23,7 @@ class Preprocessing:
     df_socio: pandas.DataFrame
     df_merged: pandas.DataFrame
     target_name: str
+    columns_to_drop: list
 
     Methods
     -------
@@ -31,11 +32,12 @@ class Preprocessing:
     merge_data_socio_eco
     drop_columns
     convert_target
+    get_features
     get_features_target
     """
 
-    def __init__(self, path_to_input_data, path_to_input_socio_eco, path_to_output,
-                 save_output=True, target_name=stg.SUBSCRIPTION):
+    def __init__(self, path_to_input_data, path_to_input_socio_eco, path_to_output=None,
+                 target_name=stg.SUBSCRIPTION, columns_to_drop=[stg.DURATION_CONTACT]):
         """ Initialize class.
 
         Create data and socio eco dataframes from corresponding input files and merge them.
@@ -45,14 +47,15 @@ class Preprocessing:
         path_to_input_data: string
         path_to_input_socio_eco: string
         path_to_output: string
-        save_output: bool, default True
         target_name: str, default stg.SUBSCRIPTION
+        columns_to_drop: list
         """
+        self.target_name = target_name
         self.df_data  = self.read_csv_parquet(path_to_input_data)
         self.df_socio = self.read_csv_parquet(path_to_input_socio_eco)
-        self.df_merge = self.merge_data_socio_eco(path_to_output, save_output)
-        self.target_name = target_name
-        self.drop_columns([stg.DURATION_CONTACT])
+        self.df_merge = self.merge_data_socio_eco(path_to_output)
+        self.columns_to_drop = columns_to_drop
+        self.drop_columns()
         self.convert_target()
 
     @staticmethod
@@ -78,14 +81,13 @@ class Preprocessing:
         else:
             raise TypeError(f"The file format {file_extension} is not treated.")
 
-    def merge_data_socio_eco(self, path_to_output, save_output=True):
+    def merge_data_socio_eco(self, path_to_output=None):
         """
         Merge data and socio eco input files.
 
         Parameters
         ----------
-        path_to_file: string
-        save_output: bool, default True
+        path_to_file: string, default None
 
         Returns
         -------
@@ -98,27 +100,34 @@ class Preprocessing:
         df_merge = self.df_data.merge(right=self.df_socio.drop(columns=[stg.DATE_SOCIO_COL]), on="MONTH_YEAR", how="left")\
                                .drop(columns=["MONTH_YEAR"])
         # Save merged dataframe
-        if save_output:
+        if path_to_output is not None:
             df_merge.to_csv(path_to_output, index=False)
         # Return merged dataframe
         return df_merge
 
-    def drop_columns(self, columns):
+    def drop_columns(self):
         """
-        Drop columns of the dataframe.
-
-        Parameters
-        ----------
-        columns: list
-            Columns to drop
+        Drop some columns of the dataframe.
         """
-        self.df_merge = self.df_merge.drop(columns = columns)
+        self.df_merge = self.df_merge.drop(columns = self.columns_to_drop)
 
     def convert_target(self):
         """
         Convert the target into category.
         """
         self.df_merge[self.target_name] = self.df_merge[self.target_name].astype("category").cat.codes
+
+    def get_features(self):
+        """
+        Get features from merged dataframe.
+
+        Returns
+        -------
+        X: pandas.DataFrame
+            Features
+        """
+        X = self.df_merge.drop(columns = [self.target_name])
+        return X
 
     def get_features_target(self):
         """

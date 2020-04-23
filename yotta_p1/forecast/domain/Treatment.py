@@ -206,20 +206,7 @@ if __name__ == "__main__":
     df_treat = Treatment(df).run_preprocessing()
     df_treat.head()
     
-    df_treat.CAT_CONTACT
-    df.DATE = df.DATE.astype('datetime64[ns]')
-    df.DATE[41065]
-    df.NB_DAY_LAST_CONTACT[41065]
-    y = df.DATE[41065] - datetime.timedelta(days = int(df.NB_DAY_LAST_CONTACT[41065]))
-    y
-    z = (df.DATE[41065].year - y.year) * 12 + (df.DATE[41065].month - y.month)
-    z
-    abs(df.DATE[41065] -y)
-    y.isocalendar()[1]
 
-    format_date = '%Y-%m-%d'
-    df.dtypes
-    
 # Teste de répartition pour NB_CONTACT
 if __name__ == "__main__": 
     
@@ -390,3 +377,49 @@ if __name__ == "__main__":
     data = pd.concat([val,pdf,t,pn,py], axis=1)
 
     data
+
+################################"""
+# 
+    #result_last_campaign_features = [stg.DATE_DATA, stg.NB_DAY_LAST_CONTACT]
+    #nb_day_last_contact_transformer = Pipeline(steps=[
+    #    ('trans', NbDayLastContactTransformer()),
+    #    ('label', StandardScaler())])
+
+########################################""
+df.NB_DAY_LAST_CONTACT.describe()
+
+perc_by_value = []
+value = []
+perc_no = []
+perc_yes = []
+taille_ech =[]
+bins = 50
+s = 0
+for i in range(min(df.NB_DAY_LAST_CONTACT),max(df.NB_DAY_LAST_CONTACT), bins):
+    s += 1
+    if i in list(df.NB_DAY_LAST_CONTACT):
+        x = df.query('NB_DAY_LAST_CONTACT >= {} and NB_DAY_LAST_CONTACT < {}'.format(i, i+bins))
+        taille = x.shape[0]
+        taille_ech.append(taille)
+        xy = x[x['SUBSCRIPTION']=='Yes']
+        xn = x[x['SUBSCRIPTION']=='No']
+        if xy.shape[0]>0 and xn.shape[0]>0:
+            perc_by_value.append(x.shape[0]/df.shape[0]*100)
+            value.append(s)
+            perc_yes.append(xy.shape[0]/ (xy.shape[0]+xn.shape[0])*100)
+            perc_no.append(xn.shape[0]/ (xy.shape[0]+xn.shape[0])*100)
+        else:
+            perc_by_value.append(x.shape[0]/df.shape[0]*100)
+            value.append(s)
+            perc_yes.append('just one value')
+            perc_no.append('just one value')
+
+
+t = pd.DataFrame(taille_ech,columns=["taille"])
+val = pd.DataFrame(value,columns=["value"])
+pdf = pd.DataFrame(perc_by_value,columns=['percentage of df'])
+pn = pd.DataFrame(perc_no,columns=['percentage of no'])
+py = pd.DataFrame(perc_yes,columns=['percentage of yes'])
+data = pd.concat([val,pdf,t,pn,py], axis=1)
+
+data"

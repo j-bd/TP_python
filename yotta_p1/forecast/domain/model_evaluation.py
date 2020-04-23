@@ -1,16 +1,38 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-# import pandas as pd
-# from tabulate import tabulate
+import pandas as pd
+from tabulate import tabulate
 
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import f1_score
 from sklearn.metrics import auc
 from sklearn.metrics import average_precision_score
+from sklearn.metrics import classification_report
+
+
+def get_transformer_feature_names(columnTransformer):
+
+    output_features = []
+
+    for name, pipe, features in columnTransformer.transformers_:
+        if name == 'remainder':
+            continue
+
+        step_names = [step[0] for step in pipe.steps]
+        if 'trans' in step_names:
+            trans_features = pipe.named_steps['trans'].get_feature_names()
+        else:
+            trans_features = features
+        if 'onehot' in step_names:
+            trans_features = pipe.named_steps['onehot'].get_feature_names(trans_features)
+
+        output_features.extend(trans_features)
+
+    return output_features
 
 
 def evaluation(model, X_test, y_test, default_prediction_rate):
@@ -48,13 +70,20 @@ def evaluation(model, X_test, y_test, default_prediction_rate):
     print("TPR: {}".format(precision))
     print("F-score: {}".format(2*(precision*recall)/(precision+recall)))
 
+    print()
+    print(classification_report(y_test, y_pred)) #, target_names=[0, 1]))
+
     # Importance features
-    # try:
-    #     headers = ["name", "score"]
-    #     values = sorted(zip(pd.DataFrame(X_test), model.steps[1][1].feature_importances_), key=lambda x: x[1] * -1)
-    #     print(tabulate(values, headers, tablefmt="plain"))
-    # except AttributeError:
-    #     pass
+    feature_names = get_transformer_feature_names(model.steps[0][1])
+    #print("len features name:", len(feature_names))
+    #print("len features impo:", len(model.steps[1][1].feature_importances_))
+    try:
+        headers = ["name", "score"]
+        values = sorted(zip(feature_names, model.steps[1][1].feature_importances_), key=lambda x: x[1] * -1)
+        #values = zip(feature_names, model.steps[1][1].feature_importances_)
+        print(tabulate(values, headers, tablefmt="plain"))
+    except AttributeError:
+        pass
 
     print(f"Taux de prediction pour un refus global : {default_prediction_rate:.3f}\n"
         f"Taux predit : {model.score(X_test, y_test):.3f}")

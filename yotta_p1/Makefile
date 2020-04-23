@@ -2,6 +2,7 @@
 .DEFAULT_GOAL := help
 
 install: requirements.txt  ## install project dependencies (requirements.txt)
+	pip install -e .
 	pip install -r requirements.txt
 	touch install
 

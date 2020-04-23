@@ -75,8 +75,12 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         X[stg.COLD_MONTH_COL] = X["month"].apply(
             lambda x: 1 if x in stg.COLD_MONTH else 0
         )
+
         # Return only features columns
-        return X.filter(items=stg.DATE_COLS)
+        return X[stg.DATE_COLS]
+
+    def get_feature_names(self):
+        return stg.DATE_COLS
 
     def fill_missing_value(self, df):
         """Transform method that return transformed DataFrame.

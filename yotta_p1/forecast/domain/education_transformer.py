@@ -65,6 +65,9 @@ class EducationTransformer(BaseEstimator, TransformerMixin):
         # Return only features columns
         return X[[stg.EDUCATION_LAB]]
 
+    def get_feature_names(self):
+        return [stg.EDUCATION_LAB]
+
     def fill_missing_value(self, df):
         """Transform method that return transformed DataFrame.
 

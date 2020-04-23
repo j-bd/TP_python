@@ -67,6 +67,9 @@ class AgeTransformer(BaseEstimator, TransformerMixin):
         # Return only features columns
         return X[[stg.AGE_LAB]]
 
+    def get_feature_names(self):
+        return [stg.AGE_LAB]
+
     def fill_missing_value(self, df):
         """Transform method that return transformed DataFrame.
 

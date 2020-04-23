@@ -69,6 +69,9 @@ class BankStatusTransformer(BaseEstimator, TransformerMixin):
         # Return only features columns
         return X[[stg.BANK_STATUS_LAB]]
 
+    def get_feature_names(self):
+        return [stg.BANK_STATUS_LAB]
+
     def fill_missing_value(self, df, column):
         """Transform method that return transformed DataFrame.
 

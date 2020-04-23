@@ -93,4 +93,3 @@ if __name__ == "__main__":
     df.head()
     df_treat = QuantitativeTransformer().fit_transform(df)
     df_treat.head()
-

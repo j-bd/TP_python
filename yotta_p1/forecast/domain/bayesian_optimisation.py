@@ -33,7 +33,6 @@ class BayesianOptimisation:
         self.y = y
         self.n_features = self.X.shape[1]
         self.space = self.space_definition()
-        print(str(type(self.model)).split("'")[1].split(".")[-1], str(type(self.model)))
 
     def space_definition(self):
         model_name = str(type(self.model)).split("'")[1].split(".")[-1]

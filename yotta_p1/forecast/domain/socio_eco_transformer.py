@@ -71,7 +71,10 @@ class SocioEcoTransformer(BaseEstimator, TransformerMixin):
         X = cls.interpolate(X, "TRIMESTER", stg.SOCIO_ECO_TRIMESTER_COLS)
 
         # Return only features columns
-        return X.filter(items=stg.SOCIO_ECO_COLS)
+        return X[stg.SOCIO_ECO_COLS]
+
+    def get_feature_names(self):
+        return stg.SOCIO_ECO_COLS
 
     @staticmethod
     def interpolate(X, key, features):
@@ -100,10 +103,10 @@ class SocioEcoTransformer(BaseEstimator, TransformerMixin):
 
         # Merge interpolated dataframe with the original one
         X_merged = X.drop(features, axis=1)\
-                    .merge(right=X_interp, on=key, how="left")
+                    .merge(right=X_interp, on=key, how="left")\
+                    .set_index(X.index)
 
         return X_merged
-
 
 if __name__ == "__main__":
     socio_eco_input = "data/interim/data_socio_merged.csv"
