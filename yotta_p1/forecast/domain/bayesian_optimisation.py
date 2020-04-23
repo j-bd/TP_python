@@ -17,7 +17,7 @@ from skopt.plots import plot_convergence, plot_evaluations, plot_objective
 
 
 
-def objective_wrapper(model, X, y):
+class objective_wrapper:
     """Seek the best parameters with Bayesian Method
 
     Parameters
@@ -26,18 +26,46 @@ def objective_wrapper(model, X, y):
     X: numpy ndarray
     y: pandas.Series
     """
-    def space_gradient_boosting():
+
+    def __init__(self, model, X, y):
+        self.model = model
+        self.X = X
+        self.y = y
+        self.n_features = self.X.shape[1]
+        self.space = self.space_gradient_boosting()
+
+    def space_definition(self):
+        model_name = str(type(self.model)).split("'")[1].split(".")[-1]
+        if model_name == 'GradientBoostingClassifier':
+            space = self.space_gradient_boosting()
+        elif model_name == 'SVC':
+            space = self.space_svm()
+        elif model_name == 'RandomForestClassifier':
+            space = self.space_random_forest()
+        elif model_name == 'AdaBoostClassifier':
+            space = self.space_adaboost()
+        else:
+            print(f"""
+                  Prameters for {type(self.model)}
+                  is not implemented. Optimisation can not be done.
+                  Please, create a new function named 'def space_{self.model_name}()'
+                  and call it with 'elif model_name == '{self.model_name}':
+                  """)
+            return None
+        return space
+
+    def space_gradient_boosting(self):
         """Define bounds for the gradient boosting model parameters"""
         space = [
             Integer(1, 2, name='max_depth'),
             Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
-            Integer(1, n_features, name='max_features'),
+            Integer(1, self.n_features, name='max_features'),
             Integer(2, 20, name='min_samples_split'),
             Integer(1, 10, name='min_samples_leaf')
         ]
         return space
 
-    def space_svm():
+    def space_svm(self):
         """Define bounds for the svm model parameters"""
         space = [
             Real(1e-6, 1e+6, "log-uniform", name='C'),
@@ -46,18 +74,18 @@ def objective_wrapper(model, X, y):
         ]
         return space
 
-    def space_random_forest():
+    def space_random_forest(self):
         """Define bounds for the random forest model parameters"""
         space = [
             Integer(1, 2, name='max_depth'),
             Categorical(['gini', 'entropy'], name='criterion'),
-            Integer(1, n_features, name='max_features'),
+            Integer(1, self.n_features, name='max_features'),
             Integer(2, 20, name='min_samples_split'),
             Integer(1, 10, name='min_samples_leaf')
         ]
         return space
 
-    def space_adaboost():
+    def space_adaboost(self):
         """Define bounds for the adaboost model parameters"""
         space = [
             Real(10**-1, 10**0, "log-uniform", name='learning_rate'),
@@ -65,49 +93,29 @@ def objective_wrapper(model, X, y):
         ]
         return space
 
-    n_features = X.shape[1]
-    model_name = str(type(model)).split("'")[1].split(".")[-1]
-    print(model_name, "////", model.__module__)
+    def wrapper(self):
+        @use_named_args(self.space)
+        def objective(**params):
+            self.model.set_params(**params)
+            return -np.mean(
+                cross_val_score(self.model, self.X, self.y, cv=5, n_jobs=-1,
+                                scoring="neg_mean_absolute_error")
+            )
+        return objective
 
-    if model_name == 'GradientBoostingClassifier':
-        space = space_gradient_boosting()
-    elif model_name == 'SVC':
-        space = space_svm()
-    elif model_name == 'RandomForestClassifier':
-        space = space_random_forest()
-    elif model_name == 'AdaBoostClassifier':
-        space = space_adaboost()
-    else:
-        print(f"""
-              Prameters for {type(model)}
-              is not implemented. Optimisation can not be done.
-              Please, create a new function named 'def space_{model_name}()' and
-              call it with 'elif model_name == '{model_name}':
-              """)
-        return None
-
-    @use_named_args(space)
-    def objective(**params):
-        model.set_params(**params)
-        return -np.mean(
-            cross_val_score(model, X, y, cv=5, n_jobs=-1,
-                            scoring="neg_mean_absolute_error")
+    def minimize(self):
+        self.res_gp = gp_minimize(
+            func=self.wrapper(), dimensions=self.space, n_calls=2, random_state=0
         )
 
-    def display_result(res_gp):
-        print("Best score=%.4f" % res_gp.fun)
+    def display_result(self):
+        print("Best score=%.4f" % self.res_gp.fun)
         print(f"""Best parameters:
-            - max_depth={res_gp.x[0]:d}
-            - learning_rate={res_gp.x[1]:.6f}
-            - max_features={res_gp.x[2]:d}
-            - min_samples_split={res_gp.x[3]:d}
-            - min_samples_leaf={res_gp.x[4]:d}""")
-        plot_convergence(res_gp)
-        _ = plot_evaluations(res_gp, bins=10)
-        _ = plot_objective(res_gp)
-
-
-    res_gp = gp_minimize(
-        func=objective, dimensions=space, n_calls=200, random_state=0
-    )
-    display_result(res_gp)
+            - max_depth={self.res_gp.x[0]:d}
+            - learning_rate={self.res_gp.x[1]:.6f}
+            - max_features={self.res_gp.x[2]:d}
+            - min_samples_split={self.res_gp.x[3]:d}
+            - min_samples_leaf={self.res_gp.x[4]:d}""")
+        plot_convergence(self.res_gp)
+        _ = plot_evaluations(self.res_gp, bins=10)
+        _ = plot_objective(self.res_gp)
