@@ -45,7 +45,7 @@ def TransformerPipeline():
 
     nb_contact_transformer = Pipeline(steps=[
         ('trans', NbContactTransformer()),
-        ('imputer', SimpleImputer(missing_values= np.NaN, strategy='most_frequent')) 
+        ('imputer', SimpleImputer(missing_values= np.NaN, strategy='most_frequent'))
     ])
 
     result_last_campaign_transformer = Pipeline(steps=[
@@ -61,33 +61,27 @@ def TransformerPipeline():
 
     date_transformer = Pipeline(steps=[
         ('trans', DateTransformer()),
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
+        ('imputer', SimpleImputer(strategy='median'))])
 
     age_transformer = Pipeline(steps=[
         ('trans', AgeTransformer()),
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
+        ('imputer', SimpleImputer(strategy='median'))])
 
     job_transformer = Pipeline(steps=[
         ('trans', JobTransformer()),
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
+        ('imputer', SimpleImputer(strategy='median'))])
 
     status_transformer = Pipeline(steps=[
         ('trans', StatusTransformer()),
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
+        ('imputer', SimpleImputer(strategy='median'))])
 
     education_transformer = Pipeline(steps=[
         ('trans', EducationTransformer()),
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
+        ('imputer', SimpleImputer(strategy='median'))])
 
     bank_status_transformer = Pipeline(steps=[
         ('trans', BankStatusTransformer()),
-        ('imputer', SimpleImputer(strategy='median')),
-        ('scaler', StandardScaler())])
+        ('imputer', SimpleImputer(strategy='median'))])
 
     balance_cat_transformer = Pipeline(steps=[
         ('trans', BalanceTransformer("cat")),
@@ -131,7 +125,7 @@ def TransformerPipeline():
     return preprocessor
 
 def BaseTransformerPipeline(X_train):
-    
+
     # Numerical transformer
     numeric_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='median')),
