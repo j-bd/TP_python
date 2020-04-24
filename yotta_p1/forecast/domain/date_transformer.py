@@ -66,15 +66,6 @@ class DateTransformer(BaseEstimator, TransformerMixin):
         X[stg.DAY_SELECTED_COL] = X[stg.DAY_SELECTED_COL].apply(
             lambda x: 0 if x in stg.WEEKEND else 1
         )
-#        X[stg.HOT_MONTH_COL] = X["month"].apply(
-#            lambda x: 1 if x in stg.HOT_MONTH else 0
-#        )
-#        X[stg.WARM_MONTH_COL] = X["month"].apply(
-#            lambda x: 1 if x in stg.WARM_MONTH else 0
-#        )
-#        X[stg.COLD_MONTH_COL] = X["month"].apply(
-#            lambda x: 1 if x in stg.COLD_MONTH else 0
-#        )
         X[stg.MONTH_LAB] = X[stg.MONTH_LAB].replace(stg.MONTH_ENCODING)
 
         # Return only features columns
