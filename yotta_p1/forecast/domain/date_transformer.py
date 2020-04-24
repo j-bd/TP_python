@@ -60,21 +60,22 @@ class DateTransformer(BaseEstimator, TransformerMixin):
             X = self.fill_missing_value(X)
 
         X[stg.DATE_DATA] = pd.to_datetime(X[stg.DATE_DATA], format=stg.DATA_DATE_FORMAT)
-        X["weekday"] = X[stg.DATE_DATA].dt.day_name()
-        X["month"] = X[stg.DATE_DATA].dt.month_name()
+        X[stg.DAY_SELECTED_COL] = X[stg.DATE_DATA].dt.day_name()
+        X[stg.MONTH_LAB] = X[stg.DATE_DATA].dt.month_name()
 
-        X[stg.DAY_SELECTED_COL] = X["weekday"].apply(
+        X[stg.DAY_SELECTED_COL] = X[stg.DAY_SELECTED_COL].apply(
             lambda x: 0 if x in stg.WEEKEND else 1
         )
-        X[stg.HOT_MONTH_COL] = X["month"].apply(
-            lambda x: 1 if x in stg.HOT_MONTH else 0
-        )
-        X[stg.WARM_MONTH_COL] = X["month"].apply(
-            lambda x: 1 if x in stg.WARM_MONTH else 0
-        )
-        X[stg.COLD_MONTH_COL] = X["month"].apply(
-            lambda x: 1 if x in stg.COLD_MONTH else 0
-        )
+#        X[stg.HOT_MONTH_COL] = X["month"].apply(
+#            lambda x: 1 if x in stg.HOT_MONTH else 0
+#        )
+#        X[stg.WARM_MONTH_COL] = X["month"].apply(
+#            lambda x: 1 if x in stg.WARM_MONTH else 0
+#        )
+#        X[stg.COLD_MONTH_COL] = X["month"].apply(
+#            lambda x: 1 if x in stg.COLD_MONTH else 0
+#        )
+        X[stg.MONTH_LAB] = X[stg.MONTH_LAB].replace(stg.MONTH_ENCODING)
 
         # Return only features columns
         return X[stg.DATE_COLS]
