@@ -56,15 +56,14 @@ SUBSCRIPTION = 'SUBSCRIPTION'
 
 # Date columns
 DATA_DATE_FORMAT = '%Y-%m-%d'
-WEEKEND = ["Saturday", "Sunday"]
-HOT_MONTH = ["February", "April", "May", "June", "July", "August", "November"]
-WARM_MONTH = ["March", "September", "October"]
-COLD_MONTH = ["January", "December"]
 DAY_SELECTED_COL = "DAY_SELECTED"
-HOT_MONTH_COL = "HOT_MONTH"
-WARM_MONTH_COL = "WARM_MONTH"
-COLD_MONTH_COL = "COLD_MONTH"
-DATE_COLS = [DAY_SELECTED_COL, HOT_MONTH_COL, WARM_MONTH_COL, COLD_MONTH_COL]
+WEEKEND = ["Saturday", "Sunday"]
+MONTH_LAB = 'MONTH_LABELS'
+MONTH_ENCODING = {'January' : 0, 'February' : 2, 'March' : 5, 'April' : 2,
+                  'May' : 2, 'June' : 2, 'July' : 2, 'August' : 2,
+                  'September' : 5, 'October' : 5, 'November' : 2, 'December' : 0}
+DATE_COLS = [MONTH_LAB, DAY_SELECTED_COL]
+
 
 # Age
 AGE_BINS = [18, 25, 30, 35, 40, 45, 50, 55, 60, 70, 120, 130]
@@ -73,12 +72,17 @@ AGE_LAB = "AGE_LABELS"
 
 # Job type
 JOB_LAB = "JOB_LABELS"
+JOB_ENCODING = {'Col bleu' : 6, 'Manager' : 9, 'Technicien' : 8, 'Admin' : 7,
+                'Services' : 4, 'Retraité' : 5, 'Indépendant' : 2, 'Entrepreuneur' : 1,
+                'Chomeur' : 2, 'Employé de ménage' : 1, 'Etudiant' : 3}
 
 # Status
 STATUS_LAB = "STATUS_LABELS"
+STATUS_ENCODING = {'Marié' : 1, 'Célibataire' : 2, 'Divorcé' : 0}
 
 # Education
 EDUCATION_LAB = "EDUCATION_LABELS"
+EDUCATION_ENCODING = {'Primaire' : 0, 'Secondaire' : 1, 'Tertiaire' : 2}
 
 # Bank status
 BANK_STATUS_COL = [HAS_DEFAULT, HAS_HOUSING_LOAN, HAS_PERSO_LOAN]
