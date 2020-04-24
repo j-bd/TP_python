@@ -60,7 +60,7 @@ class EducationTransformer(BaseEstimator, TransformerMixin):
             X = self.fill_missing_value(X)
 
         X[stg.EDUCATION] = X[stg.EDUCATION].astype("category")
-        X[stg.EDUCATION_LAB] = X[stg.EDUCATION].cat.codes
+        X[stg.EDUCATION_LAB] = X[stg.EDUCATION].replace(stg.EDUCATION_ENCODING)
 
         # Return only features columns
         return X[[stg.EDUCATION_LAB]]
