@@ -60,7 +60,7 @@ class JobTransformer(BaseEstimator, TransformerMixin):
             X = self.fill_missing_value(X)
 
         X[stg.JOB_TYPE] = X[stg.JOB_TYPE].astype("category")
-        X[stg.JOB_LAB] = X[stg.JOB_TYPE].cat.codes
+        X[stg.JOB_LAB] = X[stg.JOB_TYPE].replace(stg.JOB_ENCODING)
 
         # Return only features columns
         return X[[stg.JOB_LAB]]
