@@ -1,0 +1,9 @@
+pandas
+sklearn
+matplotlib
+seaborn
+tabulate
+imblearn
+pyarrow
+scikit-optimize
+joblib
