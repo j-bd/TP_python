@@ -27,12 +27,13 @@ from sklearn.compose import ColumnTransformer
 
 
 
-path = "/home/latitude/Documents/Yotta/yotta_exs/yotta_p1/data"
+path = "/home/latitude/Documents/Yotta/yotta_exs/yotta_p1/data/interim"
 
 DATA = os.path.join(path, "data.csv")
 SOCIO = os.path.join(path, "socio_eco.csv")
+GLOBAL = os.path.join(path, "data_socio_merged.csv")
 
-df_data = pd.read_csv(DATA)
+df_data = pd.read_csv(GLOBAL)
 df_socio = pd.read_csv(SOCIO)
 
 # =============================================================================
@@ -154,7 +155,7 @@ param_grid = {
     'svc__gamma': [0.0001, 0.001]}
 grid = GridSearchCV(model, param_grid, n_jobs=-1, cv=skf)
 
-%time grid.fit(x_train, y_train)
+#%time grid.fit(x_train, y_train)
 print(grid.get_params)
 print(grid.best_params_)
 
