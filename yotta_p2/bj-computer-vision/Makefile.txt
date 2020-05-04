@@ -2,9 +2,9 @@
 .DEFAULT_GOAL := help
 
 init: ## initiate virtual environment
-	source init.sh
+	bash init.sh
 
-install: pipenv  ## install project dependencies 
+install: pipenv  ## install project dependencies
 	pip install pipenv
 	pip install packages
 

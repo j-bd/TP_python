@@ -3,6 +3,7 @@ set -e
 
 
 # try to create a .venv with virtualenv
+python3 -m pip install --user virtualenv
 (virtualenv .venv && . ./.venv/bin/activate && pip install --upgrade pip) || \
     # if it fails, try using conda
     conda create -y --prefix .venv pip || \
