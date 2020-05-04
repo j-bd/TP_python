@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from dataclasses import dataclass
 import logging
 
 import cv2
@@ -12,7 +11,6 @@ from imutils import paths
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
-@dataclass
 class Loader:
     """
     Load images under numpy array and their corresponding labels.
@@ -29,7 +27,14 @@ class Loader:
     get_label
     get_raw_image
     """
-    dataset_dir: str
+    def __init__(self, dataset_dir):
+        """Class initialisation
+        Parameters
+        ----------
+        dataset_dir: str
+            directory where images are stored
+        """
+        self.dataset_dir = dataset_dir
 
     def get_raw_input(self):
         """Method to get labels and images
@@ -44,8 +49,8 @@ class Loader:
         labels = []
         raw_images = []
         for file in files:
-            labels.append(self.get_label(file))
-            raw_images.append(self.get_raw_image(file))
+            labels.append(self._get_label(file))
+            raw_images.append(self._get_raw_image(file))
         return labels, raw_images
 
     def files_listing(self):
@@ -56,7 +61,7 @@ class Loader:
         """
         return sorted(list(paths.list_images(self.dataset_dir)))
 
-    def get_label(self, file_path: str):
+    def _get_label(self, file_path: str):
         """Method to have the label of an image
         Parameters
         ----------
@@ -68,7 +73,7 @@ class Loader:
         """
         return os.path.basename(os.path.dirname(file_path))
 
-    def get_raw_image(self, file_path: str):
+    def _get_raw_image(self, file_path: str):
         """Method to read an image
         Parameters
         ----------
