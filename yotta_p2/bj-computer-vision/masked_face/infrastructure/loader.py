@@ -31,7 +31,7 @@ class Loader:
         """Class initialisation
         Parameters
         ----------
-        dataset_dir: str
+        dataset_dir : str
             directory where images are stored
         """
         self.dataset_dir = dataset_dir
@@ -40,18 +40,18 @@ class Loader:
         """Method to get labels and images
         Returns
         -------
-        labels: list
+        labels : list
             label in str format
-        raw_images: list
+        raw_images : list
             images are represented in numpy array format
         """
         files = self.files_listing()
-        labels = []
-        raw_images = []
-        for file in files:
-            labels.append(self._get_label(file))
-            raw_images.append(self._get_raw_image(file))
-        return labels, raw_images
+        labels = [self._get_label(file) for file in files]
+        raw_images = [self._get_raw_image(file) for file in files]
+        logging.info(
+            f' Labels size: {len(labels)}, Raw images size: {len(raw_images)}'
+        )
+        return raw_images, labels
 
     def files_listing(self):
         """Method to get all images path inside a directory
@@ -65,7 +65,7 @@ class Loader:
         """Method to have the label of an image
         Parameters
         ----------
-        file_path: str
+        file_path : str
             full path of an image
         Returns
         -------
@@ -77,7 +77,7 @@ class Loader:
         """Method to read an image
         Parameters
         ----------
-        file_path: str
+        file_path : str
             full path of an image
         Returns
         -------
