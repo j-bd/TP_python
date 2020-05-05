@@ -40,18 +40,19 @@ class Loader:
         """Method to get labels and images
         Returns
         -------
-        labels : list
+        raw_labels : list
             label in str format
         raw_images : list
             images are represented in numpy array format
         """
         files = self.files_listing()
-        labels = [self._get_label(file) for file in files]
+        raw_labels = [self._get_label(file) for file in files]
         raw_images = [self._get_raw_image(file) for file in files]
         logging.info(
-            f' Labels size: {len(labels)}, Raw images size: {len(raw_images)}'
+            f' Labels size: {len(raw_labels)}, '
+            f'Raw images size: {len(raw_images)}'
         )
-        return raw_images, labels
+        return raw_images, raw_labels
 
     def files_listing(self):
         """Method to get all images path inside a directory
