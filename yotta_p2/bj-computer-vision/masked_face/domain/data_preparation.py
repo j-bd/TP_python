@@ -26,7 +26,7 @@ class ImagePreparation:
     _im_resize
     _normalize
     """
-    def __init__(self, images: list):
+    def __init__(self, images: list, model: str, debug=False):
         """Class initialisation
         Parameters
         ----------
@@ -34,8 +34,10 @@ class ImagePreparation:
             images in numpy array format
         """
         self.images = images
+        self.model = model
+        self.debug = debug
 
-    def process(self):
+    def apply_basic_processing(self):
         """
         Lauch gray, resized and normalized images steps
         Returns
@@ -44,9 +46,13 @@ class ImagePreparation:
             processed images in numpy array format
         """
         im_processed = []
-        for im in self.images:
-            image = self._gray(im)
-            image = self._im_resize(image)
+        for index, im in enumerate(self.images):
+            image = self._im_resize(im)
+            if self.debug:
+                show_each = 200
+                if index % show_each == 0:
+                    cv2.imshow('image_check', image)
+                    cv2.waitKey()
             image = img_to_array(image)
             image = self._normalize(image)
             im_processed.append(image)
@@ -76,7 +82,36 @@ class ImagePreparation:
         -------
             resized image in numpy array format
         """
-        return imutils.resize(image, width=base.WIDTH)
+        im_height, im_width = image.shape[:2]
+        model_height, model_width = base.IMAGE_SIZE[self.model][:2]
+
+        if im_height >= im_width and im_height > model_height:
+            scale = round((im_height / model_height) + 0.06, 1)
+            image = self._image_scalling(image, scale)
+        elif im_height < im_width and im_width > model_width:
+            scale = round((im_width / model_width) + 0.06, 1)
+            image = self._image_scalling(image, scale)
+
+        im_padded = self._image_padding(image, model_height, model_width)
+        resized_image = cv2.resize(im_padded, (model_height, model_width))
+
+        return resized_image
+
+    def _image_scalling(self, image, scale):
+        new_width = int(image.shape[1] / scale)
+        new_height = int(image.shape[0] / scale)
+        dsize = (new_width, new_height)
+        resized = cv2.resize(image, dsize)
+        return resized
+
+    def _image_padding(self, image, target_h, target_w):
+        black = [0, 0, 0]
+        add_line = int((target_h - image.shape[0]) / 2) + 1
+        add_column = int((target_w - image.shape[1]) / 2) + 1
+        constant = cv2.copyMakeBorder(
+            image, add_line, add_line, add_column, add_column,
+            cv2.BORDER_CONSTANT, value=black)
+        return constant
 
     def _normalize(self, image):
         """
