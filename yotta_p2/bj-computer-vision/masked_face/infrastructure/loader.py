@@ -3,8 +3,8 @@
 
 import os
 import logging
+from random import shuffle
 
-import cv2
 from imutils import paths
 
 
@@ -37,7 +37,7 @@ class Loader:
         self.dataset_dir = dataset_dir
 
     def get_raw_input(self):
-        """Method to get labels and images
+        """Method to get labels and images in shuffle mode
         Returns
         -------
         raw_labels : list
@@ -46,13 +46,15 @@ class Loader:
             images are represented in numpy array format
         """
         files = self.files_listing()
-        raw_labels = [self._get_label(file) for file in files]
-        raw_images = [self._get_raw_image(file) for file in files]
+        images_id = [self._get_image_id(file) for file in files]
+        # Shuffle data for training purpose
+        shuffle(images_id)
+        labels = [self._get_label(file) for file in images_id]
         logging.info(
-            f' Labels size: {len(raw_labels)}, '
-            f'Raw images size: {len(raw_images)}'
+            f' Labels size: {len(labels)}, '
+            f'Raw images size: {len(images_id)}'
         )
-        return raw_images, raw_labels
+        return images_id, labels
 
     def files_listing(self):
         """Method to get all images path inside a directory
@@ -72,9 +74,9 @@ class Loader:
         -------
         name of label under str format
         """
-        return os.path.basename(os.path.dirname(file_path))
+        return os.path.dirname(file_path)
 
-    def _get_raw_image(self, file_path: str):
+    def _get_image_id(self, file_path: str):
         """Method to read an image
         Parameters
         ----------
@@ -82,6 +84,10 @@ class Loader:
             full path of an image
         Returns
         -------
-        numpy array
+        file_id : str
         """
-        return cv2.imread(file_path)
+        file_id = os.path.join(
+            os.path.basename(os.path.dirname(file_path)),
+            os.path.basename(file_path)
+        )
+        return file_id
