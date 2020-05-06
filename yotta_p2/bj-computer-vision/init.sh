@@ -1,12 +1,10 @@
 # exit on error
 set -e
 
-
-# try to create a .venv with virtualenv
-python3 -m pip install --user virtualenv
-(virtualenv .venv && . ./.venv/bin/activate && pip install --upgrade pip) || \
-    # if it fails, try using conda
-    conda create -y --prefix .venv pip || \
+    # try to create a .venv with conda
+conda create -n .venv python=3.7  || \
+    # if it fails, try using python
+    python -m venv .venv  || \
     # if it fails: warn the user (clean the .venv if it was partially created)
     (rm -rf .venv && echo "ERROR: failed to create the .venv : do it yourself!" && exit 1);
 
