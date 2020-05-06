@@ -1,29 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import logging
+
+from masked_face.infrastructure.loader_raw import Loader
+from masked_face.infrastructure.command_line_parser import TrainCommandLineParser
+from masked_face.domain.data_preparation import ImagePreparation, LabelClassifier
+from masked_face.domain.training_optimisation import TrainBySteps
+from masked_face.settings import base
 
 
-from face_detection.infrastructure.loader import Loader
-from face_detection.data_preparation import ImagePreparation, LabelClassifier
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 def main():
     """Launch the main process of algorithm training"""
-    path = '/home/latitude/Documents/Yotta/2-Data_Science/Projet_2-CV_NLP/data/final_data'  # TODO replace by args
-    training_opt = True  # TODO replace by args
+    # Command line parser
+    parser = TrainCommandLineParser()
+    args = parser.parse_args()
 
-    loader = Loader(path)
-    images_id, labels = loader.get_raw_input()
+    # Loading images and labels
+    logging.info(' Loading images and labels ...')
+    loader = Loader(args['data_input'])
+    raw_images, raw_labels = loader.get_raw_input()
+    logging.info(' Loading done')
 
     # Images preprocessing
-    preprocessing = ImagePreparation(raw_images)
-    images = preprocessing.process()
+    logging.info(' Starting Preprocessing  ...')
+    preprocessing = ImagePreparation(
+        raw_images, args['model_type'], args['devmode']
+    )
+    images = preprocessing.apply_basic_processing()
+    logging.info(' Preprocessing done')
 
     # Labels Encoding
+    logging.info(' Starting Labels Encoding ...')
     encoder = LabelClassifier(raw_labels)
-    labels = encoder.process()
+    labels, label_classes = encoder.get_categorical_labels()
+    logging.info(' Labels Encoding done')
 
     # Training to optimise the classifier
-    if training_opt:
+    logging.info(' Starting Pipeline training ...')
+    if args['step_training']:
+        TrainBySteps(images, labels, args['model_output'])
 
 
 if __name__ == "__main__":
