@@ -6,7 +6,6 @@ from masked_face.infrastructure.loader_raw import Loader
 from masked_face.infrastructure.command_line_parser import TrainCommandLineParser
 from masked_face.domain.data_preparation import ImagePreparation, LabelClassifier
 from masked_face.domain.training_optimisation import TrainBySteps
-from masked_face.settings import base
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -42,6 +41,7 @@ def main():
     logging.info(' Starting Pipeline training ...')
     if args['step_training']:
         TrainBySteps(images, labels, args)
+    logging.info(' Model trained and saved ...')
 
 
 if __name__ == "__main__":
