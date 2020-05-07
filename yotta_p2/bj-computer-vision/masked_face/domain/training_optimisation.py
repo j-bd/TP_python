@@ -11,27 +11,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from masked_face.settings import base
+from masked_face.infrastructure import model_creation
 #from masked_face.domain.data_generator import DataGenerator
 
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.layers import AveragePooling2D
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Input
-from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import classification_report
 
 
 class TrainBySteps:
 
-    def __init__(self, images_id: list, labels: dict, directory: str):
+    def __init__(self, images_id: list, labels: dict, args):
         self.images_id = images_id
         self.labels = labels
-        self.directory = directory
+        self.directory = args['model_output']
+        self.model_type = args['model_type']
         self.train()
 
 #    def train(self):
@@ -42,23 +37,8 @@ class TrainBySteps:
     def train(self):
         train_x, test_x, train_y, test_y = self._data_split()
 
-        baseModel = MobileNetV2(weights="imagenet", include_top=False,
-                                input_tensor=Input(shape=(224, 224, 3)))
-        # construct the head of the model that will be placed on top of the
-        # the base model
-        headModel = baseModel.output
-        headModel = AveragePooling2D(pool_size=(7, 7))(headModel)
-        headModel = Flatten(name="flatten")(headModel)
-        headModel = Dense(128, activation="relu")(headModel)
-        headModel = Dropout(0.5)(headModel)
-        headModel = Dense(2, activation="softmax")(headModel)
-        # place the head FC model on top of the base model (this will become
-        # the actual model we will train)
-        model = Model(inputs=baseModel.input, outputs=headModel)
-        # loop over all layers in the base model and freeze them so they will
-        # *not* be updated during the first training process
-        for layer in baseModel.layers:
-            layer.trainable = False
+        model_creator = model_creation.ModelConstructor(self.model_type)
+        model = model_creator.get_model()
 
         # Callbacks creation
         checkpoint_save = self.checkpoint_call(self.directory)
