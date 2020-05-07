@@ -79,47 +79,4 @@ class TrainBySteps:
         )
         model_evaluation.get_evaluation()
 
-#        self.model_evaluation(model, test_x, test_y, base.LABELS_NAME)
-#
-#        self.display_learning_evol(history, self.directory)
-
         return model, history
-
-#
-#    def model_evaluation(self, model, test_x, test_y, label_names):
-#        '''Display on terminal command the quality of model's predictions'''
-#        print("[INFO] Evaluating network...")
-#        predictions = model.predict(test_x, batch_size=64)
-#        print(
-#            classification_report(
-#                test_y.argmax(axis=1), predictions.argmax(axis=1),
-#                target_names=label_names
-#            )
-#        )
-#
-#    def display_learning_evol(self, history_dic, directory):
-#        '''Plot the training loss and accuracy'''
-#        fname = os.path.sep.join([directory, "loss_accuracy_history.png"])
-#        plt.style.use("ggplot")
-#        plt.figure()
-#        plt.plot(
-#            np.arange(0, len(history_dic.history["loss"])),
-#            history_dic.history["loss"], label="train_loss"
-#        )
-#        plt.plot(
-#            np.arange(0, len(history_dic.history["val_loss"])),
-#            history_dic.history["val_loss"], label="val_loss"
-#        )
-#        plt.plot(
-#            np.arange(0, len(history_dic.history["accuracy"])),
-#            history_dic.history["accuracy"], label="train_acc"
-#        )
-#        plt.plot(
-#            np.arange(0, len(history_dic.history["val_accuracy"])),
-#            history_dic.history["val_accuracy"], label="val_accuracy"
-#        )
-#        plt.title("Training Loss and Accuracy")
-#        plt.xlabel("Epoch #")
-#        plt.ylabel("Loss/Accuracy")
-#        plt.legend()
-#        plt.savefig(fname)
