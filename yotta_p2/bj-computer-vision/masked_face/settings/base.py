@@ -15,4 +15,6 @@ BATCH_SIZE = 32
 INIT_LEARNING_RATE = 1e-4
 EPOCHS = 2
 
+LABELS_NAME = ['masked', 'no_masked']
+
 # Developper mode
