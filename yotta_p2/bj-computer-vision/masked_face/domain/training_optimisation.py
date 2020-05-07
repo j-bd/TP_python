@@ -5,13 +5,11 @@ import os
 
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
-from tensorflow.keras.callbacks import TensorBoard
-from tensorflow.keras.callbacks import ModelCheckpoint
 import matplotlib.pyplot as plt
 import numpy as np
 
 from masked_face.settings import base
-from masked_face.infrastructure import model_creation
+from masked_face.infrastructure.model_creation import ModelConstructor, CallbacksConstructor
 #from masked_face.domain.data_generator import DataGenerator
 
 
@@ -37,16 +35,13 @@ class TrainBySteps:
     def train(self):
         train_x, test_x, train_y, test_y = self._data_split()
 
-        model_creator = model_creation.ModelConstructor(self.model_type)
+        # Neural Network structure creation
+        model_creator = ModelConstructor(self.model_type)
         model = model_creator.get_model()
 
         # Callbacks creation
-        checkpoint_save = self.checkpoint_call(self.directory)
-        tensor_board = TensorBoard(
-            log_dir=self.directory, histogram_freq=1, write_graph=True,
-            write_images=True
-        )
-        callbacks = [checkpoint_save, tensor_board]
+        callbacks_creator = CallbacksConstructor(self.directory)  # TODO args log
+        callbacks = callbacks_creator.get_callbacks()
 
         # compile our model
         print("[INFO] compiling model...")
@@ -89,14 +84,6 @@ class TrainBySteps:
         )
         return train_x, test_x, train_y, test_y
 
-    def checkpoint_call(self, directory):
-        '''Return a callback checkpoint configuration to save only the best model'''
-        fname = os.path.sep.join([directory, "weights.hdf5"])
-        checkpoint = ModelCheckpoint(
-            fname, monitor="val_loss", mode="min", save_best_only=True,
-            verbose=1
-        )
-        return checkpoint
 
     def model_evaluation(self, model, test_x, test_y, label_names):
         '''Display on terminal command the quality of model's predictions'''
