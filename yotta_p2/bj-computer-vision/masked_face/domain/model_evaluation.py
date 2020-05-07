@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu May  7 14:55:30 2020
+Module to analyse model performance.
 
-@author: j-bd
+Classes
+-------
+ModelResultEvaluation
 """
 import os
 import logging
@@ -19,8 +21,29 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 class ModelResultEvaluation:
+    """
+    Compute and display model evaluation (loss, accuracy and classification
+    report)
 
+    Methods
+    -------
+    get_evaluation
+    _model_evaluation
+    _display_learning_evol
+    """
     def __init__(self, model, test_x, test_y, history: dict, directory: str):
+        """Class initialisation
+
+        Parameters
+        ----------
+        model : TensorFlow Keras model
+            model trained
+        test_x, test_y : test data (images and label)
+        history : dict
+            history of every training epochs
+        directory : str
+            path to directory where to save outputs
+        """
         self.model = model
         self.test_x = test_x
         self.test_y = test_y
@@ -28,12 +51,21 @@ class ModelResultEvaluation:
         self.directory = directory
 
     def get_evaluation(self):
+        """
+        Launch the mains steps of the evaluation
+        """
         self._model_evaluation()
         self._display_learning_evol()
         logging.info(f' Plot available in {self.directory}')
 
     def _model_evaluation(self):
-        '''Display on terminal command the quality of model's predictions'''
+        """
+        Display on terminal command the quality of model's predictions
+
+        Returns
+        -------
+        Print into consol the classification report
+        """
         predictions = self.model.predict(self.test_x, batch_size=64)
         print(
             classification_report(
@@ -43,7 +75,13 @@ class ModelResultEvaluation:
         )
 
     def _display_learning_evol(self):
-        '''Plot the training loss and accuracy'''
+        """
+        Plot the training loss and accuracy
+
+        Returns
+        -------
+        Save the graph into logs directory
+        """
         fname = os.path.sep.join([self.directory, "loss_accuracy_history.png"])
         plt.style.use("ggplot")
         plt.figure()
@@ -63,8 +101,8 @@ class ModelResultEvaluation:
             np.arange(0, len(self.history.history["val_accuracy"])),
             self.history.history["val_accuracy"], label="val_accuracy"
         )
-        plt.title("Training Loss and Accuracy")
-        plt.xlabel("Epoch #")
-        plt.ylabel("Loss/Accuracy")
+        plt.title("Evolution of Loss and Accuracy during training")
+        plt.xlabel("Epoch Numbers")
+        plt.ylabel("Loss/Accuracy Training values")
         plt.legend()
         plt.savefig(fname)
