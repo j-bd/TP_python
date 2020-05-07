@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 import os
+import logging
 
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.optimizers import Adam
+from sklearn.metrics import classification_report
 
 from masked_face.settings import base
 from masked_face.infrastructure.model_creation import ModelConstructor, CallbacksConstructor
 #from masked_face.domain.data_generator import DataGenerator
 
 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras.optimizers import Adam
-from sklearn.metrics import classification_report
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 class TrainBySteps:
@@ -27,62 +28,55 @@ class TrainBySteps:
         self.model_type = args['model_type']
         self.train()
 
-#    def train(self):
-#        generator = DataGenerator(self.images_id, self.labels,
-#            batch_size=base.BATCH_SIZE, dim=base.IMAGE_SIZE['MobileNetV2'],
-#            n_classes=base.CLASS_NBR, shuffle=True, self.directory)
-
     def train(self):
-        train_x, test_x, train_y, test_y = self._data_split()
+        # Splitting Data
+        logging.info(' Splitting Data ...')
+        train_x, test_x, train_y, test_y = train_test_split(
+            self.images_id, self.labels, test_size=0.20, stratify=self.labels,
+            random_state=42
+        )
 
         # Neural Network structure creation
+        logging.info(' Model infrastructure construction ...')
         model_creator = ModelConstructor(self.model_type)
         model = model_creator.get_model()
 
         # Callbacks creation
+        logging.info(' Callbacks calling ...')
         callbacks_creator = CallbacksConstructor(self.directory)  # TODO args log
         callbacks = callbacks_creator.get_callbacks()
 
-        # compile our model
-        print("[INFO] compiling model...")
+        # Compile the model
+        logging.info(' Compiling model ...')
         opt = Adam(
-                lr=base.INIT_LEARNING_RATE,
-                decay=base.INIT_LEARNING_RATE / base.EPOCHS)
-        model.compile(loss="binary_crossentropy", optimizer=opt,
-                      metrics=["accuracy"])
-        # train the head of the network
-#        train_x = np.expand_dims(train_x, axis=0)
-#        train_x = tf.expand_dims(train_x, 0)
+            lr=base.INIT_LEARNING_RATE,
+            decay=base.INIT_LEARNING_RATE / base.EPOCHS
+        )
+        model.compile(
+            loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"]
+        )
+        model.summary()
 
         augmentation = ImageDataGenerator(
                 rotation_range=15,
                 fill_mode="nearest")
 
-
-        print("[INFO] training head...")
+        # Launch model training
+        logging.info(' Training model ...')
         history = model.fit(
             augmentation.flow(train_x, train_y, batch_size=base.BATCH_SIZE),
             epochs=base.EPOCHS, validation_data=(test_x, test_y),
             callbacks=callbacks)
 #        steps_per_epoch=len(trainX) // BS,
-#	validation_data=(testX, testY),
 #	validation_steps=len(testX) // BS,
 #	epochs=EPOCHS)
 
 
-        lab_name = ['masked', 'no_masked']
-        self.model_evaluation(model, test_x, test_y, lab_name)
+        self.model_evaluation(model, test_x, test_y, base.LABELS_NAME)
 
         self.display_learning_evol(history, self.directory)
 
         return model, history
-
-    def _data_split(self):
-        train_x, test_x, train_y, test_y = train_test_split(
-            self.images_id, self.labels, test_size=0.20, stratify=self.labels,
-            random_state=42
-        )
-        return train_x, test_x, train_y, test_y
 
 
     def model_evaluation(self, model, test_x, test_y, label_names):
