@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Module to create model structure and an other model to monitor training
+
+Classes
+-------
+ModelConstructor
+CallbacksConstructor
+"""
 import os
 
 from tensorflow.keras.applications import MobileNetV2
@@ -18,11 +26,6 @@ from masked_face.settings import base
 class ModelConstructor:
     """
     Create model following user choice
-
-    Attributes
-    ----------
-    model : str
-        model selected
 
     Methods
     -------
@@ -102,13 +105,6 @@ class ModelConstructor:
 class CallbacksConstructor:
     """
     Create Callbacks to improve the following of training
-
-    Attributes
-    ----------
-    logs_directory : str
-        directory where callbacks will be saved
-    calbacks : list
-        List of callbacks used
 
     Methods
     -------

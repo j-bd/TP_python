@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Module to feed pipeline with initial data
 
+Classes
+-------
+Loader
+"""
 import os
 import logging
 
@@ -16,18 +22,14 @@ class Loader:
     Load images under numpy array and their corresponding labels.
     Label is retrieve from the name of images directory.
 
-    Attributes
-    ----------
-    dataset_dir: path of images directory in string format
-
     Methods
     -------
     get_raw_input
     files_listing
-    get_label
-    get_raw_image
+    _get_label
+    _get_raw_image
     """
-    def __init__(self, dataset_dir):
+    def __init__(self, dataset_dir: str):
         """Class initialisation
         Parameters
         ----------

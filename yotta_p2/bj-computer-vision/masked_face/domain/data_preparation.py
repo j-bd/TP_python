@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Module to realize basic transformation on raw input images and
+corresponding labels
 
+Classes
+-------
+ImagePreparation
+LabelClassifier
+"""
 import cv2
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
@@ -15,15 +23,13 @@ class ImagePreparation:
     """
     Apply basic transformation on images
 
-    Attributes
-    ----------
-    images : raw images
-
     Methods
     -------
-    process
+    apply_basic_processing
     _gray
     _im_resize
+    _image_scalling
+    _image_padding
     _normalize
     """
     def __init__(self, images: list, model_type: str, devmod: bool):
@@ -31,7 +37,7 @@ class ImagePreparation:
         Parameters
         ----------
         images : list
-            images in numpy array format
+            raw images in numpy array format
         """
         self.images = images
         self.model_type = model_type
@@ -164,13 +170,11 @@ class LabelClassifier:
     """
     Apply basic transformation on labels
 
-    Attributes
-    ----------
-    labels : list
-
     Methods
     -------
-
+    get_categorical_labels
+    _label_encoding
+    _label_categorise
     """
     def __init__(self, labels: list):
         """Class initialisation

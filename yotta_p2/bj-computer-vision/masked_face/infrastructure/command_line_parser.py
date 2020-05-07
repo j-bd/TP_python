@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-"""Module to parse command line.
+"""
+Module to parse command line.
 
 Classes
 -------
 TrainCommandLineParser
 PredictCommandLineParser
-
 """
-
 from argparse import ArgumentParser
 
 from masked_face.settings import base
@@ -21,7 +19,7 @@ class TrainCommandLineParser():
     Methods
     -------
     parse_args
-
+    _add_arguments
     """
 
     def __init__(self):
