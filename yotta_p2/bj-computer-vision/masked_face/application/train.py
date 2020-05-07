@@ -41,7 +41,7 @@ def main():
     # Training to optimise the classifier
     logging.info(' Starting Pipeline training ...')
     if args['step_training']:
-        TrainBySteps(images, labels, args['model_output'])
+        TrainBySteps(images, labels, args)
 
 
 if __name__ == "__main__":
