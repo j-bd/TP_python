@@ -9,6 +9,8 @@ Classes
 ImagePreparation
 LabelClassifier
 """
+import logging
+
 import cv2
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
@@ -17,6 +19,8 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 from masked_face.settings import base
+
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 class ImagePreparation:
@@ -59,7 +63,9 @@ class ImagePreparation:
                 show_im_each = 500
                 if index % show_im_each == 0:
                     cv2.imshow('image_checking', image)
+                    logging.info(' Type any key to pass')
                     cv2.waitKey()
+                    cv2.destroyAllWindows()
             image = img_to_array(image)
             image = self._normalize(image)
             image = preprocess_input(image)
