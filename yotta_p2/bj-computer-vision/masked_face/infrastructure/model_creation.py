@@ -112,14 +112,10 @@ class CallbacksConstructor:
     _tensor_board
     _checkpoint_call
     """
-    def __init__(self, logs_directory):
-        """Class initialisation
-        Parameters
-        ----------
-        logs_directory : str
-            directory where callbacks will be saved
+    def __init__(self):
         """
-        self.logs_directory = logs_directory
+        Class initialisation
+        """
         self.calbacks = []
 
     def get_callbacks(self):
@@ -137,14 +133,16 @@ class CallbacksConstructor:
 
     def _tensor_board(self):
         """
-        Will display in an web API the evolution of loss and accuracy
+        Will display in an web API the evolution of loss and accuracy. To be
+        activate with the following command in the terminal:
+        tensorboard --logdir='path/to/tensorboard/folder
 
         Returns
         -------
         tensor_board : TensorFlow Object
         """
         tensor_board = TensorBoard(
-            log_dir=self.logs_directory, histogram_freq=1, write_graph=True,
+            log_dir=base.LOGS_DIR, histogram_freq=1, write_graph=True,
             write_images=True
         )
         return tensor_board
@@ -158,7 +156,7 @@ class CallbacksConstructor:
         -------
         checkpoint : TensorFlow Object
         """
-        fname = os.path.sep.join([self.logs_directory, "weights.hdf5"])
+        fname = os.path.sep.join([base.MODELS_DIR, "weights.hdf5"])
         checkpoint = ModelCheckpoint(
             fname, monitor="val_loss", mode="min", save_best_only=True,
             verbose=1
