@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import logging
 
 from sklearn.model_selection import train_test_split
-import tensorflow as tf
-import matplotlib.pyplot as plt
-import numpy as np
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.optimizers import Adam
-from sklearn.metrics import classification_report
 
 from masked_face.settings import base
 from masked_face.infrastructure.model_creation import ModelConstructor, CallbacksConstructor
 from masked_face.domain.model_evaluation import ModelResultEvaluation
-#from masked_face.domain.data_generator import DataGenerator
+# from masked_face.domain.data_generator import DataGenerator
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -25,16 +20,19 @@ class TrainBySteps:
     def __init__(self, images_id: list, labels: dict, args):
         self.images_id = images_id
         self.labels = labels
-        self.directory = args['model_output']
         self.model_type = args['model_type']
-        self.train()
 
     def train(self):
-        # Splitting Data
+        # Splitting Data training - test
         logging.info(' Splitting Data ...')
-        train_x, test_x, train_y, test_y = train_test_split(
-            self.images_id, self.labels, test_size=0.20, stratify=self.labels,
+        images_train, test_x, labels_train, test_y = train_test_split(
+            self.images_id, self.labels, test_size=0.10, stratify=self.labels,
             random_state=42
+        )
+        # Splitting Data train - validation
+        logging.info(' Splitting Data ...')
+        train_x, val_x, train_y, val_y = train_test_split(
+            images_train, labels_train, test_size=0.10, random_state=42
         )
 
         # Neural Network structure creation
@@ -44,7 +42,7 @@ class TrainBySteps:
 
         # Callbacks creation
         logging.info(' Callbacks calling ...')
-        callbacks_creator = CallbacksConstructor(self.directory)  # TODO args log
+        callbacks_creator = CallbacksConstructor()
         callbacks = callbacks_creator.get_callbacks()
 
         # Compile the model
@@ -66,17 +64,17 @@ class TrainBySteps:
         logging.info(' Training model ...')
         history = model.fit(
             augmentation.flow(train_x, train_y, batch_size=base.BATCH_SIZE),
-            epochs=base.EPOCHS, validation_data=(test_x, test_y),
+            epochs=base.EPOCHS, validation_data=(val_x, val_y),
             callbacks=callbacks)
 #        steps_per_epoch=len(trainX) // BS,
 #	validation_steps=len(testX) // BS,
 #	epochs=EPOCHS)
 
-        # Model results analysing steps
+        # Analysing model results steps
         logging.info(' Model Evaluation ...')
         model_evaluation = ModelResultEvaluation(
-            model, test_x, test_y, history, self.directory
+            model, test_x, test_y, history
         )
         model_evaluation.get_evaluation()
 
-        return model, history
+        return model
