@@ -31,7 +31,7 @@ class ModelResultEvaluation:
     _model_evaluation
     _display_learning_evol
     """
-    def __init__(self, model, test_x, test_y, history: dict, directory: str):
+    def __init__(self, model, test_x, test_y, history: dict):
         """Class initialisation
 
         Parameters
@@ -48,7 +48,6 @@ class ModelResultEvaluation:
         self.test_x = test_x
         self.test_y = test_y
         self.history = history
-        self.directory = directory
 
     def get_evaluation(self):
         """
@@ -56,7 +55,7 @@ class ModelResultEvaluation:
         """
         self._model_evaluation()
         self._display_learning_evol()
-        logging.info(f' Plot available in {self.directory}')
+        logging.info(f' Plot available in {base.LOGS_DIR}')
 
     def _model_evaluation(self):
         """
@@ -82,7 +81,7 @@ class ModelResultEvaluation:
         -------
         Save the graph into logs directory
         """
-        fname = os.path.sep.join([self.directory, "loss_accuracy_history.png"])
+        fname = os.path.join(base.LOGS_DIR, "loss_accuracy_history.png")
         plt.style.use("ggplot")
         plt.figure()
         plt.plot(
