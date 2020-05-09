@@ -83,12 +83,12 @@ class PredictCommandLineParser():
             help="Minimum probability to filter weak detections")
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=True  # TODO Change with False at the end
+            default=False  # TODO Change with False at the end
         )
-        self.parser.add_argument(
-            "-p", "--predict_output", type=str, default=base.OUTPUT_DIR,
-            help="Path to predict file output"
-        )
+#        self.parser.add_argument(
+#            "-p", "--predict_output", type=str, default=base.OUTPUT_DIR,
+#            help="Path to predict file output"
+#        )
 
     def parse_args(self):
         """Parse predict command line arguments.
@@ -97,4 +97,4 @@ class PredictCommandLineParser():
         -------
         self.parser.parse_args(): Namespace
         """
-        return self.parser.parse_args()
+        return vars(self.parser.parse_args())
