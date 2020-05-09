@@ -67,7 +67,6 @@ class ImagePreparation:
                     cv2.waitKey()
                     cv2.destroyAllWindows()
             image = img_to_array(image)
-            image = self._normalize(image)
             image = preprocess_input(image)
             im_processed.append(image)
 
@@ -158,18 +157,6 @@ class ImagePreparation:
             image, add_line, add_line, add_column, add_column,
             cv2.BORDER_CONSTANT, value=black)
         return constant
-
-    def _normalize(self, image):
-        """
-        Return a normalize image from range 0-255 to range 0-1
-        Parameters
-        ----------
-        image : numpy array
-        Returns
-        -------
-            normalized image in numpy array format
-        """
-        return np.array(image, dtype="float") / 255.0
 
 
 class LabelClassifier:
