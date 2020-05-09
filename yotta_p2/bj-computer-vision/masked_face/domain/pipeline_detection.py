@@ -17,8 +17,6 @@ class WebcamDetection:
     def __init__(self, args):
         """
         """
-#        self.model_detection = args["face_detection"]  # TODO to removed ?
-        self.model_classification = args["face_classification"]
         self.devmode = args['devmode']
         self.confidence = args["confidence"]
         self.model_classification = base.MODEL_FILE
@@ -47,7 +45,7 @@ class WebcamDetection:
             predictions = self._faces_classification(faces)
 
             # Display results
-
+            self._display_results(frame, predictions, locs)
 
             cv2.imshow('Video', frame)
             # Hit 'q' on the keyboard to quit!
@@ -118,6 +116,7 @@ class WebcamDetection:
     def _faces_classification(self, faces):
         """
         """
+        predictions = []
         preprocessing = ImagePreparation(
                 faces, base.WEBC_MODEL_CLASSIFIER, self.devmode
         )
@@ -126,5 +125,26 @@ class WebcamDetection:
             # for faster inference we'll make batch predictions on *all*
             # faces at the same time rather than one-by-one predictions
             # in the above `for` loop
-            predictions = self.model_classification.predict(faces)
+            predictions = self.face_classifier.predict(faces)
         return predictions
+
+    def _display_results(self, frame, predictions, localisation):
+        """
+        """
+        print(localisation)
+        print(predictions)
+        for (box, pred) in zip(localisation, predictions):
+            # unpack the bounding box and predictions
+            (start_x, start_y, end_x, end_y) = box
+            (mask, withoutMask) = pred
+            # determine the class label and color we'll use to draw
+            # the bounding box and text
+            label = "Mask" if mask > withoutMask else "No Mask"
+            color = (0, 255, 0) if label == "Mask" else (0, 0, 255)
+            # include the probability in the label
+            label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
+            # display the label and bounding box rectangle on the output
+            # frame
+            cv2.putText(frame, label, (start_x, start_y - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2)
+            cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), color, 2)
