@@ -30,23 +30,20 @@ class TrainCommandLineParser():
     def _add_arguments(self):
         """Add arguments to the parser."""
         self.parser.add_argument(
-            "-d", "--data_input", help="path to master input data directory",
-            default=base.DATA_FILE  # TODO Change with RAW_DIR at the end
+            "-d", "--data_input", type=str, default=base.DATA_FILE,
+            help="path to master input data directory"  # TODO Change with RAW_DIR at the end
         )
-#        self.parser.add_argument(
-#            "-m", "--model_output", help="path to model file output",
-#            default=base.MODEL_FILE
-#        )
         self.parser.add_argument(
-            "-st", "--step_training", help="for hyperparameters improuvments",
+            "-st", "--step_training", type=bool, default=True,
+            help="for hyperparameters improuvments"  # TODO Change with False at the end
+        )
+        self.parser.add_argument(
+            "-mt", "--model_type", type=str, default=base.MODEL_CHOICE,
+            help="Keras model selection"
+        )
+        self.parser.add_argument(
+            "-dev", "--devmode", help="developper mode", type=bool,
             default=True  # TODO Change with False at the end
-        )
-        self.parser.add_argument(
-            "-mt", "--model_type", help="Keras model selection",
-            default=base.MODEL_CHOICE
-        )
-        self.parser.add_argument(
-            "-dev", "--devmode", help="developper mode", default=True  # TODO Change with False at the end
         )
 
     def parse_args(self):
