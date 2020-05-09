@@ -23,6 +23,7 @@ MODEL_FILE = os.path.join(MODELS_DIR, MODEL_CHOICE + '-masked_detection.hdf5')
 LABELS_NAME = ['masked', 'no_masked']
 
 # Webcam Face detector
+WEBC_MODEL_CLASSIFIER = 'MobileNetV2'
 WEBC_MODEL_DETECTION_STRUCTURE = os.path.join(WEBCAM_DETECTION_DIR, 'deploy.prototxt')
 WEBC_MODEL_DETECTION_WEIGHT = os.path.join(WEBCAM_DETECTION_DIR, 'res10_300x300_ssd_iter_140000.caffemodel')
 
