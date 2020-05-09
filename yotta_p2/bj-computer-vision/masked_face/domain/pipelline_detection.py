@@ -4,6 +4,7 @@
 
 """
 import cv2
+import numpy as np
 from tensorflow.keras.models import load_model
 import imutils
 
@@ -27,6 +28,7 @@ class WebcamDetection:
         """
         video_capture = cv2.VideoCapture(0)
         while True:
+            # Read webcam capture
             ret, frame = video_capture.read()
 
             # Resize frame for detector
@@ -36,7 +38,7 @@ class WebcamDetection:
             detections = self._face_detection(frame)
 
             # Detection filtering
-
+            faces, locs = self._detections_filter(frame, detections)
 
             # Face classification
 
@@ -65,7 +67,6 @@ class WebcamDetection:
     def _face_detection(self, frame):
         """
         """
-        (h, w) = frame.shape[:2]
         blob = cv2.dnn.blobFromImage(
             frame, 1.0, (300, 300), (104.0, 177.0, 123.0)
         )
@@ -74,7 +75,39 @@ class WebcamDetection:
         detections = self.face_detector.forward()
         return detections
 
-    def _detections_filter(self):
+    def _detections_filter(self, frame, detections):
         """
         """
+        faces = []
+        locs = []
+        (h, w) = frame.shape[:2]
+        # loop over the detections
+        for idx in range(0, detections.shape[2]):
+            # extract the confidence (i.e., probability) associated with
+            # the detection
+            detection_confidence = detections[0, 0, idx, 2]
+            # filter out weak detections by ensuring the confidence is
+            # greater than the minimum confidence
+            if detection_confidence > self.confidence:
+                # compute the (x, y)-coordinates of the bounding box for
+                # the object
+                box = detections[0, 0, idx, 3:7] * np.array([w, h, w, h])
+                (start_x, start_y, end_x, end_y) = box.astype("int")
+                # ensure the bounding boxes fall within the dimensions of
+                # the frame
+                (start_x, start_y) = (max(0, start_x), max(0, start_y))
+                (end_x, end_y) = (min(w - 1, end_x), min(h - 1, end_y))
 
+                # extract the face ROI, convert it from BGR to RGB channel
+                # ordering, resize it to 224x224, and preprocess it
+                face = frame[start_y:end_y, start_x:end_x]
+#                face = cv2.cvtColor(face, cv2.COLOR_BGR2RGB)
+#                face = cv2.resize(face, (224, 224))
+#                face = img_to_array(face)
+#                face = preprocess_input(face)
+#                face = np.expand_dims(face, axis=0)
+                # add the face and bounding boxes to their respective
+                # lists
+                faces.append(face)
+                locs.append((start_x, start_y, end_x, end_y))
+        return faces, locs
