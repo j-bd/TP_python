@@ -56,52 +56,53 @@ class TrainCommandLineParser():
         return vars(self.parser.parse_args())
 
 
-#class PredictCommandLineParser():
-#    """Command line parser for predict application.
-#
-#    Methods
-#    -------
-#    parse_args
-#
-#    """
-#
-#    def __init__(self):
-#        """Initialize class."""
-#        self.parser = ArgumentParser()
-#        self._add_arguments()
-#
-#    def _add_arguments(self):
-#        """Add arguments to the parser."""
+class PredictCommandLineParser():
+    """Command line parser for predict application.
+
+    Methods
+    -------
+    parse_args
+
+    """
+    def __init__(self):
+        """Initialize class."""
+        self.parser = ArgumentParser()
+        self._add_arguments()
+
+    def _add_arguments(self):
 #        self.parser.add_argument(
-#            "-d",
-#            "--data_input",
-#            help="path to input data file",
-#            default=stg.DATA_WITHOUT_TARGET_FILE,
-#            )
+#            "-d", "--data_input", type=str, default=base.,
+#            help="path to master input data directory"  # TODO Change with RAW_DIR at the end
+#        )
+        self.parser.add_argument(
+            "-td", "--type_detection", type=str, default='webcam',
+            help="Choice between: image / video / webcam"
+        )
+        self.parser.add_argument(
+            "-fd", "--face_detection", type=str, default=base.MODEL_DETECTION,
+            help="Path to face detection model"
+        )
+        self.parser.add_argument(
+            "-fc", "--face_classification", type=str, default=base.MODEL_FILE,
+            help="Path to face classification model"
+        )
+        self.parser.add_argument(
+            "-c", "--confidence", type=float, default=0.5,
+            help="Minimum probability to filter weak detections")
 #        self.parser.add_argument(
-#            "-s",
-#            "--socio_eco_input",
-#            help="path to input socio eco file",
-#            default=stg.SOCIO_ECO_FILE,
-#            )
-#        self.parser.add_argument(
-#            "-m",
-#            "--model_input",
-#            help="path to input model file",
-#            default=stg.MODEL_FILE,
-#            )
-#        self.parser.add_argument(
-#            "-p",
-#            "--predict_output",
-#            help="path to predict file output",
-#            default=stg.PREDICT_FILE,
-#            )
-#
-#    def parse_args(self):
-#        """Parse predict command line arguments.
-#
-#        Returns
-#        -------
-#        self.parser.parse_args(): Namespace
-#        """
-#        return self.parser.parse_args()
+#            "-dev", "--devmode", help="developper mode", type=bool,
+#            default=True  # TODO Change with False at the end
+#        )
+        self.parser.add_argument(
+            "-p", "--predict_output", type=str, default=base.OUTPUT_DIR,
+            help="Path to predict file output"
+        )
+
+    def parse_args(self):
+        """Parse predict command line arguments.
+
+        Returns
+        -------
+        self.parser.parse_args(): Namespace
+        """
+        return self.parser.parse_args()
