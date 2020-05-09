@@ -79,20 +79,12 @@ class PredictCommandLineParser():
             help="Choice between: image / video / webcam"
         )
         self.parser.add_argument(
-            "-fd", "--face_detection", type=str, default=base.MODEL_DETECTION,
-            help="Path to face detection model"
-        )
-        self.parser.add_argument(
-            "-fc", "--face_classification", type=str, default=base.MODEL_FILE,
-            help="Path to face classification model"
-        )
-        self.parser.add_argument(
             "-c", "--confidence", type=float, default=0.5,
             help="Minimum probability to filter weak detections")
-#        self.parser.add_argument(
-#            "-dev", "--devmode", help="developper mode", type=bool,
-#            default=True  # TODO Change with False at the end
-#        )
+        self.parser.add_argument(
+            "-dev", "--devmode", help="developper mode", type=bool,
+            default=True  # TODO Change with False at the end
+        )
         self.parser.add_argument(
             "-p", "--predict_output", type=str, default=base.OUTPUT_DIR,
             help="Path to predict file output"
