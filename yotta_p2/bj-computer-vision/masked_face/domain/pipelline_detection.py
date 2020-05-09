@@ -9,6 +9,7 @@ from tensorflow.keras.models import load_model
 import imutils
 
 from masked_face.settings import base
+from masked_face.domain.data_preparation import ImagePreparation
 
 
 class WebcamDetection:
@@ -16,9 +17,11 @@ class WebcamDetection:
     def __init__(self, args):
         """
         """
-        self.model_detection = args["face_detection"]  # TODO to removed ?
+#        self.model_detection = args["face_detection"]  # TODO to removed ?
         self.model_classification = args["face_classification"]
+        self.devmode = args['devmode']
         self.confidence = args["confidence"]
+        self.model_classification = base.MODEL_FILE
         self.model_detection_structure = base.WEBC_MODEL_DETECTION_STRUCTURE
         self.model_detection_weight = base.WEBC_MODEL_DETECTION_WEIGHT
         self.face_detector, self.face_classifier = self._models_loading()
@@ -34,14 +37,14 @@ class WebcamDetection:
             # Resize frame for detector
             frame = imutils.resize(frame, width=400)
 
-            # Face Detection
+            # Faces Detection
             detections = self._face_detection(frame)
 
-            # Detection filtering
+            # Detections filtering
             faces, locs = self._detections_filter(frame, detections)
 
             # Face classification
-
+            predictions = self._faces_classification(faces)
 
             # Display results
 
@@ -111,3 +114,17 @@ class WebcamDetection:
                 faces.append(face)
                 locs.append((start_x, start_y, end_x, end_y))
         return faces, locs
+
+    def _faces_classification(self, faces):
+        """
+        """
+        preprocessing = ImagePreparation(
+                faces, base.WEBC_MODEL_CLASSIFIER, self.devmode
+        )
+        faces = preprocessing.apply_basic_processing()
+        if len(faces) > 0:
+            # for faster inference we'll make batch predictions on *all*
+            # faces at the same time rather than one-by-one predictions
+            # in the above `for` loop
+            predictions = self.model_classification.predict(faces)
+        return predictions
