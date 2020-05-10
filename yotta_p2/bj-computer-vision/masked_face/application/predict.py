@@ -11,7 +11,6 @@ import logging
 
 from masked_face.domain.pipeline_detection import WebcamDetection
 from masked_face.infrastructure.command_line_parser import PredictCommandLineParser
-from masked_face.settings import base
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -26,7 +25,10 @@ def main():
     # Detection type choice
     if args['type_detection'] == 'webcam':
         detection = WebcamDetection(args)
+        logging.info(' Starting webcam analyse ...')
+        logging.info(' To stop processing please press the letter "q"')
         detection.launch_detection()
+        logging.info(' Detection ended')
 
 
 if __name__ == "__main__":
