@@ -70,10 +70,6 @@ class PredictCommandLineParser():
         self._add_arguments()
 
     def _add_arguments(self):
-#        self.parser.add_argument(
-#            "-d", "--data_input", type=str, default=base.,
-#            help="path to master input data directory"  # TODO Change with RAW_DIR at the end
-#        )
         self.parser.add_argument(
             "-td", "--type_detection", type=str, default='webcam',
             help="Choice between: image / video / webcam"
@@ -83,12 +79,8 @@ class PredictCommandLineParser():
             help="Minimum probability to filter weak detections")
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=False  # TODO Change with False at the end
+            default=False
         )
-#        self.parser.add_argument(
-#            "-p", "--predict_output", type=str, default=base.OUTPUT_DIR,
-#            help="Path to predict file output"
-#        )
 
     def parse_args(self):
         """Parse predict command line arguments.
