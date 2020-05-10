@@ -9,7 +9,8 @@ Classes
 """
 import logging
 
-from masked_face.domain.pipeline_detection import WebcamDetection
+from masked_face.domain.pipeline_detection import Pipeline
+from masked_face.infrastructure.predict_models_loading import GetModels
 from masked_face.infrastructure.command_line_parser import PredictCommandLineParser
 
 
@@ -24,10 +25,16 @@ def main():
 
     # Detection type choice
     if args['type_detection'] == 'webcam':
-        detection = WebcamDetection(args)
+        logging.info(' Loading models ...')
+        models = GetModels(args['type_detection'])
+        detector, classifier = models.models_loading()
+
         logging.info(' Starting webcam analyse ...')
         logging.info(' To stop processing please press the letter "q"')
-        detection.launch_detection()
+        webcam_pipe = Pipeline(detector, classifier, args)
+        webcam_pipe.webcam_detection()
+    elif args['type_detection'] == 'video':
+
         logging.info(' Detection ended')
 
 
