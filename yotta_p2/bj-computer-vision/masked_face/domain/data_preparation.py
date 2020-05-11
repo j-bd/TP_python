@@ -42,6 +42,10 @@ class ImagePreparation:
         ----------
         images : list
             raw images in numpy array format
+        model_type : str
+            user choice
+        devmod : bool
+            debug mode
         """
         self.images = images
         self.model_type = model_type
