@@ -9,6 +9,7 @@ RAW_DIR = os.path.join(REPO_DIR, 'data', 'raw')
 LOGS_DIR = os.path.join(REPO_DIR, 'logs')
 MODELS_DIR = os.path.join(REPO_DIR, 'models')
 OUTPUT_DIR = os.path.join(REPO_DIR, 'data', 'processed')
+PREDICT_DIR = os.path.join(REPO_DIR, 'data', 'external')
 
 
 # Train variables
@@ -51,6 +52,20 @@ VIDEO_MODEL_DETECTION_STRUCTURE = os.path.join(
 VIDEO_MODEL_DETECTION_WEIGHT = os.path.join(
     MODELS_DIR, 'res10_caffe', 'res10_300x300_ssd_iter_140000.caffemodel'
 )
+VIDEO_FILE = os.path.join(PREDICT_DIR, 'video2predict', 'video.mp4')
+
+# Image Face detector
+IMAGE_MODEL_CLASSIFIER = 'MobileNetV2'
+IMAGE_MODEL_CLASSIFIER_FILE = os.path.join(
+    MODELS_DIR, IMAGE_MODEL_CLASSIFIER + '-masked_detection.hdf5'
+)
+IMAGE_MODEL_DETECTION_STRUCTURE = os.path.join(
+    MODELS_DIR, 'res10_caffe', 'deploy.prototxt'
+)
+IMAGE_MODEL_DETECTION_WEIGHT = os.path.join(
+    MODELS_DIR, 'res10_caffe', 'res10_300x300_ssd_iter_140000.caffemodel'
+)
+IMAGE_FILE = os.path.join(PREDICT_DIR, 'image2predict', 'image.jpeg')
 
 
 # Developper mode
