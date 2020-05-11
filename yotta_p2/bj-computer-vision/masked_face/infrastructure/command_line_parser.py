@@ -61,6 +61,7 @@ class PredictCommandLineParser():
 
     Methods
     -------
+    _add_arguments
     parse_args
 
     """
@@ -71,15 +72,24 @@ class PredictCommandLineParser():
 
     def _add_arguments(self):
         self.parser.add_argument(
-            "-td", "--type_detection", type=str, default='webcam',
+            "-td", "--type_detection", type=str, default='image',
             help="Choice between: image / video / webcam"
         )
         self.parser.add_argument(
+            "-pv", "--path_video", type=str, default=base.VIDEO_FILE,
+            help="Path to your video"
+        )
+        self.parser.add_argument(
+            "-pi", "--path_image", type=str, default=base.IMAGE_FILE,
+            help="Path to your image"
+        )
+        self.parser.add_argument(
             "-c", "--confidence", type=float, default=0.5,
-            help="Minimum probability to filter weak detections")
+            help="Minimum probability to filter weak detections"
+        )
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=False
+            default=True  # TODO put to False
         )
 
     def parse_args(self):
