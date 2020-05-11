@@ -6,7 +6,7 @@ classifier model
 
 Classes
 -------
-WebcamDetection
+FrameDetection
 """
 import cv2
 import numpy as np
@@ -18,12 +18,11 @@ from masked_face.domain.data_preparation import ImagePreparation
 
 class FrameDetection:
     """
-    Use user Webcam computer to detect if a person wear or not a mask
+    Use provide frame to detect if a person wear or not a mask
 
     Methods
     -------
     launch_detection
-    _models_loading
     _face_detection
     _detections_filter
     _faces_classification
@@ -31,9 +30,14 @@ class FrameDetection:
     """
     def __init__(self, detection, classifier, args):
         """Class initialisation
+
         Parameters
         ----------
-        args : ArgumentParser.
+        detection
+            model
+        classifier
+            model
+        args : ArgumentParser
             user specification
         """
         self.devmode = args['devmode']
