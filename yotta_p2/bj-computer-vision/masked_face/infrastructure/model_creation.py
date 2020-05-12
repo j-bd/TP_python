@@ -19,6 +19,7 @@ from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
 
 from masked_face.settings import base
 
@@ -55,7 +56,10 @@ class ModelConstructor:
         head_model = self._top_layers_constructor(base_model)
         final_model = Model(inputs=base_model.input, outputs=head_model)
 
-        return final_model
+        model = self._optimizer(final_model)
+        model.summary()
+
+        return model
 
     def _top_layers_constructor(self, base_model):
         """
@@ -100,6 +104,18 @@ class ModelConstructor:
             layer.trainable = False
 
         return base_model
+
+    def _optimizer(self, model):
+        """
+        """
+        opt = Adam(
+            lr=base.INIT_LEARNING_RATE,
+            decay=base.INIT_LEARNING_RATE / base.EPOCHS
+        )
+        model.compile(
+            loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"]
+        )
+        return model
 
 
 class CallbacksConstructor:
