@@ -22,7 +22,7 @@ MODEL_CHOICE = 'MobileNetV2'
 CLASS_NBR = 2
 BATCH_SIZE = 32
 INIT_LEARNING_RATE = 1e-2
-EPOCHS = 20
+EPOCHS = 3
 MODEL_FILE = os.path.join(MODELS_DIR, MODEL_CHOICE + '-masked_detection.hdf5')
 LABELS_NAME = ['masked', 'no_masked']
 
@@ -70,4 +70,4 @@ IMAGE_FILE = os.path.join(PREDICT_DIR, 'image2predict', 'image.jpeg')
 
 # Developper mode
 # ---------------
-DATA_FILE = '/home/latitude/Documents/Yotta/2-Data_Science/Projet_2-CV_NLP/data/final_data'  # TODO removed at the end of development
+DATA_FILE = '/home/latitude/Documents/Yotta/2-Data_Science/Projet_2-CV_NLP/data/temp_data'  # TODO removed at the end of development
