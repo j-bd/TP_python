@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report
 
+from masked_face.domain.data_preparation import DataPreprocessing
 from masked_face.settings import base
 
 
@@ -31,7 +32,7 @@ class ModelResultEvaluation:
     _model_evaluation
     _display_learning_evol
     """
-    def __init__(self, model, test_x, test_y, history: dict):
+    def __init__(self, model, test_x, test_y, history: dict, args):
         """Class initialisation
 
         Parameters
@@ -48,11 +49,15 @@ class ModelResultEvaluation:
         self.test_x = test_x
         self.test_y = test_y
         self.history = history
+        self.args = args
 
     def get_evaluation(self):
         """
         Launch the mains steps of the evaluation
         """
+        preprocess = DataPreprocessing(self.test_x, self.test_y, self.args)
+        self.test_x, self.test_y, self.label_cl = preprocess.apply_preprocessing()
+
         self._model_evaluation()
         self._display_learning_evol()
         logging.info(f' Plot available in {base.LOGS_DIR}')
@@ -69,7 +74,7 @@ class ModelResultEvaluation:
         print(
             classification_report(
                 self.test_y.argmax(axis=1), predictions.argmax(axis=1),
-                target_names=base.LABELS_NAME
+                target_names=self.label_cl  # base.LABELS_NAME
             )
         )
 
