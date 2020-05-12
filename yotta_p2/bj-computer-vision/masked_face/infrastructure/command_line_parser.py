@@ -34,7 +34,7 @@ class TrainCommandLineParser():
             help="path to master input data directory"  # TODO Change with RAW_DIR at the end
         )
         self.parser.add_argument(
-            "-st", "--step_training", type=bool, default=True,
+            "-st", "--step_training", type=bool, default=False,
             help="for hyperparameters improuvments"  # TODO Change with False at the end
         )
         self.parser.add_argument(
@@ -43,7 +43,7 @@ class TrainCommandLineParser():
         )
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=True  # TODO Change with False at the end
+            default=False  # TODO Change with False at the end
         )
 
     def parse_args(self):
