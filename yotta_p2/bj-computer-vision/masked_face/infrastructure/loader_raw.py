@@ -10,7 +10,6 @@ Loader
 import os
 import logging
 
-import cv2
 from imutils import paths
 
 
@@ -47,14 +46,13 @@ class Loader:
         raw_images : list
             images are represented in numpy array format
         """
-        files = self.files_listing()
-        raw_labels = [self._get_label(file) for file in files]
-        raw_images = [self._get_raw_image(file) for file in files]
+        paths_files = self.files_listing()
+        raw_labels = [self._get_label(file) for file in paths_files]
         logging.info(
             f' Labels size: {len(raw_labels)}, '
-            f'Raw images size: {len(raw_images)}'
+            f'Raw images size: {len(paths_files)}'
         )
-        return raw_images, raw_labels
+        return paths_files, raw_labels
 
     def files_listing(self):
         """Method to get all images path inside a directory
@@ -75,15 +73,3 @@ class Loader:
         name of label under str format
         """
         return os.path.basename(os.path.dirname(file_path))
-
-    def _get_raw_image(self, file_path: str):
-        """Method to read an image
-        Parameters
-        ----------
-        file_path : str
-            full path of an image
-        Returns
-        -------
-        numpy array
-        """
-        return cv2.imread(file_path)
