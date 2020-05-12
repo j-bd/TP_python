@@ -4,7 +4,7 @@ import logging
 
 from sklearn.model_selection import train_test_split
 
-from masked_face.infrastructure.loader_raw import Loader
+from masked_face.infrastructure.loader import Loader
 from masked_face.infrastructure.command_line_parser import TrainCommandLineParser
 from masked_face.domain.run_selection import StepsRun, FullRun
 from masked_face.domain.model_evaluation import ModelResultEvaluation
