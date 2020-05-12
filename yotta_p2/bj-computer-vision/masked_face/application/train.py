@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from sklearn.model_selection import train_test_split
+
 from masked_face.infrastructure.loader_raw import Loader
 from masked_face.infrastructure.command_line_parser import TrainCommandLineParser
-from masked_face.domain.data_preparation import ImagePreparation, LabelClassifier
-from masked_face.domain.training_optimisation import TrainBySteps
+from masked_face.domain.run_selection import StepsRun, FullRun
+from masked_face.domain.model_evaluation import ModelResultEvaluation
 from masked_face.settings import base
 
 
@@ -24,25 +26,32 @@ def main():
     raw_images, raw_labels = loader.get_raw_input()
     logging.info(' Loading done')
 
-    # Images preprocessing
-    logging.info(' Starting Preprocessing  ...')
-    preprocessing = ImagePreparation(
-        raw_images, args['model_type'], args['devmode']
-    )
-    images = preprocessing.apply_basic_processing()
-    logging.info(' Preprocessing done')
-
-    # Labels Encoding
-    logging.info(' Starting Labels Encoding ...')
-    encoder = LabelClassifier(raw_labels)
-    labels, label_classes = encoder.get_categorical_labels()
-    logging.info(' Labels Encoding done')
-
     # Training to optimise the classifier
     logging.info(' Starting Pipeline training ...')
+
     if args['step_training']:
-        model_initialisation = TrainBySteps(images, labels, args)
-        model = model_initialisation.train()
+        logging.info(' Launching training with validation test and evaluation ...')
+        # Splitting Data in training - test
+        logging.info(' Splitting Data ...')
+        train_x, test_x, train_y, test_y = train_test_split(
+            raw_images, raw_labels, test_size=0.10, stratify=raw_labels,
+            random_state=42
+        )
+        # Model training
+        model_steps = StepsRun(train_x, train_y, args)
+        model, history = model_steps.launching_steps()
+
+        # Model evaluation
+        model_evaluation = ModelResultEvaluation(
+            model, test_x, test_y, history, args
+        )
+        model_evaluation.get_evaluation()
+
+    else:
+        logging.info(' Launching training on full dataset ...')
+        model_steps = FullRun(raw_images, raw_labels, args)
+        model, history = model_steps.launching_steps()
+
     logging.info(' Model trained')
 
     # Saving model
