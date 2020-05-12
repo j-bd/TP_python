@@ -23,6 +23,32 @@ from masked_face.settings import base
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
+class DataPreprocessing:
+    """
+    """
+    def __init__(self, images_paths, labels, args):
+        """
+        """
+        self.images_paths = images_paths
+        self.labels = labels
+        self.args = args
+
+    def apply_preprocessing(self):
+        """
+        """
+        # Images preprocessing
+        preparator = ImagePreparation(
+            self.images_paths, self.args['model_type'], self.args['devmode']
+        )
+        images = preparator.apply_basic_processing()
+
+        # Labels Encoding
+        encoder = LabelClassifier(self.labels)
+        labels_cat, label_classes = encoder.get_categorical_labels()
+
+        return images, labels_cat, label_classes
+
+
 class ImagePreparation:
     """
     Apply basic transformation on images
@@ -62,7 +88,8 @@ class ImagePreparation:
         """
         im_processed = []
         for index, im in enumerate(self.images):
-            image = self._im_resize(im)
+            image = cv2.imread(im)
+            image = self._im_resize(image)
             if self.devmod:
                 show_im_each = 500
                 if index % show_im_each == 0:
@@ -77,19 +104,6 @@ class ImagePreparation:
         # Set images in keras model format input: len(images), H, W, Channel
         im_processed = np.array(im_processed, dtype="float32")
         return im_processed
-
-    def _gray(self, image):
-        """
-        Return the gray value of an color image
-        Parameters
-        ----------
-        image : numpy array
-            bgr style
-        Returns
-        -------
-            gray style image in numpy array format
-        """
-        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     def _im_resize(self, image):
         """
