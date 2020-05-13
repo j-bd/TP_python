@@ -11,6 +11,7 @@ import random
 
 from tensorflow.keras.utils import Sequence
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from masked_face.settings import base
 from masked_face.infrastructure.model_creation import ModelConstructor, CallbacksConstructor
@@ -59,7 +60,7 @@ class StepsRun:
         # Launch model training
         logging.info(' Training model ...')
         history = model.fit(
-            x=batch_im_generator, epochs=base.EPOCHS,
+            batch_im_generator, epochs=base.EPOCHS,
             validation_data=(self.val_x, self.val_y), callbacks=callbacks
         )
         return model, history
@@ -122,4 +123,25 @@ class TrainGenerator(Sequence):
         preprocess = DataPreprocessing(batch_x, batch_y, self.args)
         train_x, train_y, label_cl = preprocess.apply_preprocessing()
 
-        return train_x, train_y
+        if self.args['devmode']:
+            datagen = ImageDataGenerator(
+                featurewise_center=True, featurewise_std_normalization=True,
+                rotation_range=45, horizontal_flip=True,
+                brightness_range=[0.2, 1.0]
+            )
+            datagen.fit(train_x)
+            gen = next(datagen.flow(
+                train_x, train_y, batch_size=32,
+                save_to_dir=base.IMAGE_GENERATOR, save_prefix='aug',
+                save_format='png')
+            )
+        else:
+            datagen = ImageDataGenerator(
+                featurewise_center=True, featurewise_std_normalization=True,
+                rotation_range=45, horizontal_flip=True,
+                brightness_range=[0.2, 1.0]
+            )
+            datagen.fit(train_x)
+            gen = next(datagen.flow(train_x, train_y, batch_size=32))
+
+        return gen
