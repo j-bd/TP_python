@@ -10,6 +10,8 @@ LOGS_DIR = os.path.join(REPO_DIR, 'logs')
 MODELS_DIR = os.path.join(REPO_DIR, 'models')
 OUTPUT_DIR = os.path.join(REPO_DIR, 'data', 'processed')
 PREDICT_DIR = os.path.join(REPO_DIR, 'data', 'external')
+IMAGE_GENERATOR = os.path.join(LOGS_DIR, 'image_data_generator')
+INTERPRETABILITY = os.path.join(LOGS_DIR, 'interpretability')
 
 
 # Train variables
@@ -22,7 +24,7 @@ MODEL_CHOICE = 'MobileNetV2'
 CLASS_NBR = 2
 BATCH_SIZE = 32
 INIT_LEARNING_RATE = 1e-2
-EPOCHS = 3
+EPOCHS = 20
 MODEL_FILE = os.path.join(MODELS_DIR, MODEL_CHOICE + '-masked_detection.hdf5')
 LABELS_NAME = ['masked', 'no_masked']
 
@@ -70,4 +72,4 @@ IMAGE_FILE = os.path.join(PREDICT_DIR, 'image2predict', 'image.jpeg')
 
 # Developper mode
 # ---------------
-DATA_FILE = '/home/latitude/Documents/Yotta/2-Data_Science/Projet_2-CV_NLP/data/temp_data'  # TODO removed at the end of development
+DATA_FILE = '/home/latitude/Documents/Yotta/2-Data_Science/Projet_2-CV_NLP/data/final_data'  # TODO removed at the end of development
