@@ -172,7 +172,7 @@ class CallbacksConstructor:
         -------
         checkpoint : TensorFlow Object
         """
-        fname = os.path.sep.join([base.MODELS_DIR, "weights.hdf5"])
+        fname = os.path.sep.join([base.MODELS_DIR, "best_model.hdf5"])
         checkpoint = ModelCheckpoint(
             fname, monitor="val_loss", mode="min", save_best_only=True,
             verbose=1
