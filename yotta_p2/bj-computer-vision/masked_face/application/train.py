@@ -8,6 +8,7 @@ from masked_face.infrastructure.loader import Loader
 from masked_face.infrastructure.command_line_parser import TrainCommandLineParser
 from masked_face.domain.run_selection import StepsRun, FullRun
 from masked_face.domain.model_evaluation import ModelResultEvaluation
+from masked_face.domain.model_interpretability import Interpretability
 from masked_face.settings import base
 
 
@@ -46,6 +47,8 @@ def main():
             model, test_x, test_y, history, args
         )
         model_evaluation.get_evaluation()
+        interpreter = Interpretability(model, test_x, test_y, args)
+        interpreter.get_interpretability_results()
 
     else:
         logging.info(' Launching training on full dataset ...')
