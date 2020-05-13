@@ -90,13 +90,6 @@ class ImagePreparation:
         for index, im in enumerate(self.images):
             image = cv2.imread(im)
             image = self._im_resize(image)
-            if self.devmod:
-                show_im_each = 500
-                if index % show_im_each == 0:
-                    cv2.imshow('image_checking', image)
-                    logging.info(' Type any key to pass')
-                    cv2.waitKey()
-                    cv2.destroyAllWindows()
             image = img_to_array(image)
             image = preprocess_input(image)
             im_processed.append(image)
