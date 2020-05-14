@@ -5,7 +5,7 @@ import logging
 from sklearn.model_selection import train_test_split
 
 from masked_face.infrastructure.loader import Loader
-from masked_face.infrastructure.command_line_parser import TrainCommandLineParser
+from masked_face.infrastructure.command_line_parser import TrainParser
 from masked_face.domain.run_selection import StepsRun, FullRun
 from masked_face.domain.model_evaluation import ModelResultEvaluation
 from masked_face.domain.model_interpretability import Interpretability
@@ -18,11 +18,11 @@ logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 def main():
     """Launch the main process of algorithm training"""
     # Command line parser
-    parser = TrainCommandLineParser()
+    parser = TrainParser()
     args = parser.parse_args()
 
     # Loading images and labels
-    logging.info(' Loading images and labels ...')
+    logging.info(' Loading images and labels paths ...')
     loader = Loader(args['data_input'])
     raw_images, raw_labels = loader.get_raw_input()
     logging.info(' Loading done')
@@ -31,7 +31,7 @@ def main():
     logging.info(' Starting Pipeline training ...')
 
     if args['step_training']:
-        logging.info(' Launching training with validation test and evaluation ...')
+        logging.info(' Launching training with validation test ...')
         # Splitting Data in training - test
         logging.info(' Splitting Data ...')
         train_x, test_x, train_y, test_y = train_test_split(
@@ -48,7 +48,7 @@ def main():
         )
         model_evaluation.get_evaluation()
         interpreter = Interpretability(model, test_x, test_y, args)
-#        interpreter.get_interpretability_results()
+        interpreter.get_interpretability_results()
 #        interpreter.shap_results()
 
     else:
@@ -56,12 +56,12 @@ def main():
         model_steps = FullRun(raw_images, raw_labels, args)
         model, history = model_steps.launching_steps()
 
-    logging.info(' Model trained')
+    logging.info(f' Model trained and saved in {base.LOGS_DIR}')
 
-    # Saving model
-    logging.info(' Saving model ...')
-    model.save(base.MODEL_FILE)
-    logging.info(' Model saved')
+#    # Saving model
+#    logging.info(' Saving model ...')
+#    model.save(base.MODEL_FILE)
+#    logging.info(' Model saved')
 
 
 if __name__ == "__main__":
