@@ -12,6 +12,7 @@ import random
 from tensorflow.keras.utils import Sequence
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import imgaug.augmenters as iaa
 
 from masked_face.settings import base
 from masked_face.infrastructure.model_creation import ModelConstructor, CallbacksConstructor
@@ -127,7 +128,8 @@ class TrainGenerator(Sequence):
             datagen = ImageDataGenerator(
                 featurewise_center=True, featurewise_std_normalization=True,
                 rotation_range=45, horizontal_flip=True,
-                brightness_range=[0.2, 1.0]
+                brightness_range=[0.2, 1.0],
+                preprocessing_function=self.additional_augmentation
             )
             datagen.fit(train_x)
             gen = next(datagen.flow(
@@ -139,9 +141,19 @@ class TrainGenerator(Sequence):
             datagen = ImageDataGenerator(
                 featurewise_center=True, featurewise_std_normalization=True,
                 rotation_range=45, horizontal_flip=True,
-                brightness_range=[0.2, 1.0]
+                brightness_range=[0.2, 1.0],
+                preprocessing_function=self.additional_augmentation
             )
             datagen.fit(train_x)
             gen = next(datagen.flow(train_x, train_y, batch_size=32))
 
         return gen
+
+    def additional_augmentation(self, image):
+        """
+        """
+        aug1 = iaa.GaussianBlur(sigma=(0, 2.0))
+        aug2 = iaa.AdditiveGaussianNoise(scale=0.01 * 255)
+        image = aug1.augment_image(image)
+        image = aug2.augment_image(image)
+        return image
