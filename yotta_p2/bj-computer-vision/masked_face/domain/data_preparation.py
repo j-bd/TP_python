@@ -16,7 +16,9 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras import utils
 from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from tensorflow.keras.applications import mobilenet_v2
+from tensorflow.keras.applications import vgg16
+from tensorflow.keras.applications import Xception
 
 from masked_face.settings import base
 
@@ -38,7 +40,7 @@ class DataPreprocessing:
         """
         # Images preprocessing
         preparator = ImagePreparation(
-            self.images_paths, self.args['model_type'], self.args['devmode']
+            self.images_paths, self.args['model_type']
         )
         images = preparator.apply_basic_processing()
 
@@ -62,7 +64,7 @@ class ImagePreparation:
     _image_padding
     _normalize
     """
-    def __init__(self, images: list, model_type: str, devmod: bool):
+    def __init__(self, images: list, model_type: str):
         """Class initialisation
         Parameters
         ----------
@@ -70,12 +72,9 @@ class ImagePreparation:
             raw images in numpy array format
         model_type : str
             user choice
-        devmod : bool
-            debug mode
         """
         self.images = images
         self.model_type = model_type
-        self.devmod = devmod
 
     def apply_basic_processing(self):
         """
@@ -91,7 +90,12 @@ class ImagePreparation:
             image = cv2.imread(im)
             image = self._im_resize(image)
             image = img_to_array(image)
-            image = preprocess_input(image)
+            if self.model_type == 'mobilenet_v2':
+                image = mobilenet_v2.preprocess_input(image)
+            elif self.model_type == 'VGG16':
+                image = vgg16.preprocess_input(image)
+            elif self.model_type == 'Xception':
+                image = Xception.preprocess_input(image)
             im_processed.append(image)
 
         # Set images in keras model format input: len(images), H, W, Channel
