@@ -48,7 +48,8 @@ def main():
         )
         model_evaluation.get_evaluation()
         interpreter = Interpretability(model, test_x, test_y, args)
-        interpreter.get_interpretability_results()
+#        interpreter.get_interpretability_results()
+#        interpreter.shap_results()
 
     else:
         logging.info(' Launching training on full dataset ...')
