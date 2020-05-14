@@ -93,3 +93,26 @@ class Interpretability:
             grid = explainer.explain(
                 (self.x_val, self.y_val), self.model, idx, n_steps=15)
             explainer.save(grid, self.dir, str(idx) + "integrated_gradients.png")
+
+    def shap_results(self):
+        """
+        """
+        import shap
+        import numpy as np
+        shap.initjs()
+
+        preprocess = DataPreprocessing(self.x_set[0:6], self.y_set[0:6], self.args)
+        self.x_val, self.y_val, self.label_cl = preprocess.apply_preprocessing()
+
+        # select a set of background examples to take an expectation over
+        background = self.x_val[np.random.choice(self.x_val.shape[0], 5, replace=False)]
+#        background = self.x_val[2]
+        # self.x_val, self.y_val
+        # explain predictions of the model on four images
+        e = shap.DeepExplainer(self.model, background)  # , background)
+        # ...or pass tensors directly
+        # e = shap.DeepExplainer((model.layers[0].input, model.layers[-1].output), background)
+        shap_values = e.shap_values(self.x_val[1:3])
+
+        # plot the feature attributions
+        shap.image_plot(shap_values, -self.x_val[1:3])
