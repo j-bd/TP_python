@@ -10,7 +10,7 @@ CallbacksConstructor
 """
 import os
 
-from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.applications import MobileNetV2, VGG16, Xception
 from tensorflow.keras.layers import AveragePooling2D
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
@@ -97,6 +97,16 @@ class ModelConstructor:
                 weights="imagenet", include_top=False,
                 input_tensor=Input(shape=base.IMAGE_SIZE[self.model])
             )
+        elif self.model == 'VGG16':
+            base_model = VGG16(
+                weights="imagenet", include_top=False,
+                input_tensor=Input(shape=base.IMAGE_SIZE[self.model])
+            )
+        elif self.model == 'Xception':
+            base_model = Xception(
+                weights="imagenet", include_top=False,
+                input_tensor=Input(shape=base.IMAGE_SIZE[self.model])
+            )
 
         # Loop over all layers in the base model and freeze them so they will
         # not be updated during training process
@@ -172,7 +182,7 @@ class CallbacksConstructor:
         -------
         checkpoint : TensorFlow Object
         """
-        fname = os.path.sep.join([base.MODELS_DIR, "best_model.hdf5"])
+        fname = base.MODEL_FILE
         checkpoint = ModelCheckpoint(
             fname, monitor="val_loss", mode="min", save_best_only=True,
             verbose=1
