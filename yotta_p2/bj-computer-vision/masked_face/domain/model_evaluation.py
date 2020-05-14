@@ -10,12 +10,12 @@ ModelResultEvaluation
 import os
 import logging
 
-import matplotlib.pyplot as plt
 import numpy as np
-from sklearn.metrics import classification_report
+import matplotlib.pyplot as plt
+from sklearn.metrics import classification_report, confusion_matrix
 
-from masked_face.domain.data_preparation import DataPreprocessing
 from masked_face.settings import base
+from masked_face.domain.data_preparation import DataPreprocessing
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
@@ -60,7 +60,7 @@ class ModelResultEvaluation:
 
         self._model_evaluation()
         self._display_learning_evol()
-        logging.info(f' Plot available in {base.LOGS_DIR}')
+        logging.info(f' Plots available in {base.LOGS_DIR}')
 
     def _model_evaluation(self):
         """
@@ -71,12 +71,36 @@ class ModelResultEvaluation:
         Print into consol the classification report
         """
         predictions = self.model.predict(self.test_x, batch_size=64)
+        labels = ['Masked_face', 'Nude_face']
+
+        # Classification report display in terminal
         print(
             classification_report(
                 self.test_y.argmax(axis=1), predictions.argmax(axis=1),
                 target_names=self.label_cl  # base.LABELS_NAME
             )
         )
+
+        # Confusion matrix saved into log directory and display in terminal
+        fname = os.path.join(base.LOGS_DIR, "confusion matrix.png")
+        c_m = confusion_matrix(
+            self.test_y.argmax(axis=1), predictions.argmax(axis=1)
+        )
+        logging.info(' Confusion Matrix')
+        print(c_m)
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        cax = ax.matshow(c_m)
+        plt.title('Confusion matrix of the classifier')
+        fig.colorbar(cax)
+        ax.set_xticklabels([''] + labels)
+        ax.set_yticklabels([''] + labels)
+        plt.xlabel('Predicted')
+        plt.ylabel('True')
+        for (i, j), z in np.ndenumerate(c_m):
+            ax.text(j, i, '{:0.1f}'.format(z), ha='center', va='center')
+        plt.savefig(fname)
 
     def _display_learning_evol(self):
         """
