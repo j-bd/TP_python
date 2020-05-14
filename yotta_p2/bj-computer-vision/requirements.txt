@@ -4,4 +4,6 @@ opencv-python
 imutils
 matplotlib
 tf-explain
+shap
+imgaug
 
