@@ -30,31 +30,33 @@ class Interpretability:
     def get_interpretability_results(self):
         """
         """
-        preprocess = DataPreprocessing(self.x_set[0:6], self.y_set[0:6], self.args)
+        preprocess = DataPreprocessing(
+            self.x_set[0:4], self.y_set[0:4], self.args
+        )
         self.x_val, self.y_val, self.label_cl = preprocess.apply_preprocessing()
 
-        explainer = ExtractActivations()
-        # Compute Activations of layer activation_1
-        grid = explainer.explain(
-            (self.x_val, self.y_val), self.model, 'Conv_1'
-        )
-        explainer.save(grid, self.dir, "activations.png")
+#        explainer = ExtractActivations()
+#        # Compute Activations of layer activation_1
+#        grid = explainer.explain(
+#            (self.x_val, self.y_val), self.model, 'Conv_1'
+#        )
+#        explainer.save(grid, self.dir, "activations.png")
 
-        class_index = [0, 1]
-        for idx in class_index:
-            explainer = VanillaGradients()
-            # Compute VanillaGradients on VGG16
-            grid = explainer.explain(
-                (self.x_val, self.y_val), self.model, idx)
-            explainer.save(grid, self.dir, str(idx) + "vanilla_gradients.png")
-
-        class_index = [0, 1]
-        for idx in class_index:
-            explainer = GradientsInputs()
-            # Compute GradientsInputs on VGG16
-            grid = explainer.explain(
-                (self.x_val, self.y_val), self.model, idx)
-            explainer.save(grid, self.dir, str(idx) + "gradients_inputs.png")
+#        class_index = [0, 1]
+#        for idx in class_index:
+#            explainer = VanillaGradients()
+#            # Compute VanillaGradients on VGG16
+#            grid = explainer.explain(
+#                (self.x_val, self.y_val), self.model, idx)
+#            explainer.save(grid, self.dir, str(idx) + "vanilla_gradients.png")
+#
+#        class_index = [0, 1]
+#        for idx in class_index:
+#            explainer = GradientsInputs()
+#            # Compute GradientsInputs on VGG16
+#            grid = explainer.explain(
+#                (self.x_val, self.y_val), self.model, idx)
+#            explainer.save(grid, self.dir, str(idx) + "gradients_inputs.png")
 
         class_index = [0, 1]
         for idx in class_index:
@@ -78,21 +80,21 @@ class Interpretability:
             )
             explainer.save(grid, self.dir, str(idx) + "grad_cam.png")
 
-        class_index = [0, 1]
-        for idx in class_index:
-            explainer = SmoothGrad()
-            # Compute SmoothGrad on VGG16
-            grid = explainer.explain(
-                (self.x_val, self.y_val), self.model, idx, 20, 1.0)
-            explainer.save(grid, self.dir, str(idx) + "smoothgrad.png")
-
-        class_index = [0, 1]
-        for idx in class_index:
-            explainer = IntegratedGradients()
-            # Compute SmoothGrad on VGG16
-            grid = explainer.explain(
-                (self.x_val, self.y_val), self.model, idx, n_steps=15)
-            explainer.save(grid, self.dir, str(idx) + "integrated_gradients.png")
+#        class_index = [0, 1]
+#        for idx in class_index:
+#            explainer = SmoothGrad()
+#            # Compute SmoothGrad on VGG16
+#            grid = explainer.explain(
+#                (self.x_val, self.y_val), self.model, idx, 20, 1.0)
+#            explainer.save(grid, self.dir, str(idx) + "smoothgrad.png")
+#
+#        class_index = [0, 1]
+#        for idx in class_index:
+#            explainer = IntegratedGradients()
+#            # Compute SmoothGrad on VGG16
+#            grid = explainer.explain(
+#                (self.x_val, self.y_val), self.model, idx, n_steps=15)
+#            explainer.save(grid, self.dir, str(idx) + "integrated_gradients.png")
 
     def shap_results(self):
         """
