@@ -71,7 +71,6 @@ class ModelResultEvaluation:
         Print into consol the classification report
         """
         predictions = self.model.predict(self.test_x, batch_size=64)
-        labels = ['Masked_face', 'Nude_face']
 
         # Classification report display in terminal
         print(
@@ -94,8 +93,8 @@ class ModelResultEvaluation:
         cax = ax.matshow(c_m)
         plt.title('Confusion matrix of the classifier')
         fig.colorbar(cax)
-        ax.set_xticklabels([''] + labels)
-        ax.set_yticklabels([''] + labels)
+        ax.set_xticklabels([''] + base.LABELS_NAME)
+        ax.set_yticklabels([''] + base.LABELS_NAME)
         plt.xlabel('Predicted')
         plt.ylabel('True')
         for (i, j), z in np.ndenumerate(c_m):
