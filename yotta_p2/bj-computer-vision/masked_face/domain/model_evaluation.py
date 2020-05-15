@@ -44,6 +44,8 @@ class ModelResultEvaluation:
             history of every training epochs
         directory : str
             path to directory where to save outputs
+        args : arguments parser
+            user choices
         """
         self.model = model
         self.test_x = test_x
@@ -76,7 +78,7 @@ class ModelResultEvaluation:
         print(
             classification_report(
                 self.test_y.argmax(axis=1), predictions.argmax(axis=1),
-                target_names=self.label_cl  # base.LABELS_NAME
+                target_names=self.label_cl
             )
         )
 
