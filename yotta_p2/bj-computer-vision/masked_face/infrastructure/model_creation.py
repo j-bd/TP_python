@@ -33,9 +33,11 @@ class ModelConstructor:
     get_model
     _top_layers_constructor
     _base_model
+    _optimizer
     """
     def __init__(self, model: str):
         """Class initialisation
+
         Parameters
         ----------
         model : str
@@ -57,8 +59,8 @@ class ModelConstructor:
         final_model = Model(inputs=base_model.input, outputs=head_model)
 
         model = self._optimizer(final_model)
-        model.summary()
 
+        model.summary()
         return model
 
     def _top_layers_constructor(self, base_model):
@@ -116,7 +118,18 @@ class ModelConstructor:
         return base_model
 
     def _optimizer(self, model):
-        """
+        """Parameters for a stochastic gradient descent method that is based
+        on adaptive estimation of first-order and second-order moments : Adam
+
+        Parameters
+        ----------
+        model : Keras model
+            Keras pretrained model
+
+        Returns
+        -------
+        model : Keras model
+            Keras compile model
         """
         opt = Adam(
             lr=base.INIT_LEARNING_RATE,
@@ -138,10 +151,16 @@ class CallbacksConstructor:
     _tensor_board
     _checkpoint_call
     """
-    def __init__(self):
+    def __init__(self, model: str):
         """
         Class initialisation
+
+        Parameters
+        ----------
+        model : str
+            model selected by user
         """
+        self.model = model
         self.calbacks = []
 
     def get_callbacks(self):
@@ -182,7 +201,8 @@ class CallbacksConstructor:
         -------
         checkpoint : TensorFlow Object
         """
-        fname = base.MODEL_FILE
+        fname = os.path.join(
+            base.MODELS_DIR, self.model + '-masked_detection.hdf5')
         checkpoint = ModelCheckpoint(
             fname, monitor="val_loss", mode="min", save_best_only=True,
             verbose=1
