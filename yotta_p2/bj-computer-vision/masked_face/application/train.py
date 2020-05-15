@@ -58,11 +58,6 @@ def main():
 
     logging.info(f' Model trained and saved in {base.LOGS_DIR}')
 
-#    # Saving model
-#    logging.info(' Saving model ...')
-#    model.save(base.MODEL_FILE)
-#    logging.info(' Model saved')
-
 
 if __name__ == "__main__":
     main()
