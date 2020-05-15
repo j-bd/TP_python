@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 """
 Module to realize basic transformation on raw input images and
-corresponding labels
+corresponding labels. From path to image and categorical label.
 
 Classes
 -------
+DataPreprocessing
 ImagePreparation
 LabelClassifier
 """
@@ -13,30 +14,54 @@ import logging
 
 import cv2
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras import utils
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.applications import mobilenet_v2
 from tensorflow.keras.applications import vgg16
-from tensorflow.keras.applications import Xception
+from tensorflow.keras.applications import xception
+from sklearn.preprocessing import LabelEncoder
 
 from masked_face.settings import base
+
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 
 class DataPreprocessing:
     """
+    Organize labels and images transformation
+
+    Methods
+    -------
+    apply_preprocessing
     """
-    def __init__(self, images_paths, labels, args):
-        """
+    def __init__(self, images_paths: list, labels: list, args):
+        """Class initialisation
+
+        Parameters
+        ----------
+        paths_images : list
+            list of paths to selected images
+        labels : list
+            list of labels (str) corresponding to the images paths
+        args : arguments parser
+            list of user arguments
         """
         self.images_paths = images_paths
         self.labels = labels
         self.args = args
 
     def apply_preprocessing(self):
-        """
+        """Call classes in charge of transforming images and labels
+
+        Returns
+        -------
+        images : list
+            list of numpy array
+        labels_cat : list
+            list of categoricalized labels
+        label_classes : list
+            names of labels
         """
         # Images preprocessing
         preparator = ImagePreparation(
@@ -58,7 +83,6 @@ class ImagePreparation:
     Methods
     -------
     apply_basic_processing
-    _gray
     _im_resize
     _image_scalling
     _image_padding
@@ -66,6 +90,7 @@ class ImagePreparation:
     """
     def __init__(self, images: list, model_type: str):
         """Class initialisation
+
         Parameters
         ----------
         images : list
@@ -95,7 +120,7 @@ class ImagePreparation:
             elif self.model_type == 'VGG16':
                 image = vgg16.preprocess_input(image)
             elif self.model_type == 'Xception':
-                image = Xception.preprocess_input(image)
+                image = xception.preprocess_input(image)
             im_processed.append(image)
 
         # Set images in keras model format input: len(images), H, W, Channel
@@ -111,6 +136,7 @@ class ImagePreparation:
         Parameters
         ----------
         image : numpy array
+
         Returns
         -------
         resized_image : numpy array
@@ -133,7 +159,7 @@ class ImagePreparation:
 
         return resized_image
 
-    def _image_scalling(self, image, scale):
+    def _image_scalling(self, image, scale: float):
         """
         Downsize the image.
 
@@ -141,6 +167,7 @@ class ImagePreparation:
         ----------
         image : numpy array
         scale : float
+
         Returns
         -------
         resized : numpy array
@@ -152,7 +179,7 @@ class ImagePreparation:
         resized = cv2.resize(image, dsize)
         return resized
 
-    def _image_padding(self, image, target_h, target_w):
+    def _image_padding(self, image, target_h: int, target_w: int):
         """
         Add the right amount of black padding.
 
@@ -161,6 +188,8 @@ class ImagePreparation:
         image : numpy array
         target_h : int
         target_w : int
+
+        Returns
         -------
         constant : numpy array
             resized image in numpy array format
@@ -186,6 +215,7 @@ class LabelClassifier:
     """
     def __init__(self, labels: list):
         """Class initialisation
+
         Parameters
         ----------
         images : list
@@ -197,6 +227,7 @@ class LabelClassifier:
     def get_categorical_labels(self):
         """
         Transform string label into categorised label
+
         Returns
         -------
         categorised_label : array
@@ -211,9 +242,13 @@ class LabelClassifier:
     def _label_encoding(self):
         """
         Transform str label into label with value between 0 and self.class_nbr
+
         Returns
         -------
+        labels
             array of label under int correspondance
+        label_classes : list
+            names of the differents classes
         """
         self.encoder = LabelEncoder()
         labels = self.encoder.fit_transform(self.labels)
@@ -223,10 +258,12 @@ class LabelClassifier:
     def _label_categorise(self, encoded_label):
         """
         Converts a class vector to binary class matrix
+
         Parameters
         ----------
         encoded_label : array
             labels in int format
+
         Returns
         -------
             binary class matrix
