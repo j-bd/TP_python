@@ -17,16 +17,19 @@ INTERPRETABILITY = os.path.join(LOGS_DIR, 'interpretability')
 # Train variables
 # ---------------
 # Image constants
-IMAGE_SIZE = {'MobileNetV2': (224, 224, 3)}
+IMAGE_SIZE = {
+    'MobileNetV2': (224, 224, 3), 'VGG16': (224, 224, 3),
+    'Xception': (299, 299, 3)
+}
 
 # Classifier Model constants
-MODEL_CHOICE = 'MobileNetV2'
+MODEL_CHOICE = 'Xception'  # 'MobileNetV2' 'VGG16' 'Xception'
 CLASS_NBR = 2
 BATCH_SIZE = 32
 INIT_LEARNING_RATE = 1e-2
 EPOCHS = 2
 MODEL_FILE = os.path.join(MODELS_DIR, MODEL_CHOICE + '-masked_detection.hdf5')
-LABELS_NAME = ['masked', 'no_masked']
+LABELS_NAME = ['Masked', 'No_masked']
 
 
 # Predict variables
