@@ -13,7 +13,7 @@ from argparse import ArgumentParser
 from masked_face.settings import base
 
 
-class TrainCommandLineParser():
+class TrainParser():
     """Command line parser for train application.
 
     Methods
@@ -43,7 +43,7 @@ class TrainCommandLineParser():
         )
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=False  # TODO Change with False at the end
+            default=True  # TODO Change with False at the end
         )
 
     def parse_args(self):
@@ -72,7 +72,7 @@ class PredictCommandLineParser():
 
     def _add_arguments(self):
         self.parser.add_argument(
-            "-td", "--type_detection", type=str, default='image',
+            "-td", "--type_detection", type=str, default='video',
             help="Choice between: image / video / webcam"
         )
         self.parser.add_argument(
@@ -89,7 +89,7 @@ class PredictCommandLineParser():
         )
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=True  # TODO put to False
+            default=False  # TODO put to False
         )
 
     def parse_args(self):
