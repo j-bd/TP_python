@@ -47,16 +47,19 @@ def main():
             model, test_x, test_y, history, args
         )
         model_evaluation.get_evaluation()
+
+        # Model intepretability
         interpreter = Interpretability(model, test_x, test_y, args)
-        interpreter.get_interpretability_results()
-#        interpreter.shap_results()
+#        interpreter.tf_explainer_results()
+        if args['model_type'] == 'VGG16':
+            interpreter.shap_results()
 
     else:
         logging.info(' Launching training on full dataset ...')
         model_steps = FullRun(raw_images, raw_labels, args)
         model, history = model_steps.launching_steps()
 
-    logging.info(f' Model trained and saved in {base.LOGS_DIR}')
+    logging.info(f' Model trained and saved in {base.MODELS_DIR}')
 
 
 if __name__ == "__main__":
