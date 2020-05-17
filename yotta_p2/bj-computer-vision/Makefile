@@ -6,7 +6,6 @@ init: ## initiate virtual environment
 	touch init
 
 install: ## install project dependencies
-	# conda install packages
 	pip install -e .
 	pip install -r requirements.txt
 	touch install
