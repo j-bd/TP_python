@@ -23,6 +23,7 @@ class MediumSelection:
 
     Methods
     -------
+    medium_pipeline_selection
     webcam_detection
     video_detection
     image_detection
