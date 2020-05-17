@@ -20,15 +20,15 @@ class GetModels:
     -------
     models_loading
     """
-    def __init__(self, type_detection):
+    def __init__(self, classifier_type: str):
         """Class initialisation
 
         Parameters
         ----------
-        type_detection : str
+        classifier_type : str
             user specification
         """
-        self.type_input = type_detection
+        self.classifier_type = classifier_type
 
     def models_loading(self):
         """
@@ -41,32 +41,21 @@ class GetModels:
         classifier
             Keras model user choice
         """
-        if self.type_input == 'webcam':
-            model_classification = base.WEBC_MODEL_CLASSIFIER_FILE
-            model_detection_structure = base.WEBC_MODEL_DETECTION_STRUCTURE
-            model_detection_weights = base.WEBC_MODEL_DETECTION_WEIGHT
-            detector = cv2.dnn.readNet(
-                model_detection_structure, model_detection_weights
-            )
+        model_detection_structure = base.MODEL_DETECTION_STRUCTURE
+        model_detection_weights = base.MODEL_DETECTION_WEIGHT
+        detector = cv2.dnn.readNet(
+            model_detection_structure, model_detection_weights
+        )
+        if self.classifier_type == 'MobileNetV2':
+            model_classification = base.MOBNETV2_CLASSIFIER
             classifier = load_model(model_classification)
-            return detector, classifier
 
-        elif self.type_input == 'video':
-            model_classification = base.VIDEO_MODEL_CLASSIFIER_FILE
-            model_detection_structure = base.VIDEO_MODEL_DETECTION_STRUCTURE
-            model_detection_weights = base.VIDEO_MODEL_DETECTION_WEIGHT
-            detector = cv2.dnn.readNet(
-                model_detection_structure, model_detection_weights
-            )
+        elif self.classifier_type == 'VGG16':
+            model_classification = base.VGG16_CLASSIFIER
             classifier = load_model(model_classification)
-            return detector, classifier
 
-        elif self.type_input == 'image':
-            model_classification = base.IMAGE_MODEL_CLASSIFIER_FILE
-            model_detection_structure = base.IMAGE_MODEL_DETECTION_STRUCTURE
-            model_detection_weights = base.IMAGE_MODEL_DETECTION_WEIGHT
-            detector = cv2.dnn.readNet(
-                model_detection_structure, model_detection_weights
-            )
-            classifier = load_model(model_classification)
-            return detector, classifier
+#        elif self.classifier_type == 'Xception':
+#            model_classification = base.IMAGE_MODEL_CLASSIFIER_FILE
+#            classifier = load_model(model_classification)
+
+        return detector, classifier
