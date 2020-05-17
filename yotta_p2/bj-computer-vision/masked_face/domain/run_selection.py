@@ -9,7 +9,7 @@ Classes
 StepsRun
 FullRun
 """
-
+import os
 import logging
 import random
 
@@ -141,12 +141,18 @@ class FullRun:
 
         # Callbacks creation
         logging.info(' Callbacks calling ...')
-        callbacks_creator = CallbacksConstructor()
+        callbacks_creator = CallbacksConstructor(self.args['model_type'])
         callbacks = callbacks_creator.get_callbacks()
 
         # Launch model training
         logging.info(' Training model ...')
         history = model.fit(
             x=batch_im_generator, epochs=base.EPOCHS, callbacks=callbacks
+        )
+        model.save(
+            os.path.join(
+                base.MODELS_DIR, self.args['model_type'] +
+                '-masked_detection.hdf5'
+            )
         )
         return model, history
