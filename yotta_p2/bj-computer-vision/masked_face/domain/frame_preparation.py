@@ -6,9 +6,7 @@ corresponding labels. From path to image and categorical label.
 
 Classes
 -------
-DataPreprocessing
 ImagePreparation
-LabelClassifier
 """
 import cv2
 import numpy as np
@@ -27,11 +25,9 @@ class ImagePreparation:
     Methods
     -------
     apply_basic_processing
-    _gray
     _im_resize
     _image_scalling
     _image_padding
-    _normalize
     """
     def __init__(self, images: list, model_type: str):
         """Class initialisation
