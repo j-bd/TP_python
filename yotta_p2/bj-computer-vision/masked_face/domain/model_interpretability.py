@@ -67,7 +67,7 @@ class Interpretability:
         preprocess = DataPreprocessing(
             self.x_set[2:4], self.y_set[2:4], self.args
         )
-        self.x_val, self.y_val, self.label_cl = preprocess.apply_preprocessing()
+        self.x_val, self.y_val, self.label = preprocess.apply_preprocessing()
 
         # ExtractActivations
 #        explainer = ExtractActivations()
@@ -185,7 +185,7 @@ class Interpretability:
         preprocess = DataPreprocessing(
             self.x_set[2:4], self.y_set[2:4], self.args
         )
-        self.x_val, self.y_val, self.label_cl = preprocess.apply_preprocessing()
+        self.x_val, self.y_val, self.label = preprocess.apply_preprocessing()
 
         # Layer choosen to be analysed
         layer = 5  # TODO We could boucle over different layer
