@@ -7,10 +7,10 @@ Example
 -------
 Script could be run with the following command line
 
-    $ python masked_face/application/predict.py ----type_detection 'video'
+    $ python masked_face/application/predict.py --type_detection 'video'
     --path_video 'path/to/video.mp4' --classifier_type 'MobileNetV2'
 
-    $ python masked_face/application/predict.py ----type_detection 'image'
+    $ python masked_face/application/predict.py --type_detection 'image'
     --path_image 'path/to/image.jpg' --classifier_type 'MobileNetV2'
 
 --type_detection: 3 types of detection are offered 'image', 'video', 'webcam'.
