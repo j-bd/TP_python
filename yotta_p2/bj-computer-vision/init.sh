@@ -2,7 +2,7 @@
 set -e
 
     # try to create a .venv with conda
-conda create -n .venv python=3.7  || \
+conda create -n yp2 python=3.7  || \
     # if it fails, try using python
     python -m venv .venv  || \
     # if it fails: warn the user (clean the .venv if it was partially created)
