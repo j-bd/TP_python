@@ -12,8 +12,7 @@ import cv2
 import numpy as np
 import imutils
 
-from masked_face.settings import base
-from masked_face.domain.data_preparation import ImagePreparation
+from masked_face.domain.frame_preparation import ImagePreparation
 
 
 class FrameDetection:
@@ -40,17 +39,16 @@ class FrameDetection:
         args : ArgumentParser
             user specification
         """
-        self.devmode = args['devmode']
-        self.confidence = args["confidence"]
+        self.args = args
         self.face_detector = detection
         self.face_classifier = classifier
 
-    def launch_detection(self, frame):
+    def launch_detection(self, frame, streamlit_window):
         """
         Process webcam video through all the pipeline detection
         """
-        # Resize frame for detector
-        frame = imutils.resize(frame, width=400)
+        # Windows displaying size
+        frame = imutils.resize(frame, width=600)
 
         # Faces Detection
         detections = self._face_detection(frame)
@@ -62,9 +60,7 @@ class FrameDetection:
         predictions = self._faces_classification(faces)
 
         # Display results
-        self._display_results(frame, predictions, locations)
-
-        cv2.imshow('Video', frame)
+        self._display_results(frame, predictions, locations, streamlit_window)
 
     def _face_detection(self, frame):
         """
@@ -82,7 +78,7 @@ class FrameDetection:
         """
         # Image preprocessing
         blob = cv2.dnn.blobFromImage(
-            frame, 1.0, (300, 300), (104.0, 177.0, 123.0)
+            frame, 1.0, (320, 240), (104.0, 177.0, 123.0)
         )
         # Face Detection
         self.face_detector.setInput(blob)
@@ -116,7 +112,7 @@ class FrameDetection:
             # Targets interest detections (greater than user threshold)
             detection_confidence = detections[0, 0, idx, 2]
 
-            if detection_confidence > self.confidence:
+            if detection_confidence > self.args["confidence"]:
                 # Retrieve face bounding box
                 box = detections[0, 0, idx, 3:7] * np.array([w, h, w, h])
                 (start_x, start_y, end_x, end_y) = box.astype("int")
@@ -147,13 +143,15 @@ class FrameDetection:
         if len(faces) > 0:
             # Preprocess face before pushing in classifier prediction
             preprocessing = ImagePreparation(
-                faces, base.WEBC_MODEL_CLASSIFIER, False
+                faces, self.args["classifier_type"]
             )
             faces = preprocessing.apply_basic_processing()
             predictions = self.face_classifier.predict(faces)
         return predictions
 
-    def _display_results(self, frame, predictions, localisations):
+    def _display_results(
+        self, frame, predictions, localisations, streamlit_window
+    ):
         """
         Display the original frame and add a bounding box with text
 
@@ -165,8 +163,10 @@ class FrameDetection:
             probability of having or not a mask
         localisations : list
             bounding box of selected faces
+        streamlit_window: streamlit object
+            allow to overwrite frame in the same window
         """
-        if self.devmode:
+        if self.args['devmode']:
             print(f"localisations = {localisations}")
             print(f"predictions = {predictions}")
         for (bounding_box, prediction) in zip(localisations, predictions):
@@ -186,3 +186,8 @@ class FrameDetection:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.45, color, 2
             )
             cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), color, 2)
+
+            if self.args['streamlit']:
+                streamlit_window.image(frame, channels="BGR")
+            else:
+                cv2.imshow('Result', frame)
