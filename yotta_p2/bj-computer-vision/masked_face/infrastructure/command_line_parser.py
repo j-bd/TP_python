@@ -5,8 +5,8 @@ Module to parse command line.
 
 Classes
 -------
-TrainCommandLineParser
-PredictCommandLineParser
+TrainParser
+PredictParser
 """
 from argparse import ArgumentParser
 
@@ -30,20 +30,20 @@ class TrainParser():
     def _add_arguments(self):
         """Add arguments to the parser."""
         self.parser.add_argument(
-            "-d", "--data_input", type=str, default=base.DATA_FILE,
-            help="path to master input data directory"  # TODO Change with RAW_DIR at the end
+            "-d", "--data_input", type=str, default=base.RAW_DIR,
+            help="path to master input data directory"
         )
         self.parser.add_argument(
-            "-st", "--step_training", type=bool, default=True,
-            help="for hyperparameters improuvments"  # TODO Change with False at the end
+            "-st", "--step_training", type=bool, default=False,
+            help="for hyperparameters improuvments"
         )
         self.parser.add_argument(
-            "-mt", "--model_type", type=str, default=base.MODEL_CHOICE,
-            help="Keras model selection"
+            "-mt", "--model_type", type=str, default='MobileNetV2',
+            help="Keras model selection: 'MobileNetV2', 'VGG16', 'Xception'"
         )
         self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=True  # TODO Change with False at the end
+            default=False
         )
 
     def parse_args(self):
@@ -56,7 +56,7 @@ class TrainParser():
         return vars(self.parser.parse_args())
 
 
-class PredictCommandLineParser():
+class PredictParser():
     """Command line parser for predict application.
 
     Methods
@@ -72,24 +72,32 @@ class PredictCommandLineParser():
 
     def _add_arguments(self):
         self.parser.add_argument(
-            "-td", "--type_detection", type=str, default='video',
+            "-td", "--type_detection", type=str, default='webcam',
             help="Choice between: image / video / webcam"
         )
         self.parser.add_argument(
-            "-pv", "--path_video", type=str, default=base.VIDEO_FILE,
+            "-pv", "--path_video", type=str,
             help="Path to your video"
         )
         self.parser.add_argument(
-            "-pi", "--path_image", type=str, default=base.IMAGE_FILE,
+            "-pi", "--path_image", type=str,
             help="Path to your image"
+        )
+        self.parser.add_argument(
+            "-ct", "--classifier_type", type=str, default='MobileNetV2',
+            help="Classifier model choice: 'MobileNetV2', 'VGG16', 'Xception'"
         )
         self.parser.add_argument(
             "-c", "--confidence", type=float, default=0.5,
             help="Minimum probability to filter weak detections"
         )
         self.parser.add_argument(
+            "-st", "--streamlit", type=float, default=False,
+            help="Only used for API"
+        )
+        self.parser.add_argument(
             "-dev", "--devmode", help="developper mode", type=bool,
-            default=False  # TODO put to False
+            default=False
         )
 
     def parse_args(self):
