@@ -1,5 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Module to train models.
+
+Example
+-------
+Script could be run with the following command line
+
+    $ python masked_face/application/train.py --data_input 'path/to/dir'
+    --step_training True --model_type 'MobileNetV2'
+
+--data_input: the directory must contains two directory gathering images. One
+called 'masked_face' and the other one 'nude_face'. By default, the master
+directory is 'raw' in 'data'.
+
+--step_training: offer the possibility to train with train, validation and test
+dataset. If set to 'False', training will be done on the full dataset
+
+--model_type: 3 types of models are offered 'MobileNetV2', 'VGG16', 'Xception'.
+If you want to add an other keras model, please add the new model entry images
+size in the constant 'IMAGE_SIZE' located in 'masked_face/settings/base.py'
+"""
 import logging
 
 from sklearn.model_selection import train_test_split
@@ -50,7 +71,7 @@ def main():
 
         # Model intepretability
         interpreter = Interpretability(model, test_x, test_y, args)
-#        interpreter.tf_explainer_results()
+        interpreter.tf_explainer_results()
         if args['model_type'] == 'VGG16':
             interpreter.shap_results()
 
