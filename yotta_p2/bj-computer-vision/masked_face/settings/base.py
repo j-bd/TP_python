@@ -32,58 +32,15 @@ LABELS_NAME = ['Masked', 'No_masked']
 
 # Predict variables
 # -----------------
-# Webcam Face detector
-WEBC_MODEL_CLASSIFIER = 'MobileNetV2'
-WEBC_MODEL_CLASSIFIER_FILE = os.path.join(
-    MODELS_DIR, WEBC_MODEL_CLASSIFIER + '-masked_detection.hdf5'
+MODEL_DETECTION_STRUCTURE = os.path.join(
+    MODELS_DIR, 'detector', 'deploy.prototxt'
 )
-WEBC_MODEL_DETECTION_STRUCTURE = os.path.join(
-    MODELS_DIR, 'res10_caffe', 'deploy.prototxt'
+MODEL_DETECTION_WEIGHT = os.path.join(
+    MODELS_DIR, 'detector', 'res10_300x300_ssd_iter_140000.caffemodel'
 )
-WEBC_MODEL_DETECTION_WEIGHT = os.path.join(
-    MODELS_DIR, 'res10_caffe', 'res10_300x300_ssd_iter_140000.caffemodel'
+MOBNETV2_CLASSIFIER = os.path.join(
+    MODELS_DIR, 'classifier', 'MobileNetV2-masked_detection.hdf5'
 )
-
-# Video Face detector
-VIDEO_MODEL_CLASSIFIER = 'MobileNetV2'
-VIDEO_MODEL_CLASSIFIER_FILE = os.path.join(
-    MODELS_DIR, VIDEO_MODEL_CLASSIFIER + '-masked_detection.hdf5'
+VGG16_CLASSIFIER = os.path.join(
+    MODELS_DIR, 'classifier', 'VGG16-masked_detection.hdf5'
 )
-#VIDEO_MODEL_DETECTION_STRUCTURE = os.path.join(
-#    MODELS_DIR, 'yolo_face', 'yolov3-face.cfg'
-#)
-#VIDEO_MODEL_DETECTION_WEIGHT = os.path.join(
-#    MODELS_DIR, 'yolo_face', 'yolov3-face.weights'
-#)
-#VIDEO_MODEL_DETECTION_STRUCTURE = os.path.join(
-#    MODELS_DIR, 'res10_caffe', 'deploy.prototxt'
-#)
-#VIDEO_MODEL_DETECTION_WEIGHT = os.path.join(
-#    MODELS_DIR, 'res10_caffe', 'res10_300x300_ssd_iter_140000.caffemodel'
-#)
-VIDEO_MODEL_DETECTION_STRUCTURE = os.path.join(
-    MODELS_DIR, 'slim320_caffe', 'slim-320.prototxt'
-)
-VIDEO_MODEL_DETECTION_WEIGHT = os.path.join(
-    MODELS_DIR, 'slim320_caffe', 'slim-320.caffemodel'
-)
-VIDEO_FILE = os.path.join(PREDICT_DIR, 'video2predict', 'video.mp4')
-
-# Image Face detector
-IMAGE_MODEL_CLASSIFIER = 'MobileNetV2'
-IMAGE_MODEL_CLASSIFIER_FILE = os.path.join(
-    MODELS_DIR, IMAGE_MODEL_CLASSIFIER + '-masked_detection.hdf5'
-)
-IMAGE_MODEL_DETECTION_STRUCTURE = os.path.join(
-    MODELS_DIR, 'res10_caffe', 'deploy.prototxt'
-)
-IMAGE_MODEL_DETECTION_WEIGHT = os.path.join(
-    MODELS_DIR, 'res10_caffe', 'res10_300x300_ssd_iter_140000.caffemodel'
-)
-IMAGE_FILE = os.path.join(PREDICT_DIR, 'image2predict', 'image.jpeg')
-
-
-# Developper mode
-# ---------------
-DATA_FILE = '/home/latitude/Documents/Yotta/2-Data_Science/Projet_2-CV_NLP/data/temp_data'  # TODO removed at the end of development
-MODEL_CHOICE = 'VGG16'  # 'MobileNetV2' 'VGG16' 'Xception'
