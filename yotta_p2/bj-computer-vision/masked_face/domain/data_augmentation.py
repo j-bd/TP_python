@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri May 15 12:19:08 2020
+Module to create data augmentation on the fly
 
-@author: j-bd
+Classes
+-------
+TrainGenerator
 """
 import math
 
