@@ -26,7 +26,7 @@ IMAGE_SIZE = {
 CLASS_NBR = 2
 BATCH_SIZE = 32
 INIT_LEARNING_RATE = 1e-2
-EPOCHS = 2
+EPOCHS = 20
 LABELS_NAME = ['Masked', 'No_masked']
 
 
