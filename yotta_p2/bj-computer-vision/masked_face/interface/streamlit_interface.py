@@ -23,7 +23,7 @@ def streamlit_interface():
     type_detection = ["image", "video", "webcam"]
     td_choice = st.sidebar.selectbox("Select your support", type_detection)
 
-    classifier_type = ['MobileNetV2', 'VGG16']
+    classifier_type = ['MobileNetV2', 'VGG16', 'Xception']
     ct_choice = st.sidebar.selectbox("Select your support", classifier_type)
 
     if td_choice == 'image':
