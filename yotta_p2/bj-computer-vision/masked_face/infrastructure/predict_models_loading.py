@@ -54,8 +54,8 @@ class GetModels:
             model_classification = base.VGG16_CLASSIFIER
             classifier = load_model(model_classification)
 
-#        elif self.classifier_type == 'Xception':
-#            model_classification = base.IMAGE_MODEL_CLASSIFIER_FILE
-#            classifier = load_model(model_classification)
+        elif self.classifier_type == 'Xception':
+            model_classification = base.XCEPTION_CLASSIFIER
+            classifier = load_model(model_classification)
 
         return detector, classifier
