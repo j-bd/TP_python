@@ -11,6 +11,7 @@ Our work for this second project is to use some tools about computer vision, we 
 │   └──  nude_face                          <- Folder containing images with unmasked face
 │
 ├── logs                                    <- Folder with log files
+│    ├── interpretability                   <- File for interpretabily of models
 │    └── .gitignore                         <- Files .log ignored by git
 │
 ├── masked_face                             <- Source code for use in this project
@@ -114,8 +115,7 @@ $ python masked_face/application/train.py -h
 
 The training could be launched with the following command line:
 ```
-$ python masked_face/application/train.py --data_input 'path/to/dir'
-    --step_training True --model_type 'MobileNetV2'
+$ python masked_face/application/train.py --data_input 'path/to/dir' --step_training True --model_type 'MobileNetV2'
 ```
 
 **--data_input**: the directory must contains two directory gathering images. One
@@ -158,7 +158,7 @@ $ python masked_face/application/predict.py --type_detection 'image'
 ### 6. Mini App : Streamlit
 This application could be run with the following command line:
 ```
-$ streamlit run masked_face/infrastructure/streamlit_interface.py
+$ streamlit run masked_face/interface/streamlit_interface.py
 ```
 
 
