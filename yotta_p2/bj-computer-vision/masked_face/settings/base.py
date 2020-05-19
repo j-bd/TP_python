@@ -44,3 +44,6 @@ MOBNETV2_CLASSIFIER = os.path.join(
 VGG16_CLASSIFIER = os.path.join(
     MODELS_DIR, 'classifier', 'VGG16-masked_detection.hdf5'
 )
+XCEPTION_CLASSIFIER = os.path.join(
+    MODELS_DIR, 'classifier', 'Xception-masked_detection.hdf5'
+)
