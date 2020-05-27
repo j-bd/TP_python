@@ -115,7 +115,7 @@ class ImagePreparation:
             image = cv2.imread(im)
             image = self._im_resize(image)
             image = img_to_array(image)
-            if self.model_type == 'mobilenet_v2':
+            if self.model_type == 'MobileNetV2':
                 image = mobilenet_v2.preprocess_input(image)
             elif self.model_type == 'VGG16':
                 image = vgg16.preprocess_input(image)
