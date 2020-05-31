@@ -64,7 +64,7 @@ class TrainGenerator(Sequence):
         if self.args['devmode']:
             datagen = ImageDataGenerator(
                 featurewise_center=True, featurewise_std_normalization=True,
-                rotation_range=45, horizontal_flip=True,
+                rotation_range=20, horizontal_flip=True,
                 brightness_range=[0.2, 1.0],
                 preprocessing_function=self.additional_augmentation
             )
@@ -77,7 +77,7 @@ class TrainGenerator(Sequence):
         else:
             datagen = ImageDataGenerator(
                 featurewise_center=True, featurewise_std_normalization=True,
-                rotation_range=45, horizontal_flip=True,
+                rotation_range=20, horizontal_flip=True,
                 brightness_range=[0.2, 1.0],
                 preprocessing_function=self.additional_augmentation
             )

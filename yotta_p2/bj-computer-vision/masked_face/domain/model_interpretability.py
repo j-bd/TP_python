@@ -188,7 +188,7 @@ class Interpretability:
         self.x_val, self.y_val, self.label = preprocess.apply_preprocessing()
 
         # Layer choosen to be analysed
-        layer = 5  # TODO We could boucle over different layer
+        layer = 7  # TODO We could boucle over different layer
         submodel = get_submodel_from(layer=layer, model=self.model)
 
         # The reference is a black background preprocessed
