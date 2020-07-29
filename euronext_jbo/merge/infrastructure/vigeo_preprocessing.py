@@ -13,7 +13,6 @@ VigeoPreprocessing
 import os
 
 import pandas as pd
-import xlrd
 
 from merge.settings import base
 
