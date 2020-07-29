@@ -37,6 +37,10 @@ V_CUTOFF = 'Cutoff_dates'
 V_ISIN = 'ISIN'
 V_TITLE = 'Title'
 V_COLUMNS = [V_VIGEO_KEY, V_CUTOFF, V_ISIN, V_TITLE]
+V_COLUMNS_CAST = {
+    V_VIGEO_KEY: 'category', V_CUTOFF: 'datetime64', V_ISIN: 'category',
+    V_TITLE: 'category'
+}
 
 # F7_ISIN_to_EID_Filter file
 F_ISIN = 'isin'
