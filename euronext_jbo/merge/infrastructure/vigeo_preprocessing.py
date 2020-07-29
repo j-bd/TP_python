@@ -13,6 +13,7 @@ VigeoPreprocessing
 import os
 
 import pandas as pd
+import xlrd
 
 from merge.settings import base
 
@@ -61,7 +62,7 @@ class VigeoPreprocessing:
         file_name, file_extension = os.path.splitext(self.vigeo_data_path)
         # Read input file
         if file_extension == ".xlsx":
-            return pd.read_csv(self.vigeo_data_path)
+            return pd.read_excel(self.vigeo_data_path)
         else:
             raise TypeError(
                 f"The file format {file_extension} is not treated."
