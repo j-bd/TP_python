@@ -42,7 +42,7 @@ class IsinEidPreprocessing:
 
         Returns
         -------
-        universe_df: pandas.DataFrame
+        isin_eid_df: pandas.DataFrame
         """
         isin_eid_df = self.read_csv()
         self.sanity_check(isin_eid_df)
@@ -74,7 +74,7 @@ class IsinEidPreprocessing:
         data_columns_set = set(base.F_COLUMNS)
         data_diff = data_columns_set - set(df.columns)
         if len(data_diff) != 0:
-            raise KeyError(data_diff, "is not present in the universe file")
+            raise KeyError(data_diff, "is not present in the isin_eid file")
 
     def cast_columns(self, df):
         """
