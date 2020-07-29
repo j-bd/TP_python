@@ -6,7 +6,7 @@ Module to preprocess raw data.
 
 Classes
 -------
-UniversePreprocessing
+IsinEidPreprocessing
 
 """
 
@@ -17,13 +17,13 @@ import pandas as pd
 from merge.settings import base
 
 
-class UniversePreprocessing:
+class IsinEidPreprocessing:
     """
         Return a DataFrame with some pretreatments performing.
 
         Attributes
         ----------
-        universe_data_path: str
+        isin_eid_data_path: str
 
         Methods
         -------
@@ -33,9 +33,9 @@ class UniversePreprocessing:
         sanity_check
         cast_columns
     """
-    def __init__(self, universe_data_path):
+    def __init__(self, isin_eid_data_path):
         """Initialize class"""
-        self.universe_data_path = universe_data_path
+        self.isin_eid_data_path = isin_eid_data_path
 
     def do_preprocessing(self):
         """Perform some preliminary treatments.
@@ -44,10 +44,10 @@ class UniversePreprocessing:
         -------
         universe_df: pandas.DataFrame
         """
-        universe_df = self.read_csv()
-        self.sanity_check(universe_df)
-        universe_df = self.cast_columns(universe_df)
-        return universe_df
+        isin_eid_df = self.read_csv()
+        self.sanity_check(isin_eid_df)
+        isin_eid_df = self.cast_columns(isin_eid_df)
+        return isin_eid_df
 
     def read_csv(self):
         """
@@ -58,10 +58,10 @@ class UniversePreprocessing:
         pandas.DataFrame
         """
         # File name and extension
-        file_name, file_extension = os.path.splitext(self.universe_data_path)
+        file_name, file_extension = os.path.splitext(self.isin_eid_data_path)
         # Read input file
         if file_extension == ".csv":
-            return pd.read_csv(self.universe_data_path)
+            return pd.read_csv(self.isin_eid_data_path)
         else:
             raise TypeError(
                 f"The file format {file_extension} is not treated."
@@ -71,7 +71,7 @@ class UniversePreprocessing:
         """
         Check if expected columns are present is the dataset.
         """
-        data_columns_set = set(base.U_COLUMNS)
+        data_columns_set = set(base.F_COLUMNS)
         data_diff = data_columns_set - set(df.columns)
         if len(data_diff) != 0:
             raise KeyError(data_diff, "is not present in the universe file")
@@ -84,5 +84,4 @@ class UniversePreprocessing:
         -------
         pandas.DataFrame
         """
-        return df.astype(base.U_COLUMNS_CAST)
-
+        return df.astype(base.F_COLUMNS_CAST)
