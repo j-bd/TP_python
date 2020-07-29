@@ -17,6 +17,8 @@ Input datasets localizations can be specified with
 """
 
 from merge.infrastructure.command_line_parser import MergeCommandLineParser
+from merge.infrastructure.universe_preprocessing import UniversePreprocessing
+from merge.infrastructure.isin_eid_preprocessing import IsinEidPreprocessing
 
 
 def main():
@@ -25,6 +27,14 @@ def main():
     parser = MergeCommandLineParser()
     args = parser.parse_args()
     print(args)  # TODO Removed
+
+    # Raw data preprocessing
+    u_preprocess = UniversePreprocessing(args.universe_input)
+    universe_df = u_preprocess.do_preprocessing()
+    print(universe_df.info())  # TODO Removed
+    f_preprocess = IsinEidPreprocessing(args.filter_input)
+    filter_df = f_preprocess.do_preprocessing()
+    print(filter_df.info())  # TODO Removed
 
 
 if __name__ == "__main__":
