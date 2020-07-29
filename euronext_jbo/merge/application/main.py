@@ -19,6 +19,7 @@ Input datasets localizations can be specified with
 from merge.infrastructure.command_line_parser import MergeCommandLineParser
 from merge.infrastructure.universe_preprocessing import UniversePreprocessing
 from merge.infrastructure.isin_eid_preprocessing import IsinEidPreprocessing
+from merge.infrastructure.vigeo_preprocessing import VigeoPreprocessing
 
 
 def main():
@@ -34,7 +35,10 @@ def main():
     print(universe_df.info())  # TODO Removed
     f_preprocess = IsinEidPreprocessing(args.filter_input)
     filter_df = f_preprocess.do_preprocessing()
-    print(filter_df.info())  # TODO Removed
+    print(filter_df.info())  # TODO Remove
+    v_preprocess = VigeoPreprocessing(args.vigeo_input)
+    vigeo_df = v_preprocess.do_preprocessing()
+    print(vigeo_df.info())  # TODO Removed
 
 
 if __name__ == "__main__":
