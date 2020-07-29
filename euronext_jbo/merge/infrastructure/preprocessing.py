@@ -23,12 +23,15 @@ class UniversePreprocessing:
 
         Attributes
         ----------
-        universe_df: pandas.DataFrame
         universe_data_path: str
 
         Methods
         -------
         __init__
+        do_preprocessing
+        read_csv
+        sanity_check
+        cast_columns
     """
     def __init__(self, universe_data_path):
         """Initialize class"""
@@ -39,7 +42,7 @@ class UniversePreprocessing:
 
         Returns
         -------
-        pandas.DataFrame
+        universe_df: pandas.DataFrame
         """
         universe_df = self.read_csv()
         self.sanity_check(universe_df)
