@@ -42,8 +42,9 @@ class UniversePreprocessing:
         pandas.DataFrame
         """
         universe_df = self.read_csv()
-        self.sanity_check()
+        self.sanity_check(universe_df)
         universe_df = self.cast_columns(universe_df)
+        return universe_df
 
     def read_csv(self):
         """
@@ -63,12 +64,12 @@ class UniversePreprocessing:
                 f"The file format {file_extension} is not treated."
             )
 
-    def sanity_check(self):
+    def sanity_check(self, df):
         """
-        Check if expected columns are present is the datasets.
+        Check if expected columns are present is the dataset.
         """
         data_columns_set = set(base.U_COLUMNS)
-        data_diff = data_columns_set - set(self.universe_df.columns)
+        data_diff = data_columns_set - set(df.columns)
         if len(data_diff) != 0:
             raise KeyError(data_diff, "is not present in the universe file")
 
@@ -80,4 +81,5 @@ class UniversePreprocessing:
         -------
         pandas.DataFrame
         """
-        return df.astype(base.U_COLUMNS_CAST).dtypes
+        return df.astype(base.U_COLUMNS_CAST)
+
