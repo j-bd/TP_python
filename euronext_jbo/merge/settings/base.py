@@ -42,6 +42,7 @@ V_COLUMNS = [V_VIGEO_KEY, V_CUTOFF, V_ISIN, V_TITLE]
 F_ISIN = 'isin'
 F_FACTSET_ENTITY_ID = 'factset_entity_id'
 F_COLUMNS = [F_ISIN, F_FACTSET_ENTITY_ID]
+F_COLUMNS_CAST = {F_ISIN: 'category', F_FACTSET_ENTITY_ID: 'category'}
 
 
 
