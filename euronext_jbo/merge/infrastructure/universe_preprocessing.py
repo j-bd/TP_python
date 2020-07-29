@@ -85,4 +85,3 @@ class UniversePreprocessing:
         pandas.DataFrame
         """
         return df.astype(base.U_COLUMNS_CAST)
-
