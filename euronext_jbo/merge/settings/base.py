@@ -48,6 +48,8 @@ F_FACTSET_ENTITY_ID = 'factset_entity_id'
 F_COLUMNS = [F_ISIN, F_FACTSET_ENTITY_ID]
 F_COLUMNS_CAST = {F_ISIN: 'category', F_FACTSET_ENTITY_ID: 'category'}
 
+# Global
+DATE = 'date'
 
 
 # Socio eco columns
