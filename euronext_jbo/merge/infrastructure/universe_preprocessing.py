@@ -48,8 +48,6 @@ class UniversePreprocessing:
         self.sanity_check(universe_df)
         universe_df = self.cast_columns(universe_df)
         universe_df = self.datetime_setup(universe_df)
-        # Sort dataframe by date
-        universe_df.sort_values(by=base.DATE, inplace=True)
         return universe_df
 
     def read_csv(self):
