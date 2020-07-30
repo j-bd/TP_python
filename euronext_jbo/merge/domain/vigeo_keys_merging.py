@@ -9,7 +9,6 @@ Classes
 VigeoKeysMerging
 
 """
-
 from merge.settings import base
 
 
@@ -55,27 +54,39 @@ class VigeoKeysMerging:
         size = len(self.universe_df)
         for u_index, u_row in self.universe_df.iterrows():
             print(counter, '/', size)
-            for v_index, v_row in self.vigeo_df.iterrows():
-                if u_row[base.DATE] <= v_row[base.DATE]:
-                    if u_row[base.U_ISIN] == v_row[base.V_ISIN]:
-                        self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
-                        break
-                    elif u_row[base.U_HISTORICAL_ISIN] == v_row[base.V_ISIN]:
-                        self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
-                        break
-                    elif u_row[base.U_ISIN] == v_row[base.V_VIGEO_KEY]:
-                        self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
-                        break
-                    elif u_row[base.U_HISTORICAL_ISIN] == v_row[base.V_VIGEO_KEY]:
-                        self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
-                        break
-                else:
-                    for f_index, f_row in self.filter_df.iterrows():
-                        if u_row[base.U_FACTSET_ENTITY_ID] == f_row[base.F_FACTSET_ENTITY_ID] and f_row[base.F_ISIN] == v_row[base.V_ISIN]:
-                            self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
-                            break
+
+            first_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_ISIN])].head(1)
+            if len(first_condition) != 0:
+                self.universe_df.loc[u_index, base.U_VIGEO_KEY] = first_condition[base.V_VIGEO_KEY].values[0]
+                pass
+
+            second_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_HISTORICAL_ISIN])].head(1)
+            if len(second_condition) != 0:
+                self.universe_df.loc[u_index, base.U_VIGEO_KEY] = second_condition[base.V_VIGEO_KEY].values[0]
+                pass
+
+            third_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_VIGEO_KEY] == u_row[base.U_ISIN])].head(1)
+            if len(third_condition) != 0:
+                self.universe_df.loc[u_index, base.U_VIGEO_KEY] = third_condition[base.V_VIGEO_KEY].values[0]
+                pass
+
+            fourth_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_VIGEO_KEY] == u_row[base.U_HISTORICAL_ISIN])].head(1)
+            if len(fourth_condition) != 0:
+                self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fourth_condition[base.V_VIGEO_KEY].values[0]
+                pass
+
+            # fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == self.filter_df[base.F_ISIN].values[0])].head(1)
+            # fifth_condition = fifth_condition.loc[(fifth_condition[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
+            fifth_condition = self.filter_df.loc[(self.filter_df[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
+            try:
+                fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.V_ISIN] == fifth_condition[base.F_ISIN].values[0]) & (self.vigeo_df[base.DATE] >= u_row[base.DATE])].head(1)
+                if len(fifth_condition) != 0:
+                    self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fifth_condition[base.V_VIGEO_KEY].values[0]
+                    print(u_index)
+                    pass
+            except IndexError:
+                print('no_values')
 
             counter += 1
-            if counter == 10:
-                break
+
         return self.universe_df
