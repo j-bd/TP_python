@@ -20,6 +20,8 @@ from merge.infrastructure.command_line_parser import MergeCommandLineParser
 from merge.infrastructure.universe_preprocessing import UniversePreprocessing
 from merge.infrastructure.isin_eid_preprocessing import IsinEidPreprocessing
 from merge.infrastructure.vigeo_preprocessing import VigeoPreprocessing
+from merge.domain.vigeo_keys_merging import VigeoKeysMerging
+from merge.settings import base
 
 
 def main():
@@ -39,6 +41,14 @@ def main():
     v_preprocess = VigeoPreprocessing(args.vigeo_input)
     vigeo_df = v_preprocess.do_preprocessing()
     print(vigeo_df.info())  # TODO Removed
+    print(vigeo_df.head(5))  # TODO Removed
+
+    # Merging Vigeo_key to Universe
+    merging_data = VigeoKeysMerging(universe_df, filter_df, vigeo_df)
+    final_data = merging_data.merge_vigeo_key()
+
+    # Save data
+    final_data.to_csv(base.UNIVERSE_VIGEO_FILE)
 
 
 if __name__ == "__main__":
