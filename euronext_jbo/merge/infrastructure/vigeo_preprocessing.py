@@ -47,6 +47,9 @@ class VigeoPreprocessing:
         vigeo_df = self.read_csv()
         self.sanity_check(vigeo_df)
         vigeo_df = self.cast_columns(vigeo_df)
+        vigeo_df = self.datetime_setup(vigeo_df)
+        # Sort dataframe by date
+        vigeo_df.sort_values(by=base.DATE, inplace=True)
         return vigeo_df
 
     def read_csv(self):
@@ -85,3 +88,14 @@ class VigeoPreprocessing:
         pandas.DataFrame
         """
         return df.astype(base.V_COLUMNS_CAST)
+
+    def datetime_setup(self, df):
+        """
+        Setup date columns as expected.
+
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        df[base.DATE] = pd.to_datetime(df[base.V_CUTOFF]).dt.to_period("D")
+        return df
