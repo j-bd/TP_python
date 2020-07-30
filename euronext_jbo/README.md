@@ -1,6 +1,6 @@
-# Face Detection Project (bj-dl) Repository
+# Data merging - Euronext - Repository
 
-Code to solve human face wearing a mask protection
+Code to merge specific key into a global file
 
 
 # Project Organization
@@ -13,34 +13,34 @@ Code to solve human face wearing a mask protection
     │   ├── processed       <- The final, canonical data sets for modeling and predictions.
     │   └── raw             <- The original, immutable data dump.
     │
-    ├── face_detection      <- Source code for use in this project.
+    ├── merge		    <- Source code for use in this project.
     │   │
     │   ├── application     <- Scripts to train models and make predictions.
     │   │   ├── __init__.py <- Makes application a Python module.
-    │   │   ├── predict.py  <- Script to make predictions.
-    │   │   └── train.py    <- Script to train models.
+    │   │   ├── main.py     <- Script to launch process.
     │   │
     │   ├── domain          <- Contains domain related part of the code.
     │   │   ├── __init__.py <- Makes domain a Python module.
+    │   │   ├── vigeo_keys_merging.py
+    │   │   │               <- Merge the key.
     │   │
     │   ├── infrastructure  <- Contains infrastructure part of the code.
     │   │   ├── __init__.py <- Makes infrastructure a Python module.
     │   │   ├── command_line_parser.py
-    │   │   │               <- Command line parser for `predict.py` and `train.py`.
-    │   │   └── preprocessing.py
-    │   │                   <- Perform first operations
+    │   │   │               <- Command line parser `main.py`.
+    │   │   ├── isin_eid_preprocessing.py
+    │   │   │               <- Perform raw data operations for specific file
+    │   │   ├── universe_preprocessing.py
+    │   │   │               <- Perform raw data operations for specific file
+    │   │   └── vigeo_preprocessing.py
+    │   │                   <- Perform raw data operations for specific file
     │   │
     │   ├── settings        <- Contains variables.
     │   │   ├── __init__.py <- Makes settings a Python module, and load `base.py`.
     │   │   └── base.py     <- Contains path/to/file variables and dataframe column names.
     │   │
-    │   └── __init__.py     <- Makes face_detection a Python module.
+    │   └── __init__.py     <- Makes 'merge' a Python module.
     │
-    ├── models              <- Trained and serialized models.
-    │
-    │
-    ├── reports             <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures         <- Generated graphics and figures to be used in reporting
     │
     ├── activate.sh         <- Activate the python environment.
     │
@@ -62,7 +62,7 @@ Code to solve human face wearing a mask protection
 # Getting Started
 
 
-## 0. Clone this repository and checkout the v1 branch
+## 0. Clone this repository and checkout the master branch
 ```
 $ git clone
 $ cd 
@@ -126,19 +126,20 @@ init                           initiate virtual environment
 install                        install project dependencies (requirements.txt)
 ```
 
-## 4. Train the model
+## 4. Merge with 3 raw files in 'data/raw' folder
 
-The training could be launched with the following command line:
-
-```
-$ python face_detection/application/train.py
-```
-
-## 5. Make predictions
-
-The predictions could be obtained with the following command line:
+The merge could be launched with the following command line:
 
 ```
-$ python face_detection/application/predict.py
+$ python merge/application/main.py
+```
+
+## 5. Merge with specified files path
+
+The merge could be launched with the following command line:
+
+```
+$ python fmerge/application/main.py -u path/to/universe_file
+    -v path/to/vigeo_file -f path/to/filter_file
 ```
 
