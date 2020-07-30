@@ -15,6 +15,7 @@ Input datasets localizations can be specified with
     $ python fmerge/application/main.py -u path/to/universe_file
     -v path/to/vigeo_file -f path/to/filter_file
 """
+import logging
 
 from merge.infrastructure.command_line_parser import MergeCommandLineParser
 from merge.infrastructure.universe_preprocessing import UniversePreprocessing
@@ -24,31 +25,33 @@ from merge.domain.vigeo_keys_merging import VigeoKeysMerging
 from merge.settings import base
 
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
 def main():
     """Launch main steps of model training."""
     # Command line parser
     parser = MergeCommandLineParser()
     args = parser.parse_args()
-    print(args)  # TODO Removed
 
     # Raw data preprocessing
+    logging.info(" Raw data preprocessing on going...")
     u_preprocess = UniversePreprocessing(args.universe_input)
     universe_df = u_preprocess.do_preprocessing()
-    print(universe_df.info())  # TODO Removed
     f_preprocess = IsinEidPreprocessing(args.filter_input)
     filter_df = f_preprocess.do_preprocessing()
-    print(filter_df.info())  # TODO Remove
     v_preprocess = VigeoPreprocessing(args.vigeo_input)
     vigeo_df = v_preprocess.do_preprocessing()
-    print(vigeo_df.info())  # TODO Removed
-    print(vigeo_df.head(5))  # TODO Removed
+    logging.info(" Raw data preprocessing done.")
 
     # Merging Vigeo_key to Universe
+    logging.info(" Merging Vigeo_key to Universe on going...")
     merging_data = VigeoKeysMerging(universe_df, filter_df, vigeo_df)
     final_data = merging_data.merge_vigeo_key()
+    logging.info(" Merging Vigeo_key to Universe done.")
 
     # Save data
     final_data.to_csv(base.UNIVERSE_VIGEO_FILE)
+    logging.info(" File saved.")
 
 
 if __name__ == "__main__":
