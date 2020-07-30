@@ -47,6 +47,9 @@ class UniversePreprocessing:
         universe_df = self.read_csv()
         self.sanity_check(universe_df)
         universe_df = self.cast_columns(universe_df)
+        universe_df = self.datetime_setup(universe_df)
+        # Sort dataframe by date
+        universe_df.sort_values(by=base.DATE, inplace=True)
         return universe_df
 
     def read_csv(self):
@@ -85,3 +88,14 @@ class UniversePreprocessing:
         pandas.DataFrame
         """
         return df.astype(base.U_COLUMNS_CAST)
+
+    def datetime_setup(self, df):
+        """
+        Setup date columns as expected.
+
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        df[base.DATE] = pd.to_datetime(df[base.V_CUTOFF]).dt.to_period("D")
+        return df
