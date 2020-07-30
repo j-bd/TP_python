@@ -48,6 +48,8 @@ class UniversePreprocessing:
         self.sanity_check(universe_df)
         universe_df = self.cast_columns(universe_df)
         universe_df = self.datetime_setup(universe_df)
+        # Add empty columns for merging key
+        universe_df[base.U_VIGEO_KEY] = ''
         return universe_df
 
     def read_csv(self):
