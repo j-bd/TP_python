@@ -60,9 +60,11 @@ class VigeoKeysMerging:
         for u_index, u_row in self.universe_df.iterrows():
             print(counter, '/', size)
             for v_index, v_row in self.vigeo_df.iterrows():
+                print("2nd for")
                 if u_row[base.DATE] <= v_row[base.DATE]:
-                    # print(i)
+                    print("1st if")
                     if u_row[base.U_ISIN] == v_row[base.V_ISIN]:
+                        print("2 if")
                         self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
                         print('ISIN')
                         print(
@@ -72,6 +74,7 @@ class VigeoKeysMerging:
                         print(u_row[base.U_VIGEO_KEY])
                         break
                     elif u_row[base.U_HISTORICAL_ISIN] == v_row[base.V_ISIN]:
+                        print("3 if")
                         self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
                         print('Historical_ISIN')
                         print(
@@ -81,6 +84,7 @@ class VigeoKeysMerging:
                         print(u_row[base.U_VIGEO_KEY])
                         break
                     elif u_row[base.U_ISIN] == v_row[base.V_VIGEO_KEY]:
+                        print("4 if")
                         self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
                         print('ISIN - Vigeo_Key')
                         print(
@@ -90,6 +94,7 @@ class VigeoKeysMerging:
                         print(u_row[base.U_VIGEO_KEY])
                         break
                     elif u_row[base.U_HISTORICAL_ISIN] == v_row[base.V_VIGEO_KEY]:
+                        print("5 if")
                         self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
                         print('Historical_ISIN - Vigeo_Key')
                         print(
@@ -98,20 +103,22 @@ class VigeoKeysMerging:
                         print(v_row['Vigeo_Key'])
                         print(u_row[base.U_VIGEO_KEY])
                         break
-                    # else:
-                    #     for f_index, f_row in self.filter_df.iterrows():
-                    #         if u_row[base.U_FACTSET_ENTITY_ID] == f_row[base.F_FACTSET_ENTITY_ID] and f_row[base.F_ISIN] == v_row[base.V_ISIN]:
-                    #              u_row[base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
-                    #              print('filter')
-                    #              print(
-                    #                  f"True, universe: {u_row['date']}, vigeo {v_row['date']}, vig index: {v_index}, isin {v_row['ISIN']}"
-                    #              )
-                    #              print(v_row['Vigeo_Key'])
-                    #              print(u_row[base.U_VIGEO_KEY])
-                    #              break
-                    #         break
+                else:
+                    print("in")
+                    for f_index, f_row in self.filter_df.iterrows():
+                        print("in, in")
+                        if u_row[base.U_FACTSET_ENTITY_ID] == f_row[base.F_FACTSET_ENTITY_ID] and f_row[base.F_ISIN] == v_row[base.V_ISIN]:
+                            self.universe_df.loc[u_index, base.U_VIGEO_KEY] = v_row[base.V_VIGEO_KEY]
+                            print('filter')
+                            print(
+                             f"True, universe: {u_row['date']}, vigeo {v_row['date']}, vig index: {v_index}, isin {v_row['ISIN']}"
+                            )
+                            print(v_row['Vigeo_Key'])
+                            print(u_row[base.U_VIGEO_KEY])
+                            break
+                            # break
 
             counter += 1
-            if counter == 10:
-                break
+            # if counter == 10:
+            #     break
         return self.universe_df
