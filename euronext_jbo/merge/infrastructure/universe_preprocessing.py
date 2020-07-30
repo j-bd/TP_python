@@ -97,5 +97,5 @@ class UniversePreprocessing:
         -------
         pandas.DataFrame
         """
-        df[base.DATE] = pd.to_datetime(df[base.V_CUTOFF]).dt.to_period("D")
+        df[base.DATE] = pd.to_datetime(df[base.U_CUTOFF]).dt.to_period("D")
         return df
