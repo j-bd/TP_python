@@ -30,6 +30,7 @@ U_COLUMNS_CAST = {
     U_HISTORICAL_ISIN: 'category', U_ISIN: 'category', U_SHORT_NAME: 'object',
     U_CUTOFF: 'datetime64', U_FACTSET_ENTITY_ID: 'category'
 }
+U_VIGEO_KEY = 'Vigeo_Key'
 
 # Vigeo file
 V_VIGEO_KEY = 'Vigeo_Key'
