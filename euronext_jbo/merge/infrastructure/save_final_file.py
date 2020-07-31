@@ -9,8 +9,6 @@ Classes
 ProcessedDataSave
 
 """
-import pandas as pd
-
 from merge.settings import base
 
 
@@ -36,4 +34,11 @@ class ProcessedDataSave:
     def save_file(self):
         """Save final file after preprocessing and merging.
         """
+        # Clean unuseful column
+        self._drop_column()
+        # Data saving
         self.universe_vigeo_df.to_csv(self.saving_path)
+
+    def _drop_column(self):
+        """Suppress working column"""
+        self.universe_vigeo_df.drop(columns=[base.DATE], inplace=True)
