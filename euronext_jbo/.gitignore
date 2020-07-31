@@ -95,3 +95,4 @@ install
 data/interim/
 data/processed/
 data/external/
+logs
