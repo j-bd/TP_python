@@ -67,8 +67,6 @@ class VigeoKeysMerging:
             counter += 1
             logging.info(f" {counter}/{size}")
             logging.info(f" Historical_ISIN: {u_row[base.U_HISTORICAL_ISIN]}")
-            # if counter >= 100:
-            #     break
 
             first_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_ISIN])].head(1)
             if len(first_condition) != 0:
