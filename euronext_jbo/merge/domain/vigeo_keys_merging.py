@@ -10,10 +10,9 @@ VigeoKeysMerging
 
 """
 import logging
+from os.path import basename
 
-from merge.settings import base
-
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+from merge.settings import base, log_saving
 
 
 class VigeoKeysMerging:
@@ -52,6 +51,15 @@ class VigeoKeysMerging:
         -------
         universe_df: pandas.DataFrame
         """
+        # log saving setup
+        log_saving.enable_logging(
+            log_filename=f'{basename(__file__)}.log',
+            logging_level=logging.DEBUG
+        )
+        logging.info('----------------------------------')
+        logging.info(f'Script {basename(__file__)}')
+        logging.info('----------------------------------')
+
         counter = 0
         size = len(self.universe_df)
         for u_index, u_row in self.universe_df.iterrows():
@@ -87,18 +95,14 @@ class VigeoKeysMerging:
                 continue
 
             fifth_condition = self.filter_df.loc[(self.filter_df[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
-            try:
-                print('try')  # TODO removed
+            if len(fifth_condition) != 0:
                 fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.V_ISIN] == fifth_condition[base.F_ISIN].values[0]) & (self.vigeo_df[base.DATE] >= u_row[base.DATE])].head(1)
                 if len(fifth_condition) != 0:
                     self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fifth_condition[base.V_VIGEO_KEY].values[0]
                     logging.info(f" Condition number 5 valid. Value Added")
                     continue
-            except IndexError:
-                logging.info(
-                    " No correspondence between the 3 tables for condition 5"
-                )
 
             logging.info(" No condition is matching. No value will be add")
 
+        logging.info(f'End of script {basename(__file__)}')
         return self.universe_df
