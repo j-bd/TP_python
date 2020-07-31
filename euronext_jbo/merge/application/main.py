@@ -17,16 +17,17 @@ Input datasets localizations can be specified with
 """
 import logging
 
-from merge.infrastructure.command_line_parser import MergeCommandLineParser
-from merge.infrastructure.universe_preprocessing import UniversePreprocessing
-from merge.infrastructure.isin_eid_preprocessing import IsinEidPreprocessing
-from merge.infrastructure.vigeo_preprocessing import VigeoPreprocessing
+from merge.settings import base
 from merge.domain.vigeo_keys_merging import VigeoKeysMerging
 from merge.infrastructure.save_final_file import ProcessedDataSave
-from merge.settings import base
+from merge.infrastructure.vigeo_preprocessing import VigeoPreprocessing
+from merge.infrastructure.command_line_parser import MergeCommandLineParser
+from merge.infrastructure.isin_eid_preprocessing import IsinEidPreprocessing
+from merge.infrastructure.universe_preprocessing import UniversePreprocessing
 
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
 
 def main():
     """Launch main steps of model training."""
@@ -55,7 +56,6 @@ def main():
         final_data, base.UNIVERSE_VIGEO_FILE
     )
     save_processed_data.save_file()
-    # final_data.to_csv(base.UNIVERSE_VIGEO_FILE)
     logging.info(" File saved.")
 
 
