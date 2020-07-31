@@ -9,8 +9,11 @@ Classes
 VigeoKeysMerging
 
 """
+import logging
+
 from merge.settings import base
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 class VigeoKeysMerging:
     """
@@ -53,40 +56,47 @@ class VigeoKeysMerging:
         counter = 0
         size = len(self.universe_df)
         for u_index, u_row in self.universe_df.iterrows():
-            print(counter, '/', size)
+            counter += 1
+            logging.info(f" {counter}/{size}")
+            logging.info(f" Historical_ISIN: {u_row[base.U_HISTORICAL_ISIN]}")
+            # if counter >= 100:
+            #     break
 
             first_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_ISIN])].head(1)
             if len(first_condition) != 0:
+                logging.info(f" Condition succeeded number 1")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = first_condition[base.V_VIGEO_KEY].values[0]
-                pass
+                continue
 
             second_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_HISTORICAL_ISIN])].head(1)
             if len(second_condition) != 0:
+                logging.info(f" Condition succeeded number 2")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = second_condition[base.V_VIGEO_KEY].values[0]
-                pass
+                continue
 
             third_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_VIGEO_KEY] == u_row[base.U_ISIN])].head(1)
             if len(third_condition) != 0:
+                logging.info(f" Condition succeeded number 3")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = third_condition[base.V_VIGEO_KEY].values[0]
-                pass
+                continue
 
             fourth_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_VIGEO_KEY] == u_row[base.U_HISTORICAL_ISIN])].head(1)
             if len(fourth_condition) != 0:
+                logging.info(f" Condition succeeded number 4")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fourth_condition[base.V_VIGEO_KEY].values[0]
-                pass
+                continue
 
             # fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == self.filter_df[base.F_ISIN].values[0])].head(1)
             # fifth_condition = fifth_condition.loc[(fifth_condition[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
             fifth_condition = self.filter_df.loc[(self.filter_df[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
             try:
+                print('try')
                 fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.V_ISIN] == fifth_condition[base.F_ISIN].values[0]) & (self.vigeo_df[base.DATE] >= u_row[base.DATE])].head(1)
                 if len(fifth_condition) != 0:
                     self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fifth_condition[base.V_VIGEO_KEY].values[0]
-                    print(u_index)
-                    pass
+                    logging.info(f" Condition succeeded number 5")
+                    continue
             except IndexError:
-                print('no_values')
-
-            counter += 1
+                logging.info(" No_values to add")
 
         return self.universe_df
