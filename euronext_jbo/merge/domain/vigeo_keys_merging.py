@@ -49,7 +49,6 @@ class VigeoKeysMerging:
 
         For each rul we need to have V_CUTOFF equal or closest above U_CUTOFF
 
-
         Returns
         -------
         universe_df: pandas.DataFrame
@@ -65,40 +64,40 @@ class VigeoKeysMerging:
 
             first_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_ISIN])].head(1)
             if len(first_condition) != 0:
-                logging.info(f" Condition succeeded number 1")
+                logging.info(f" Condition number 1 valid. Value Added")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = first_condition[base.V_VIGEO_KEY].values[0]
                 continue
 
             second_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_HISTORICAL_ISIN])].head(1)
             if len(second_condition) != 0:
-                logging.info(f" Condition succeeded number 2")
+                logging.info(f" Condition number 2 valid. Value Added")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = second_condition[base.V_VIGEO_KEY].values[0]
                 continue
 
             third_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_VIGEO_KEY] == u_row[base.U_ISIN])].head(1)
             if len(third_condition) != 0:
-                logging.info(f" Condition succeeded number 3")
+                logging.info(f" Condition number 3 valid. Value Added")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = third_condition[base.V_VIGEO_KEY].values[0]
                 continue
 
             fourth_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_VIGEO_KEY] == u_row[base.U_HISTORICAL_ISIN])].head(1)
             if len(fourth_condition) != 0:
-                logging.info(f" Condition succeeded number 4")
+                logging.info(f" Condition number 4 valid. Value Added")
                 self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fourth_condition[base.V_VIGEO_KEY].values[0]
                 continue
 
-            # fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == self.filter_df[base.F_ISIN].values[0])].head(1)
-            # fifth_condition = fifth_condition.loc[(fifth_condition[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
             fifth_condition = self.filter_df.loc[(self.filter_df[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
             try:
                 print('try')  # TODO removed
                 fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.V_ISIN] == fifth_condition[base.F_ISIN].values[0]) & (self.vigeo_df[base.DATE] >= u_row[base.DATE])].head(1)
                 if len(fifth_condition) != 0:
                     self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fifth_condition[base.V_VIGEO_KEY].values[0]
-                    logging.info(f" Condition succeeded number 5")
+                    logging.info(f" Condition number 5 valid. Value Added")
                     continue
             except IndexError:
-                logging.error(" IndexError")
+                logging.info(
+                    " No correspondence between 3 tables for condition 5"
+                )
 
             logging.info(" No condition is matching. No value will be add")
 
