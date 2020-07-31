@@ -43,11 +43,10 @@ class VigeoKeysMerging:
         2. ISIN (in Vigeo) = Historical ISIN in universe
         3. Vigeo Key = ISIN in universe
         4. Vigeo Key = Historical ISIN in universe
-
         5. ISIN (in Vigeo) = ISIN in F7_ISIN_to_EID_Filter and
         facset_entity_id = factset_entity_id In Universe.
 
-        For each rul we need to have V_CUTOFF equal or closest above U_CUTOFF
+        For each rule we need to have V_CUTOFF equal or closest above U_CUTOFF
 
         Returns
         -------
@@ -56,11 +55,12 @@ class VigeoKeysMerging:
         counter = 0
         size = len(self.universe_df)
         for u_index, u_row in self.universe_df.iterrows():
+            # Displays progress
             counter += 1
             logging.info(f" {counter}/{size}")
             logging.info(f" Historical_ISIN: {u_row[base.U_HISTORICAL_ISIN]}")
-            if counter >= 100:
-                break
+            # if counter >= 100:
+            #     break
 
             first_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_ISIN])].head(1)
             if len(first_condition) != 0:
@@ -96,7 +96,7 @@ class VigeoKeysMerging:
                     continue
             except IndexError:
                 logging.info(
-                    " No correspondence between 3 tables for condition 5"
+                    " No correspondence between the 3 tables for condition 5"
                 )
 
             logging.info(" No condition is matching. No value will be add")
