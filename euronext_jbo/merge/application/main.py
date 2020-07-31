@@ -22,6 +22,7 @@ from merge.infrastructure.universe_preprocessing import UniversePreprocessing
 from merge.infrastructure.isin_eid_preprocessing import IsinEidPreprocessing
 from merge.infrastructure.vigeo_preprocessing import VigeoPreprocessing
 from merge.domain.vigeo_keys_merging import VigeoKeysMerging
+from merge.infrastructure.save_final_file import ProcessedDataSave
 from merge.settings import base
 
 
@@ -50,7 +51,11 @@ def main():
     logging.info(" Merging Vigeo_key to Universe done.")
 
     # Save data
-    final_data.to_csv(base.UNIVERSE_VIGEO_FILE)
+    save_processed_data = ProcessedDataSave(
+        final_data, base.UNIVERSE_VIGEO_FILE
+    )
+    save_processed_data.save_file()
+    # final_data.to_csv(base.UNIVERSE_VIGEO_FILE)
     logging.info(" File saved.")
 
 
