@@ -11,6 +11,7 @@ REPO_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
 DATA_DIR = os.path.join(REPO_DIR, 'data')
 PROCESSED_DATA_DIR = os.path.join(DATA_DIR, 'processed')
 RAW_DATA_DIR = os.path.join(DATA_DIR, 'raw')
+LOGS_DIR = os.path.join(REPO_DIR, 'logs')
 
 UNIVERSE_FILE = os.path.join(RAW_DATA_DIR, 'Universe.csv')
 VIGEO_FILE = os.path.join(RAW_DATA_DIR, 'Vigeo_keys.xlsx')
