@@ -15,6 +15,7 @@ from merge.settings import base
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
+
 class VigeoKeysMerging:
     """
         Return a DataFrame with added values.
@@ -59,8 +60,8 @@ class VigeoKeysMerging:
             counter += 1
             logging.info(f" {counter}/{size}")
             logging.info(f" Historical_ISIN: {u_row[base.U_HISTORICAL_ISIN]}")
-            # if counter >= 100:
-            #     break
+            if counter >= 100:
+                break
 
             first_condition = self.vigeo_df.loc[(self.vigeo_df[base.DATE] >= u_row[base.DATE]) & (self.vigeo_df[base.V_ISIN] == u_row[base.U_ISIN])].head(1)
             if len(first_condition) != 0:
@@ -90,13 +91,15 @@ class VigeoKeysMerging:
             # fifth_condition = fifth_condition.loc[(fifth_condition[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
             fifth_condition = self.filter_df.loc[(self.filter_df[base.F_FACTSET_ENTITY_ID] == u_row[base.U_FACTSET_ENTITY_ID])]
             try:
-                print('try')
+                print('try')  # TODO removed
                 fifth_condition = self.vigeo_df.loc[(self.vigeo_df[base.V_ISIN] == fifth_condition[base.F_ISIN].values[0]) & (self.vigeo_df[base.DATE] >= u_row[base.DATE])].head(1)
                 if len(fifth_condition) != 0:
                     self.universe_df.loc[u_index, base.U_VIGEO_KEY] = fifth_condition[base.V_VIGEO_KEY].values[0]
                     logging.info(f" Condition succeeded number 5")
                     continue
             except IndexError:
-                logging.info(" No_values to add")
+                logging.error(" IndexError")
+
+            logging.info(" No condition is matching. No value will be add")
 
         return self.universe_df
