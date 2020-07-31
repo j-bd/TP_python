@@ -36,7 +36,9 @@ Code to merge specific key into a global file
     │   │                   <- Perform raw data operations for specific file
     │   │
     │   ├── settings        <- Contains variables.
-    │   │   ├── __init__.py <- Makes settings a Python module, and load `base.py`.
+    │   │   ├── __init__.py <- Makes settings a Python module.
+    │   │   ├── log_saving.py 
+    │   │   │               <- Provide logging function to save information in logs folder.
     │   │   └── base.py     <- Contains path/to/file variables and dataframe column names.
     │   │
     │   └── __init__.py     <- Makes 'merge' a Python module.
